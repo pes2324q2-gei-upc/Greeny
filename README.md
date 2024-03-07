@@ -12,7 +12,9 @@ Aplicació de mobilitat sostenible
 - Vega Centeno, Javier
 
 ---
-## Posar en marxa:
+
+## Backend
+### Posar en marxa:
 
 1. Baixarse el repo
 
@@ -20,14 +22,29 @@ Aplicació de mobilitat sostenible
 
 3. Situarse a la carpeta backend
 
-## Run dels dockers corresponents
+### Run dels dockers corresponents
 
 1. `docker compose up`
 
-## Per fer migracions
+### Per fer migracions
 
 1. `docker compose run backend python manage.py migrate`
 
 2. Per crear migracions
 
 3. `docker compose run backend python manage.py makemigrations`
+
+---
+## Frontend
+> **Macos:** Descarregar `cocoapod`
+
+### Preparació
+1. Instalar extensió flutter a vscode (potser també instalar flutter)
+2. Instalar emulador mobil (Xcode/Android Studio)
+
+### Run app
+1. Abaix a la dreta de vscode seleccionar un dispositiu per executar el front end
+2. Seleccionar l'arxiu `./App/greeny/lib/main.dart`
+3. Donar-li a `Start debugging`.
+
+
