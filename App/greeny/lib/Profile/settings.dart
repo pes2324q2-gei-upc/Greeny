@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:greeny/log_in.dart';
+import 'package:greeny/Registration/log_in.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
