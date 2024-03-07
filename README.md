@@ -28,11 +28,11 @@ Aplicació de mobilitat sostenible
 
 ### Per fer migracions
 
-1. `docker compose run backend python manage.py migrate`
+`docker compose run backend python manage.py migrate`
 
-2. Per crear migracions
+### Per crear migracions
 
-3. `docker compose run backend python manage.py makemigrations`
+`docker compose run backend python manage.py makemigrations`
 
 ---
 ## Frontend
@@ -43,7 +43,7 @@ Aplicació de mobilitat sostenible
 2. Instalar emulador mobil (Xcode/Android Studio)
 
 ### Run app
-1. Abaix a la dreta de vscode seleccionar un dispositiu per executar el front end
+1. A baix a la dreta de vscode seleccionar un dispositiu per executar el front end
 2. Seleccionar l'arxiu `./App/greeny/lib/main.dart`
 3. Donar-li a `Start debugging`.
 
