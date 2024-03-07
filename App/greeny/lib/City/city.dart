@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+double punts = 0.5;
+
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
 
@@ -18,6 +20,7 @@ class _CityPageState extends State<CityPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('City'),
+            BarraProgres(punts: punts, onProgressChanged: updateProgress),
             Container(
               width: 70,
               height: 70,
@@ -35,7 +38,6 @@ class _CityPageState extends State<CityPage> {
                 iconSize: 40.0,
               ),
             ),
-            BarraProgres(),
           ],
         ),
       ),
@@ -51,33 +53,69 @@ class _CityPageState extends State<CityPage> {
 
   void play() {
     print('Playing');
+    if (punts < 1) {
+      punts += 0.01;
+      updateProgress(punts + 0.01);
+    } else {
+      punts = 0;
+      updateProgress(punts);
+    }
   }
 
   void viewHistory() {
     print('Viewing history');
   }
-}
 
+  void updateProgress(double newProgress) {
+    setState(() {
+      punts = newProgress;
+    });
+  }
+}
+/*
 class BarraProgres extends StatefulWidget {
   @override
   _BarraProgresState createState() => _BarraProgresState();
 }
+*/
 
-class _BarraProgresState extends State<BarraProgres> {
-  double progres = 0.5;
+// Barra de progres ciutat
+class BarraProgres extends StatelessWidget {
+  final double punts;
+  final Function(double) onProgressChanged;
+
+  const BarraProgres({required this.punts, required this.onProgressChanged});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        LinearProgressIndicator(
-          value: progres,
-          backgroundColor: Colors.grey,
-          valueColor: AlwaysStoppedAnimation<Color>(
-              Colors.blue), // Ajusta el color de la barra de progreso aquí
+        SizedBox(height: 30.0),
+        Container(
+          alignment: Alignment.centerRight,
+          margin: EdgeInsets.symmetric(horizontal: 110.0),
+          child: Text('Nivell ${(1)}'),
         ),
-        SizedBox(height: 10.0),
-        Text('Progreso: ${(progres * 100).toStringAsFixed(1)}%'),
+        SizedBox(height: 5.0),
+        Container(
+          height: 23,
+          margin: EdgeInsets.symmetric(horizontal: 100.0),
+          child: LinearProgressIndicator(
+            value: punts,
+            backgroundColor: Color.fromARGB(255, 205, 197, 197),
+            borderRadius: BorderRadius.circular(10.0),
+            valueColor: AlwaysStoppedAnimation<Color>(
+                const Color.fromARGB(255, 1, 167, 164)),
+          ),
+        ),
+        SizedBox(height: 5.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.symmetric(horizontal: 110.0),
+          child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100'),
+        ),
+        SizedBox(height: 20.0),
       ],
     );
   }
