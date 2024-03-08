@@ -1,7 +1,8 @@
 import 'dart:async';
+//import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
 
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 double punts = 0.5;
 
@@ -16,11 +17,10 @@ class _CityPageState extends State<CityPage> {
   int currentPageIndex = 0;
   bool isPlaying = false;
   late Timer timer;
-  final Location location = Location();
 
   @override
   Widget build(BuildContext context) {
-    comprovarUbicacio();
+    //comprovarUbicacio();
     return Scaffold(
       body: Center(
         child: Column(
@@ -98,28 +98,29 @@ class _CityPageState extends State<CityPage> {
   }
 
   Future<bool> comprovarUbicacio() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
         print('Servicio no habilitado');
         return false;
       }
     }
-    //print('Servicio habilitado');
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
         print('Permiso denegado');
         return false;
       }
     }
-    //print('Permiso concedido');
+
+    print('Servicio habilitado y permiso concedido');
     return true;
   }
 
@@ -137,21 +138,14 @@ class _CityPageState extends State<CityPage> {
 
   Future<void> getLocation() async {
     try {
-      LocationData locationData = await location.getLocation();
-      print(
-          'Latitude: ${locationData.latitude}, Longitude: ${locationData.longitude}');
+      Position position = await Geolocator.getCurrentPosition();
+      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
     } catch (e) {
       print('Error obtaining location: $e');
       // Puedes manejar el error de manera adecuada según tus necesidades
     }
   }
 }
-/*
-class BarraProgres extends StatefulWidget {
-  @override
-  _BarraProgresState createState() => _BarraProgresState();
-}
-*/
 
 // Barra de progres ciutat
 class BarraProgres extends StatelessWidget {
