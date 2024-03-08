@@ -22,20 +22,20 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _controller =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    _controller = AnimationController(
+        duration: const Duration(seconds: 1),
+        vsync: this); //inicialitzar el animation controller
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.dispose(); // per tancar el animation controller
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //comprovarUbicacio();
     return Scaffold(
       body: Center(
         child: Column(
@@ -57,39 +57,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 ),
               ),
             SizedBox(height: 20.0),
-            Container(
-              width: 70,
-              height: 70,
-              margin: EdgeInsets.all(8.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22.0),
-                color: const Color.fromARGB(255, 1, 167, 164),
-              ),
-              child: GestureDetector(
-                onTap: () async {
-                  if (isPlaying) {
-                    // Si está reproduciendo, pausar
-                    pause();
-                  } else {
-                    bool ubiActiva = await comprovarUbicacio();
-                    if (!ubiActiva) return;
-                    // Si no está reproduciendo, reproducir
-                    play();
-                    timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-                      await incrementPoints();
-                      await getLocation();
-                    });
-                  }
-                },
-                child: AnimatedIcon(
-                  icon: AnimatedIcons.play_pause,
-                  progress: _controller,
-                  size: 50.0,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            buildplaypause(),
           ],
         ),
       ),
@@ -181,6 +149,42 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       print('Error obtaining location: $e');
       // Puedes manejar el error de manera adecuada según tus necesidades
     }
+  }
+
+  Widget buildplaypause() {
+    return Container(
+      width: 70,
+      height: 70,
+      margin: EdgeInsets.all(8.0),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22.0),
+        color: const Color.fromARGB(255, 1, 167, 164),
+      ),
+      child: GestureDetector(
+        onTap: () async {
+          if (isPlaying) {
+            // Si está reproduciendo, pausar
+            pause();
+          } else {
+            bool ubiActiva = await comprovarUbicacio();
+            if (!ubiActiva) return;
+            // Si no está reproduciendo, reproducir
+            play();
+            timer = Timer.periodic(Duration(seconds: 1), (timer) async {
+              await incrementPoints();
+              await getLocation();
+            });
+          }
+        },
+        child: AnimatedIcon(
+          icon: AnimatedIcons.play_pause,
+          progress: _controller,
+          size: 50.0,
+          color: Colors.white,
+        ),
+      ),
+    );
   }
 }
 
