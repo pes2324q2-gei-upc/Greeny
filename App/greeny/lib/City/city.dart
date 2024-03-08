@@ -14,10 +14,24 @@ class CityPage extends StatefulWidget {
   State<CityPage> createState() => _CityPageState();
 }
 
-class _CityPageState extends State<CityPage> {
+class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int currentPageIndex = 0;
   bool isPlaying = false;
   late Timer timer;
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    _controller =
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,12 +61,13 @@ class _CityPageState extends State<CityPage> {
               width: 70,
               height: 70,
               margin: EdgeInsets.all(8.0),
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22.0),
                 color: const Color.fromARGB(255, 1, 167, 164),
               ),
-              child: IconButton(
-                onPressed: () async {
+              child: GestureDetector(
+                onTap: () async {
                   if (isPlaying) {
                     // Si está reproduciendo, pausar
                     pause();
@@ -67,11 +82,12 @@ class _CityPageState extends State<CityPage> {
                     });
                   }
                 },
-                icon: Icon(
-                  isPlaying ? Icons.pause : Icons.play_arrow,
+                child: AnimatedIcon(
+                  icon: AnimatedIcons.play_pause,
+                  progress: _controller,
+                  size: 50.0,
                   color: Colors.white,
                 ),
-                iconSize: 40.0,
               ),
             ),
           ],
@@ -91,6 +107,7 @@ class _CityPageState extends State<CityPage> {
   }
 
   void play() {
+    _controller.forward();
     setState(() {
       isPlaying = true;
     });
@@ -98,6 +115,7 @@ class _CityPageState extends State<CityPage> {
   }
 
   void pause() {
+    _controller.reverse();
     setState(() {
       isPlaying = false;
     });
