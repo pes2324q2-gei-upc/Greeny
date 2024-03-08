@@ -28,7 +28,21 @@ class _CityPageState extends State<CityPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('City'),
-            BarraProgres(punts: punts, onProgressChanged: updateProgress),
+            if (!isPlaying)
+              BarraProgres(punts: punts, onProgressChanged: updateProgress)
+            else
+              Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(horizontal: 110.0),
+                child: Text(
+                  'Km recorreguts: ${(km).toStringAsFixed(1)} km',
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            SizedBox(height: 20.0),
             Container(
               width: 70,
               height: 70,
@@ -189,18 +203,6 @@ class BarraProgres extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 110.0),
           child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100',
               style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        SizedBox(height: 20.0),
-        Container(
-          alignment: Alignment.center,
-          margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text(
-            'Km recorreguts: ${(km).toStringAsFixed(1)} km',
-            style: DefaultTextStyle.of(context)
-                .style
-                .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
-            textAlign: TextAlign.center,
-          ),
         ),
         SizedBox(height: 20.0),
       ],
