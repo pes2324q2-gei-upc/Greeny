@@ -3,19 +3,43 @@ import 'package:geolocator/geolocator.dart';
 double km = 0;
 
 Future<void> comptakm() async {
-  km += 1;
-  await getLocation();
+  comprovarUbicacio();
+  //await getLocation();
+  startLocationUpdates();
 }
 
-Future<void> getLocation() async {
+Future<void> startLocationUpdates() async {
+  Position? previousPosition;
+
+  // ignore: unused_local_variable
+  final stream = Geolocator.getPositionStream(
+    desiredAccuracy: LocationAccuracy.high,
+  ).listen((Position position) {
+    if (previousPosition != null) {
+      double distanceInMeters = Geolocator.distanceBetween(
+        previousPosition!.latitude,
+        previousPosition!.longitude,
+        position.latitude,
+        position.longitude,
+      );
+
+      // Convertir la distancia de metros a kilómetros y actualizar el contador.
+      double distanceInKm = distanceInMeters / 1000;
+      km += distanceInKm;
+    }
+
+    previousPosition = position;
+  });
+}
+
+/* Future<void> getLocation() async {
   try {
     Position position = await Geolocator.getCurrentPosition();
     print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
   } catch (e) {
     print('Error obtaining location: $e');
-    // Puedes manejar el error de manera adecuada según tus necesidades
   }
-}
+} */
 
 Future<bool> comprovarUbicacio() async {
   bool serviceEnabled;
