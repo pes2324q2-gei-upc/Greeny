@@ -25,7 +25,7 @@ Future<bool> comprovarUbicacio() async {
   if (!serviceEnabled) {
     serviceEnabled = await Geolocator.openLocationSettings();
     if (!serviceEnabled) {
-      print('Servicio no habilitado');
+      print('Servei ubicació no habilitat');
       return false;
     }
   }
@@ -35,11 +35,11 @@ Future<bool> comprovarUbicacio() async {
     permission = await Geolocator.requestPermission();
     if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-      print('Permiso denegado');
+      print('Permis denegat');
       return false;
     }
   }
 
-  print('Servicio habilitado y permiso concedido');
+  print('Servei habilitat i permis otorgat');
   return true;
 }
