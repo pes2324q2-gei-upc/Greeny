@@ -42,8 +42,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           children: [
             const Text('City'),
             if (!isPlaying)
-              BarraProgres(punts: punts, onProgressChanged: updateProgress)
-            else
+              BarraProgres(punts: punts, onProgressChanged: updateProgress),
+            if (isPlaying)
+              Icon(Icons.directions_walk,
+                  size: 50), // icona per indicar que sésta fent un recorregut
+            if (isPlaying)
               Container(
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(horizontal: 110.0),
@@ -57,6 +60,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               ),
             SizedBox(height: 20.0),
             buildplaypause(),
+            if (!isPlaying)
+              Container(
+                alignment: Alignment.center,
+                margin: EdgeInsets.symmetric(horizontal: 110.0),
+                child: Text(
+                  'Ultim recorregut: ${(km).toStringAsFixed(1)} km',
+                  style: DefaultTextStyle.of(context)
+                      .style
+                      .apply(fontWeightDelta: 2),
+                  textAlign: TextAlign.center,
+                ), //imprimeix els km de lib/City/comptakm.dart
+              ),
           ],
         ),
       ),
@@ -64,7 +79,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         title: Text(
           'Greeny',
           style: TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
+        centerTitle: true,
         leading: IconButton(
             onPressed: viewHistory,
             icon: const Icon(Icons.restore),
@@ -75,6 +92,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void play() {
     _controller.forward();
+    km = 0;
     setState(() {
       isPlaying = true;
     });
@@ -86,7 +104,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       isPlaying = false;
     });
-    km = 0;
     print('Paused');
     timer.cancel(); //cancelar el temporitzador
   }
