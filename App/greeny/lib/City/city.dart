@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 double punts = 0.5;
 
@@ -11,9 +14,13 @@ class CityPage extends StatefulWidget {
 
 class _CityPageState extends State<CityPage> {
   int currentPageIndex = 0;
+  bool isPlaying = false;
+  late Timer timer;
+  final Location location = Location();
 
   @override
   Widget build(BuildContext context) {
+    comprovarUbicacio();
     return Scaffold(
       body: Center(
         child: Column(
@@ -24,17 +31,31 @@ class _CityPageState extends State<CityPage> {
             Container(
               width: 70,
               height: 70,
-              margin:
-                  EdgeInsets.all(8.0), // Ajusta el margen según tus necesidades
+              margin: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22.0),
-                color: const Color.fromARGB(255, 1, 167,
-                    164), // Cambia el color del fondo redondeado aquí
+                color: const Color.fromARGB(255, 1, 167, 164),
               ),
-
               child: IconButton(
-                onPressed: play,
-                icon: const Icon(Icons.play_arrow, color: Colors.white),
+                onPressed: () async {
+                  if (isPlaying) {
+                    // Si está reproduciendo, pausar
+                    pause();
+                  } else {
+                    bool ubiActiva = await comprovarUbicacio();
+                    if (!ubiActiva) return;
+                    // Si no está reproduciendo, reproducir
+                    play();
+                    timer = Timer.periodic(Duration(seconds: 1), (timer) async {
+                      await incrementPoints();
+                      await getLocation();
+                    });
+                  }
+                },
+                icon: Icon(
+                  isPlaying ? Icons.pause : Icons.play_arrow,
+                  color: Colors.white,
+                ),
                 iconSize: 40.0,
               ),
             ),
@@ -52,14 +73,18 @@ class _CityPageState extends State<CityPage> {
   }
 
   void play() {
+    setState(() {
+      isPlaying = true;
+    });
     print('Playing');
-    if (punts < 1) {
-      punts += 0.01;
-      updateProgress(punts + 0.01);
-    } else {
-      punts = 0;
-      updateProgress(punts);
-    }
+  }
+
+  void pause() {
+    setState(() {
+      isPlaying = false;
+    });
+    print('Paused');
+    timer.cancel(); //cancelar el temporitzador
   }
 
   void viewHistory() {
@@ -70,6 +95,55 @@ class _CityPageState extends State<CityPage> {
     setState(() {
       punts = newProgress;
     });
+  }
+
+  Future<bool> comprovarUbicacio() async {
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        print('Servicio no habilitado');
+        return false;
+      }
+    }
+    //print('Servicio habilitado');
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        print('Permiso denegado');
+        return false;
+      }
+    }
+    //print('Permiso concedido');
+    return true;
+  }
+
+  Future<void> incrementPoints() async {
+    setState(() {
+      if (punts < 1) {
+        punts += 0.01;
+        updateProgress(punts + 0.01);
+      } else {
+        punts = 0;
+        updateProgress(punts);
+      }
+    });
+  }
+
+  Future<void> getLocation() async {
+    try {
+      LocationData locationData = await location.getLocation();
+      print(
+          'Latitude: ${locationData.latitude}, Longitude: ${locationData.longitude}');
+    } catch (e) {
+      print('Error obtaining location: $e');
+      // Puedes manejar el error de manera adecuada según tus necesidades
+    }
   }
 }
 /*
