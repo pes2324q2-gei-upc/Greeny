@@ -2,10 +2,9 @@ import 'dart:async';
 //import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:greeny/City/comptakm.dart';
 
 double punts = 0.5;
-double km = 0;
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -54,7 +53,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       .style
                       .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
                   textAlign: TextAlign.center,
-                ),
+                ), //imprimeix els km de lib/City/comptakm.dart
               ),
             SizedBox(height: 20.0),
             buildplaypause(),
@@ -87,6 +86,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       isPlaying = false;
     });
+    km = 0;
     print('Paused');
     timer.cancel(); //cancelar el temporitzador
   }
@@ -101,54 +101,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
   }
 
-  Future<bool> comprovarUbicacio() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await Geolocator.openLocationSettings();
-      if (!serviceEnabled) {
-        print('Servicio no habilitado');
-        return false;
-      }
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        print('Permiso denegado');
-        return false;
-      }
-    }
-
-    print('Servicio habilitado y permiso concedido');
-    return true;
-  }
-
   Future<void> incrementPoints() async {
     setState(() {
       if (punts < 1) {
         punts += 0.01;
-        km += 1;
         updateProgress(punts + 0.01);
       } else {
         punts = 0;
         updateProgress(punts);
       }
     });
-  }
-
-  Future<void> getLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition();
-      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
-    } catch (e) {
-      print('Error obtaining location: $e');
-      // Puedes manejar el error de manera adecuada según tus necesidades
-    }
   }
 
   Widget buildplaypause() {
@@ -172,8 +134,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             // Si no está reproduciendo, reproducir
             play();
             timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-              await incrementPoints();
-              await getLocation();
+              setState(() {
+                comptakm();
+              });
             });
           }
         },
