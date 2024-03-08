@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 double punts = 0.5;
+double km = 0;
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -63,7 +64,10 @@ class _CityPageState extends State<CityPage> {
         ),
       ),
       appBar: AppBar(
-        title: Text('Greeny'),
+        title: Text(
+          'Greeny',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
             onPressed: viewHistory,
             icon: const Icon(Icons.restore),
@@ -128,6 +132,7 @@ class _CityPageState extends State<CityPage> {
     setState(() {
       if (punts < 1) {
         punts += 0.01;
+        km += 1;
         updateProgress(punts + 0.01);
       } else {
         punts = 0;
@@ -163,7 +168,8 @@ class BarraProgres extends StatelessWidget {
         Container(
           alignment: Alignment.centerRight,
           margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Nivell ${(1)}'),
+          child: Text('Nivell ${(1)}',
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         SizedBox(height: 5.0),
         Container(
@@ -181,7 +187,20 @@ class BarraProgres extends StatelessWidget {
         Container(
           alignment: Alignment.centerLeft,
           margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100'),
+          child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        SizedBox(height: 20.0),
+        Container(
+          alignment: Alignment.center,
+          margin: EdgeInsets.symmetric(horizontal: 110.0),
+          child: Text(
+            'Km recorreguts: ${(km).toStringAsFixed(1)} km',
+            style: DefaultTextStyle.of(context)
+                .style
+                .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+            textAlign: TextAlign.center,
+          ),
         ),
         SizedBox(height: 20.0),
       ],
