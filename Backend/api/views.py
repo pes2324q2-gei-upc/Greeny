@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 from pathlib import Path
+from .serializers import MetroSerializer
 import os
 
 from .models import *
@@ -76,6 +77,12 @@ class FetchEstacionsTransportPublic(View):
             #         longitud = item.get('LONGITUD')]
             #     )
         return JsonResponse(data, safe=False)
+
+def getParadesMetro(request):
+    elements = Metro.objects.all();
+    serializer = MetroSerializer(elements, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
     
 #GET parades de bus Barcelona
 class ParadesBus(View):
