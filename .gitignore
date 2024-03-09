@@ -2,5 +2,6 @@
 /DB
 .idea
 Backend/.env
-App/greeny/ios/Runner.xcodeproj/project.pbxproj
+App/greeny/ios/Runner.xcodeproj/
+App/greeny/ios/Runner/
 
