@@ -30,6 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -115,12 +116,15 @@ class _SignInPageState extends State<SignInPage> {
               Column(
                 children: [
                   Text(
-                    'Or sign in with:',
+                    'Or continue with:',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.g_translate),
-                    iconSize: 30,
+                    icon: const Image(
+                      image: AssetImage('assets/icons/google.png'),
+                      height: 40,
+                      width: 40,
+                    ),
                     tooltip: 'Sign in with Google',
                     onPressed: googleSignIn,
                   ),

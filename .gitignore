@@ -1,3 +1,6 @@
 **/.DS_Store
 /DB
 .idea
+Backend/.env
+App/greeny/ios/Runner.xcodeproj/
+App/greeny/ios/Runner/
