@@ -1,8 +1,9 @@
 from rest_framework import serializers
-from .models import Tram, Metro, FGC, RENFE, Bicing, BUS, PuntsRecarrega
+from .models import Estacio, Tram, Metro, FGC, RENFE, Bicing, BUS, PuntsRecarrega
 
 class EstacioSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Estacio
         fields = ['nom', 'latitud', 'longitud', 'adreca', 'rating']
 
 class TramSerializer(serializers.ModelSerializer):

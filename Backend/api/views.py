@@ -5,6 +5,8 @@ from django.views import View
 from pathlib import Path
 import os
 
+from .models import *
+
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
 headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
 
@@ -20,11 +22,59 @@ class CarregadorsElectricsView(View):
         data = response.json()
         return JsonResponse(data, safe=False)
     
-#GET estacions Transport Public Barcelona (METRO, TRAM, FGC, )
-class EstacionsTransportPublic(View):
+#GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
+class FetchEstacionsTransportPublic(View):
     def get(self, request):
         response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
         data = response.json()
+
+        estacions = data.get("result").get("records")
+
+        for item in estacions:
+            if "METRO" in item.get('EQUIPAMENT'):
+                full_name = item.get('EQUIPAMENT');
+                nom_parada = full_name.split(" - ")[1].replace("-","");
+                linia = [full_name.split("(")[1].split(")")[0]];
+
+                #print(full_name, nom_parada, linia)
+
+                #Buscamos por nombre por si ya existe la parada
+                
+                try:
+                    estacio = Estacio.objects.get(nom=nom_parada)
+                except Estacio.DoesNotExist:
+                    estacio = None
+                
+                if estacio is None:                     #Si no existe parada la creamos
+                    Metro.objects.create(
+                        nom = nom_parada,
+                        latitud = item.get('LATITUD'),
+                        longitud = item.get('LONGITUD'),
+                        linies = linia
+                    )
+                    #print("Create Metro")
+                else:                                   #Si existe la parada, actualizamos las lineas del Metro Asociado     
+                    estacio.metro.linies.append(linia[0])
+                    estacio.metro.save()
+                
+            # elif "TRAM" in item.get('EQUIPAMENT'):
+            #     Tram.objects.create(
+            #         nom = item.get('EQUIPAMENT'),
+            #         latitud = item.get('LATITUD'),
+            #         longitud = item.get('LONGITUD')
+            #     )
+            # elif "FGC" in item.get('EQUIPAMENT'):
+            #     FGC.objects.create(
+            #         nom = item.get('EQUIPAMENT'),
+            #         latitud = item.get('LATITUD'),
+            #         longitud = item.get('LONGITUD')
+            #     )
+            # elif "RENFE" in item.get('EQUIPAMENT'):
+            #     RENFE.objects.create(
+            #         nom = item.get('EQUIPAMENT'),
+            #         latitud = item.get('LATITUD'),
+            #         longitud = item.get('LONGITUD')]
+            #     )
         return JsonResponse(data, safe=False)
     
 #GET parades de bus Barcelona

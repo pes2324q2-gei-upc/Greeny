@@ -6,12 +6,9 @@ class Estacio(models.Model):
     latitud = models.FloatField()
     longitud = models.FloatField()
     adreca = models.CharField(max_length=100)
-    rating = models.FloatField()
+    rating = models.FloatField(default= 0.0)
     def __str__(self):
         return self.nom
-    class Meta:
-        abstract = True
-    
 
 class Tram(Estacio):
     linies = ArrayField(models.CharField(max_length=10, blank=False))
@@ -26,7 +23,7 @@ class RENFE(Estacio):
     linies = ArrayField(models.CharField(max_length=10, blank=False))
 
 class Bicing(Estacio):
-    capacitat = models.IntegerField();
+    capacitat = models.IntegerField(default=0)
 
 class BUS(Estacio):
     linies = ArrayField(models.CharField(max_length=10, blank=False))
@@ -34,6 +31,6 @@ class BUS(Estacio):
 class PuntsRecarrega(Estacio):
     acces= models.CharField(max_length=100)
     velocitatCarrega = models.CharField(max_length=100)
-    potencia = models.IntegerField()
+    potencia = models.IntegerField(default=0)
     tipusCorrent = models.CharField(max_length=100)
     tipusConnexio = models.CharField(max_length=100)
