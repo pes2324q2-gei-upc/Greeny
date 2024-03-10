@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'form_final.dart';
+
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
 
@@ -19,7 +21,8 @@ class _CityPageState extends State<CityPage> {
           children: [
             const Text('City'),
             IconButton(onPressed: play, icon: const Icon(Icons.play_arrow)),
-            IconButton(onPressed: viewHistory, icon: const Icon(Icons.restore))
+            IconButton(onPressed: viewHistory, icon: const Icon(Icons.restore)),
+            IconButton(onPressed: final_form, icon: const Icon(Icons.pause))
           ],
         ),
       ),
@@ -32,5 +35,12 @@ class _CityPageState extends State<CityPage> {
 
   void viewHistory() {
     print('Viewing history');
+  }
+
+  void final_form() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FormFinalPage()),
+    );
   }
 }
