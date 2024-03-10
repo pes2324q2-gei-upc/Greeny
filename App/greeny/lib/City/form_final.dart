@@ -141,7 +141,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
   } 
 
   void submit() {
-    print('Submitting');
+    print('Submited!');
   }
   
   void close() {
