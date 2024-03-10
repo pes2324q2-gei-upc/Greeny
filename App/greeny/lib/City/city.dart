@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'form_final.dart';
 
 class CityPage extends StatefulWidget {
@@ -43,5 +42,5 @@ class _CityPageState extends State<CityPage> {
       MaterialPageRoute(builder: (context) => const FormFinalPage()),
     );
   }
-  
+
 }
