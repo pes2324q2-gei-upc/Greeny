@@ -4,4 +4,4 @@
 Backend/.env
 App/greeny/ios/Runner.xcodeproj/
 App/greeny/ios/Runner/
-
+Backend/api/migrations/
