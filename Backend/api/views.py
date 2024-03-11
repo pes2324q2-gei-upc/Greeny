@@ -24,84 +24,108 @@ class CarregadorsElectricsView(View):
         return JsonResponse(data, safe=False)
     
 # #GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
-# class FetchEstacionsTransportPublic(View):
-#     def get(self, request):
-#         response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
-#         data = response.json()
+class FetchEstacionsTransportPublic(View):
+    def get(self, request):
+        response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
+        data = response.json()
 
-#         estacions = data.get("result").get("records")
+        estacions = data.get("result").get("records")
 
-#         for item in estacions:
-#             # if "METRO" in item.get('EQUIPAMENT'):
-#             #     full_name = item.get('EQUIPAMENT');
-#             #     nom_parada = full_name.split(" - ")[1].replace("-","");
-#             #     linia = [full_name.split("(")[1].split(")")[0]];
+        for item in estacions:
+            #Metro: ej METRO (L1) - CATALUNYA
+            if "METRO" in item.get('EQUIPAMENT'):
+                continue
+                full_name = item.get('EQUIPAMENT');
+                nom_parada = full_name.split(" - ")[1].replace("-","");
+                linia = [full_name.split("(")[1].split(")")[0]];
 
 
-#             #     #Buscamos por nombre por si ya existe la parada
+                #Miramos si existe el tipo Metro, sino creamos la instancia
+                try:
+                    tipusTrans = TipusTransport.objects.get(tipus=TipusTransport.TTransport.METRO)
+                except TipusTransport.DoesNotExist:
+                    tipusTrans = TipusTransport.objects.create(tipus=TipusTransport.TTransport.METRO)
+                    
+                #Buscamos por nombre por si ya existe la parada
                 
-#             #     try:
-#             #         estacio = Estacio.objects.get(nom=nom_parada)
-#             #     except Estacio.DoesNotExist:
-#             #         estacio = None
+                try:
+                    estacio = EstacioTransportPublic.objects.get(nom=nom_parada)
+                except EstacioTransportPublic.DoesNotExist:
+                    estacio = None
                 
-#             #     if estacio is None:                     #Si no existe parada la creamos
-#             #         Metro.objects.create(
-#             #             nom = nom_parada,
-#             #             latitud = item.get('LATITUD'),
-#             #             longitud = item.get('LONGITUD'),
-#             #             linies = linia
-#             #         )
-#             #         #print("Create Metro")
-#             #     else:                                   #Si existe la parada, actualizamos las lineas del Metro Asociado     
-#             #         estacio.metro.linies.append(linia[0])
-#             #         estacio.metro.save()
+                if estacio is None:                     #Si no existe estacionTPublic la creamos
+                    new_estacio_tp = EstacioTransportPublic.objects.create(
+                        nom = nom_parada,
+                        latitud = item.get('LATITUD'),
+                        longitud = item.get('LONGITUD'),
+                    )
+
+                    print("Estacion TP creada: " + nom_parada)
+
+                    #Creamos la parada asociada a la estacion
+                    Parada.objects.create(
+                        estacio = new_estacio_tp,
+                        tipus_transport = tipusTrans,
+                        linies = linia
+                    )
+
+                    #print("Parada de la estacion " + nom_parada + "de tipo Metro")
+                else:                                   #Si existe la parada, actualizamos las lineas del Metro Asociado     
+                    parada = Parada.objects.get(estacio=estacio, tipus_transport=tipusTrans)
+                    parada.linies = parada.linies + linia
+                    parada.save()
+                    #print("Añadida linea " + str(linia) + "a " + nom_parada)
+
             
-#             #Tramvia: ej TRAMVIA (T1,T2) - LES AIGÜES- 
-#             if "TRAM" in item.get('EQUIPAMENT'):
-#                 full_name = item.get('EQUIPAMENT');
-#                 nom_parada = full_name.split(" - ")[1].replace("-","");
-#                 #linies_parada = full_name.split(" - ")[0].split(" ")[1].replace("(","").replace(")","").split(",");
-#                 linies_parada = full_name.split(" - ")[0].replace(" ", "").split("(")[1].replace(")", "").split(",")
+            #Tramvia: ej TRAMVIA (T1,T2) - LES AIGÜES- 
+            if "TRAM" in item.get('EQUIPAMENT'):
+                continue
+                full_name = item.get('EQUIPAMENT');
+                nom_parada = full_name.split(" - ")[1].replace("-","");
+                #linies_parada = full_name.split(" - ")[0].split(" ")[1].replace("(","").replace(")","").split(",");
+                linies_parada = full_name.split(" - ")[0].replace(" ", "").split("(")[1].replace(")", "").split(",")
 
-#                 if nom_parada == "Mª CRISTINA":
-#                     nom_parada = "MARIA CRISTINA"
-#                 elif nom_parada == "TORREBLANCA":
-#                     linies_parada = [full_name.split(" - ")[0].split(" ")[2].replace(")", "")]
+                if nom_parada == "Mª CRISTINA":
+                    nom_parada = "MARIA CRISTINA"
+                elif nom_parada == "TORREBLANCA":
+                    linies_parada = [full_name.split(" - ")[0].split(" ")[2].replace(")", "")]
 
-#                 print(nom_parada, linies_parada)
+                print(nom_parada, linies_parada)
 
-#                 try:
-#                     estacio = Estacio.objects.get(nom__iexact=nom_parada)
-#                 except Estacio.DoesNotExist:
-#                     estacio = None
+                try:
+                    estacio = EstacioTransportPublic.objects.get(nom__iexact=nom_parada)
+                except EstacioTransportPublic.DoesNotExist:
+                    estacio = None
 
-#                 if estacio is None:
-#                     Tram.objects.create(
-#                         nom = nom_parada,
-#                         latitud = item.get('LATITUD'),
-#                         longitud = item.get('LONGITUD'),
-#                         linies = linies_parada,
-#                     )
-#                     #print("Nueva estación creada: " + nom_parada)
-#                 else:
-#                     new_tram = Tram(linies=linies_parada, estacio_ptr_id=estacio.id)
-#                     new_tram.save()
-#                     #print("Creamos nuevo TRAM asociado a la estacion: " + nom_parada + " con linias: " + str(linies_parada))
+                try:
+                    tipusTrans = TipusTransport.objects.get(tipus=TipusTransport.TTransport.TRAM)
+                except TipusTransport.DoesNotExist:
+                    tipusTrans = TipusTransport.objects.create(tipus=TipusTransport.TTransport.TRAM)
+
+                if estacio is None:
+                    estacio = EstacioTransportPublic.objects.create(
+                        nom = nom_parada,
+                        latitud = item.get('LATITUD'),
+                        longitud = item.get('LONGITUD'),
+                    )
+                    print("Nueva estación creada: " + nom_parada)
+
+                #creamos parada asociada
+                Parada.objects.create(estacio=estacio, tipus_transport=tipusTrans, linies=linies_parada)
                 
-#             # elif "FGC" in item.get('EQUIPAMENT'):
-#             #     FGC.objects.create(
-#             #         nom = item.get('EQUIPAMENT'),
-#             #         latitud = item.get('LATITUD'),
-#             #         longitud = item.get('LONGITUD')
-#             #     )
-#             # elif "RENFE" in item.get('EQUIPAMENT'):
-#             #     RENFE.objects.create(
-#             #         nom = item.get('EQUIPAMENT'),
-#             #         latitud = item.get('LATITUD'),
-#             #         longitud = item.get('LONGITUD')]
-#             #     )
-#         return JsonResponse(data, safe=False)
+            # elif "FGC" in item.get('EQUIPAMENT'):
+            #     FGC.objects.create(
+            #         nom = item.get('EQUIPAMENT'),
+            #         latitud = item.get('LATITUD'),
+            #         longitud = item.get('LONGITUD')
+            #     )
+            # elif "RENFE" in item.get('EQUIPAMENT'):
+            #     RENFE.objects.create(
+            #         nom = item.get('EQUIPAMENT'),
+            #         latitud = item.get('LATITUD'),
+            #         longitud = item.get('LONGITUD')]
+            #     )
+        return JsonResponse(data, safe=False)
 
 # def getParadesMetro(request):
 #     elements = Metro.objects.all();
