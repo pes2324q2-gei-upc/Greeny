@@ -209,8 +209,4 @@ class _MapPageState extends State<MapPage> {
       });
     }
   }
-
-  void filterBus() async {
-    print('Filtering...');
-  }
 }
