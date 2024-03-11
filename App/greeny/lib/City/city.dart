@@ -15,11 +15,13 @@ class CityPage extends StatefulWidget {
 
 class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int currentPageIndex = 0;
-  bool isPlaying = false;
-  late AnimationController _controller;
-  late StreamSubscription<Position> positionStream;
-  static double km = 0;
-  Position? previousPosition;
+  bool isPlaying = false; // estat de el comptador de km
+  late AnimationController
+      _controller; // controlador per l'animació del botó play/pause
+  late StreamSubscription<Position>
+      positionStream; // stream de posicions per actualitzar l'ubicació
+  static double km = 0; // km totals del recorregut actual o finalitzat
+  Position? previousPosition; // posicio anterior per calcular els km desplaçats
 
   @override
   void initState() {
@@ -94,6 +96,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     );
   }
 
+  // inicia el comptador de km i pasa al estat isPlaying true
   void play() {
     _controller.forward();
     setState(() {
@@ -104,6 +107,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     print('Playing');
   }
 
+  //pausa el comptador de km i pasa al estat isPlaying false
   void pause() {
     _controller.reverse();
     positionStream.cancel();
@@ -118,12 +122,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     print('Viewing history');
   }
 
+  // actualitza els punts per newProgress
   void updateProgress(double newProgress) {
     setState(() {
       punts = newProgress;
     });
   }
 
+//incrementa punts de la barra de progrés per provar-la
   Future<void> incrementPoints() async {
     setState(() {
       if (punts < 1) {
@@ -136,6 +142,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
   }
 
+  // Boto animat de play/pause
   Widget buildplaypause() {
     return Container(
       width: 70,
@@ -168,6 +175,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     );
   }
 
+  // crea un stream d'ubicacions i cada cop que canvia l'ubicació actualitza el comptador de km
   Future<void> startLocationUpdates() async {
     // ignore: unused_local_variable
     positionStream = Geolocator.getPositionStream(
@@ -245,6 +253,7 @@ class BarraProgres extends StatelessWidget {
   }
 } */
 
+// comprova que els servieis dúbicació estan activats i tenen permissos
 Future<bool> comprovarUbicacio() async {
   bool serviceEnabled;
   LocationPermission permission;
