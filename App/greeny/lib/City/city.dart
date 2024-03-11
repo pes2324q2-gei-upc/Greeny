@@ -97,7 +97,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   void play() {
     _controller.forward();
     setState(() {
-      previousPosition = null;
       km = 0;
       isPlaying = true;
     });
@@ -109,6 +108,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     _controller.reverse();
     positionStream.cancel();
     setState(() {
+      previousPosition = null;
       isPlaying = false;
     });
     print('Paused');
@@ -184,7 +184,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         // Convertir la distancia de metros a kilómetros y actualizar el contador.
         double distanceInKm = distanceInMeters / 1000;
         km += distanceInKm;
-        print(km);
+        //print(km); //chivato per comprovar els km
         setState(() {}); //actualizar la interfaz
       }
       previousPosition = position;
