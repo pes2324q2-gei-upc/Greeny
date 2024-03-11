@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class FormFinalPage extends StatefulWidget {
   const FormFinalPage({super.key});
@@ -8,24 +9,23 @@ class FormFinalPage extends StatefulWidget {
 }
 
 class _FormFinalPageState extends State<FormFinalPage> {
-
   final isSelected_ = <bool>[false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column (
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(0, 40, 5, 0),
-              child: Column (
+              child: Column(
                 children: [
                   const SizedBox(
                     height: 40,
                   ),
-                  Row (
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
@@ -34,46 +34,48 @@ class _FormFinalPageState extends State<FormFinalPage> {
                       ),
                     ],
                   ),
-                  const Text(
-                    "Which transport have \nyou used?", 
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold)
-                  ),
+                  const Text("Which transports have \nyou used?",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 20.0),
-                  ToggleButtons(
-                    renderBorder: false,
-                    isSelected: isSelected_,
-                    //borderRadius: BorderRadius.circular(60),
-                    onPressed: (int index) {
-                      setState(() {
-                        isSelected_[index] = !isSelected_[index];
-                      });
-                    },
-                    children: const <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.directions_walk, size: 40),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.directions_bike, size: 40),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.directions_bus, size: 40),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.train, size: 40),
-                      ),
-                      //Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        //child: Icon(Icons.subway, size: 40),
-                      //),
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.electric_car, size: 40),
-                      ),
-                      Padding(padding: EdgeInsets.symmetric(horizontal: 7),
-                        child: Icon(Icons.directions_car, size: 40),
-                      ),
-                    ],
-                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(isSelected_.length, (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isSelected_[index] = !isSelected_[index];
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                          decoration: BoxDecoration(
+                            color: isSelected_[index]
+                                ? const Color.fromARGB(131, 1, 164, 167)
+                                : null,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: Colors.transparent),
+                          ),
+                          child: Icon(
+                            index == 0
+                                ? Icons.directions_walk
+                                : index == 1
+                                    ? Icons.directions_bike
+                                    : index == 2
+                                        ? Icons.directions_bus
+                                        : index == 3
+                                            ? Icons.train
+                                            : index == 4
+                                                ? Icons.electric_car
+                                                : Icons.directions_car,
+                            size: 40,
+                          ),
+                        ),
+                      );
+                    }),
+                  )
                 ],
               ),
             ),
@@ -83,7 +85,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
               child: const Text('Submit'),
             ),
           ],
-        ), 
+        ),
       ),
     );
   }
@@ -98,7 +100,10 @@ class _FormFinalPageState extends State<FormFinalPage> {
             physics: const NeverScrollableScrollPhysics(),
             children: <Widget>[
               const SizedBox(height: 20),
-              const Center(child: Text('Information', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
+              const Center(
+                  child: Text('Information',
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
               _buildRow(Icons.directions_walk, 'Walking'),
               _buildRow(Icons.directions_bike, 'Cycling'),
@@ -130,7 +135,8 @@ class _FormFinalPageState extends State<FormFinalPage> {
               Text(name),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                 child: Icon(icon),
               ),
             ],
@@ -138,14 +144,13 @@ class _FormFinalPageState extends State<FormFinalPage> {
         ],
       ),
     );
-  } 
+  }
 
   void submit() {
     print('Submitted!');
   }
-  
+
   void close() {
     Navigator.of(context).pop();
   }
-
 }
