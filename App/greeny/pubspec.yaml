@@ -38,6 +38,8 @@ dependencies:
   google_maps_flutter: ^2.6.0
   location: ^5.0.3
 
+  model_viewer_plus: ^1.6.0 # https://pub.dev/packages/model_viewer_plus
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
