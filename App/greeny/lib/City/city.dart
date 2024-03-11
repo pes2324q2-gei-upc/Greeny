@@ -2,7 +2,7 @@ import 'dart:async';
 //import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
 
 import 'package:flutter/material.dart';
-import 'package:greeny/City/comptakm.dart';
+import 'package:geolocator/geolocator.dart';
 
 double punts = 0.5;
 
@@ -16,8 +16,10 @@ class CityPage extends StatefulWidget {
 class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int currentPageIndex = 0;
   bool isPlaying = false;
-  late Timer timer;
   late AnimationController _controller;
+  late StreamSubscription<Position> positionStream;
+  static double km = 0;
+  Position? previousPosition;
 
   @override
   void initState() {
@@ -25,11 +27,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         duration: const Duration(seconds: 1),
         vsync: this); //inicialitzar el animation controller
     super.initState();
+    previousPosition = null;
   }
 
   @override
   void dispose() {
     _controller.dispose(); // per tancar el animation controller
+    positionStream.cancel();
     super.dispose();
   }
 
@@ -51,7 +55,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  'Km recorreguts: ${(km).toStringAsFixed(1)} km',
+                  'Km recorreguts: ${(km).toStringAsFixed(2)} km',
                   style: DefaultTextStyle.of(context)
                       .style
                       .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
@@ -65,7 +69,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  'Ultim recorregut: ${(km).toStringAsFixed(1)} km',
+                  'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
                   style: DefaultTextStyle.of(context)
                       .style
                       .apply(fontWeightDelta: 2),
@@ -92,20 +96,22 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void play() {
     _controller.forward();
-    km = 0;
     setState(() {
+      previousPosition = null;
+      km = 0;
       isPlaying = true;
     });
+    startLocationUpdates();
     print('Playing');
   }
 
   void pause() {
     _controller.reverse();
+    positionStream.cancel();
     setState(() {
       isPlaying = false;
     });
     print('Paused');
-    timer.cancel(); //cancelar el temporitzador
   }
 
   void viewHistory() {
@@ -150,11 +156,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             if (!ubiActiva) return;
             // Si no está reproduciendo, reproducir
             play();
-            timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-              setState(() {
-                comptakm();
-              });
-            });
           }
         },
         child: AnimatedIcon(
@@ -165,6 +166,29 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  Future<void> startLocationUpdates() async {
+    // ignore: unused_local_variable
+    positionStream = Geolocator.getPositionStream(
+      desiredAccuracy: LocationAccuracy.high,
+    ).listen((Position position) {
+      if (previousPosition != null) {
+        double distanceInMeters = Geolocator.distanceBetween(
+          previousPosition!.latitude,
+          previousPosition!.longitude,
+          position.latitude,
+          position.longitude,
+        );
+
+        // Convertir la distancia de metros a kilómetros y actualizar el contador.
+        double distanceInKm = distanceInMeters / 1000;
+        km += distanceInKm;
+        print(km);
+        setState(() {}); //actualizar la interfaz
+      }
+      previousPosition = position;
+    });
   }
 }
 
@@ -210,4 +234,40 @@ class BarraProgres extends StatelessWidget {
       ],
     );
   }
+}
+
+/* Future<void> getLocation() async {
+  try {
+    Position position = await Geolocator.getCurrentPosition();
+    print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+  } catch (e) {
+    print('Error obtaining location: $e');
+  }
+} */
+
+Future<bool> comprovarUbicacio() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await Geolocator.openLocationSettings();
+    if (!serviceEnabled) {
+      print('Servei ubicació no habilitat');
+      return false;
+    }
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      print('Permis denegat');
+      return false;
+    }
+  }
+
+  print('Servei habilitat i permis otorgat');
+  return true;
 }
