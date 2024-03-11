@@ -1,4 +1,5 @@
 **/.DS_Store
 /DB
 .idea
-Backend/.envBackend/.env
+Backend/.env
+Backend/migrations

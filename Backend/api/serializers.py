@@ -1,41 +1,41 @@
 from rest_framework import serializers
-from .models import Estacio, Tram, Metro, FGC, RENFE, Bicing, BUS, PuntsRecarrega
+from .models import Estacio, PuntsRecarrega
 
 class EstacioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estacio
-        fields = ['nom', 'latitud', 'longitud', 'adreca', 'rating']
+        fields = ['nom', 'latitud', 'longitud', 'adreca', 'rating'] 
 
-class TramSerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = Tram
-        fields = EstacioSerializer.Meta.fields + ['linies']
+# class TramSerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = Tram
+#         fields = EstacioSerializer.Meta.fields + ['linies']
 
-class MetroSerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = Metro
-        fields = EstacioSerializer.Meta.fields + ['linies']
+# class MetroSerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = Metro
+#         fields = EstacioSerializer.Meta.fields + ['linies']
 
-class FGCSerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = FGC
-        fields = EstacioSerializer.Meta.fields + ['linies']
+# class FGCSerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = FGC
+#         fields = EstacioSerializer.Meta.fields + ['linies']
 
 
-class RENFESerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = RENFE
-        fields = EstacioSerializer.Meta.fields + ['linies']
+# class RENFESerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = RENFE
+#         fields = EstacioSerializer.Meta.fields + ['linies']
 
-class BicingSerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = Bicing
-        fields = EstacioSerializer.Meta.fields + ['capacitat']
+# class BicingSerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = Bicing
+#         fields = EstacioSerializer.Meta.fields + ['capacitat']
 
-class BUSSerializer(serializers.ModelSerializer):
-    class Meta(EstacioSerializer.Meta):
-        model = BUS
-        fields = EstacioSerializer.Meta.fields + ['linies']
+# class BUSSerializer(serializers.ModelSerializer):
+#     class Meta(EstacioSerializer.Meta):
+#         model = BUS
+#         fields = EstacioSerializer.Meta.fields + ['linies']
 
 class PuntsRecarregaSerializer(serializers.ModelSerializer):
     class Meta(EstacioSerializer.Meta):
