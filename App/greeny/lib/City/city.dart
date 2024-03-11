@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:greeny/appState.dart';
+import 'package:provider/provider.dart';
 
 double punts = 0.5;
 
@@ -15,7 +17,7 @@ class CityPage extends StatefulWidget {
 
 class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int currentPageIndex = 0;
-  bool isPlaying = false; // estat de el comptador de km
+  late AppState appState; // estat de l'aplicació
   late AnimationController
       _controller; // controlador per l'animació del botó play/pause
   late StreamSubscription<Position>
@@ -30,6 +32,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         vsync: this); //inicialitzar el animation controller
     super.initState();
     previousPosition = null;
+    appState = context.read<AppState>(); // estat de l'aplicació
   }
 
   @override
@@ -47,12 +50,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('City'),
-            if (!isPlaying)
+            if (!appState.isPlaying)
               BarraProgres(punts: punts, onProgressChanged: updateProgress),
-            if (isPlaying)
+            if (appState.isPlaying)
               Icon(Icons.directions_walk,
                   size: 50), // icona per indicar que sésta fent un recorregut
-            if (isPlaying)
+            if (appState.isPlaying)
               Container(
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(horizontal: 110.0),
@@ -66,7 +69,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               ),
             SizedBox(height: 20.0),
             buildplaypause(),
-            if (!isPlaying)
+            if (!appState.isPlaying)
               Container(
                 alignment: Alignment.center,
                 margin: EdgeInsets.symmetric(horizontal: 110.0),
@@ -101,7 +104,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     _controller.forward();
     setState(() {
       km = 0;
-      isPlaying = true;
+      appState.isPlaying = true;
     });
     startLocationUpdates();
     print('Playing');
@@ -113,7 +116,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     positionStream.cancel();
     setState(() {
       previousPosition = null;
-      isPlaying = false;
+      appState.isPlaying = false;
     });
     print('Paused');
   }
@@ -155,7 +158,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       ),
       child: GestureDetector(
         onTap: () async {
-          if (isPlaying) {
+          if (appState.isPlaying) {
             // Si está reproduciendo, pausar
             pause();
           } else {
