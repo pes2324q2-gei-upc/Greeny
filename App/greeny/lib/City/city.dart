@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:greeny/City/LocationService.dart';
 import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 
@@ -20,10 +21,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   late AppState appState; // estat de l'aplicació
   late AnimationController
       _controller; // controlador per l'animació del botó play/pause
-  late StreamSubscription<Position>
-      positionStream; // stream de posicions per actualitzar l'ubicació
-  static double km = 0; // km totals del recorregut actual o finalitzat
-  Position? previousPosition; // posicio anterior per calcular els km desplaçats
+  Timer? _updateTimer;
 
   @override
   void initState() {
@@ -31,14 +29,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         duration: const Duration(seconds: 1),
         vsync: this); //inicialitzar el animation controller
     super.initState();
-    previousPosition = null;
     appState = context.read<AppState>(); // estat de l'aplicació
   }
 
   @override
   void dispose() {
     _controller.dispose(); // per tancar el animation controller
-    positionStream.cancel();
+    _updateTimer?.cancel();
     super.dispose();
   }
 
@@ -61,10 +58,10 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             if (appState.isPlaying)
               const Icon(Icons.directions_walk,
                   size: 50), // icona per indicar que sésta fent un recorregut
-            if (appState.isPlaying) KmTravelled(km: km),
+            if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
             const SizedBox(height: 20.0),
             buildplaypause(),
-            if (!appState.isPlaying) LastTravel(km: km),
+            if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
           ],
         ),
       ),
@@ -87,19 +84,24 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   void play() {
     _controller.forward();
     setState(() {
-      km = 0;
+      appState.totalDistance = 0;
       appState.isPlaying = true;
     });
-    startLocationUpdates();
+
+    _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+      // Actualizar el contador de kilómetros cada 2 segundos
+      setState(() {});
+    });
+    LocationService.instance.startLocationUpdates(context);
     print('Playing');
   }
 
   //pausa el comptador de km i pasa al estat isPlaying false
   void pause() {
     _controller.reverse();
-    positionStream.cancel();
+    LocationService.instance.stopLocationUpdates(context);
+    _updateTimer?.cancel();
     setState(() {
-      previousPosition = null;
       appState.isPlaying = false;
     });
     print('Paused');
@@ -167,30 +169,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               ),
       ),
     );
-  }
-
-  // crea un stream d'ubicacions i cada cop que canvia l'ubicació actualitza el comptador de km
-  Future<void> startLocationUpdates() async {
-    // ignore: unused_local_variable
-    positionStream = Geolocator.getPositionStream(
-      desiredAccuracy: LocationAccuracy.high,
-    ).listen((Position position) {
-      if (previousPosition != null) {
-        double distanceInMeters = Geolocator.distanceBetween(
-          previousPosition!.latitude,
-          previousPosition!.longitude,
-          position.latitude,
-          position.longitude,
-        );
-
-        // Convertir la distancia de metros a kilómetros y actualizar el contador.
-        double distanceInKm = distanceInMeters / 1000;
-        km += distanceInKm;
-        //print(km); //chivato per comprovar els km
-        setState(() {}); //actualizar la interfaz
-      }
-      previousPosition = position;
-    });
   }
 }
 
