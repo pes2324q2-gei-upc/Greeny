@@ -34,5 +34,5 @@ jobs:
           cd App/greeny
           dart analyze
 
-      - name: Run tests
+      #- name: Run tests
         #run: | cd App/greeny flutter test
