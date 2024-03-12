@@ -37,5 +37,7 @@ jobs:
       - name: Run tests
         working-directory: App/greeny
         run: |
+          ls
+          ls App
           cd App/greeny
           flutter test
