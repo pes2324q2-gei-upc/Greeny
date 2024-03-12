@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/main_page.dart';
 import 'log_in.dart';
+import '../translate.dart' as t;
+import 'package:flutter_translate/flutter_translate.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -33,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Welcome to Greeny!'),
+          title: Text(translate('Welcome to Greeny!')),
         ),
         body: Center(
           child: Column(
@@ -46,10 +48,21 @@ class _SignInPageState extends State<SignInPage> {
                   child: Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.language),
+                            onPressed: () {
+                              t.showLanguageDialog(context);
+                            },
+                          )
+                        ],
+                      ),
+                      Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              'Sign Up',
+                              translate('Sign Up'),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ]),
@@ -59,9 +72,9 @@ class _SignInPageState extends State<SignInPage> {
                       TextFormField(
                         obscureText: false,
                         controller: emailController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email Address',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Email Address'),
                         ),
                         validator: emailValidator,
                       ),
@@ -71,9 +84,9 @@ class _SignInPageState extends State<SignInPage> {
                       TextFormField(
                         obscureText: false,
                         controller: usernameController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Username',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Username'),
                         ),
                         validator: usernameValidator,
                       ),
@@ -83,9 +96,9 @@ class _SignInPageState extends State<SignInPage> {
                       TextFormField(
                         obscureText: true,
                         controller: passwordController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Password'),
                         ),
                         validator: passwordValidator,
                       ),
@@ -95,9 +108,9 @@ class _SignInPageState extends State<SignInPage> {
                       TextFormField(
                         obscureText: true,
                         controller: passwordConfirmController,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Confirm Password',
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Confirm Password'),
                         ),
                         validator: passwordConfirmValidator,
                       ),
@@ -106,7 +119,7 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       ElevatedButton(
                         onPressed: sendSignUp,
-                        child: const Text('Sign Up'),
+                        child: Text(translate('Sign Up')),
                       ),
                     ],
                   ),
@@ -115,13 +128,13 @@ class _SignInPageState extends State<SignInPage> {
               Column(
                 children: [
                   Text(
-                    'Or sign in with:',
+                    '${translate('Or sign in with')}:',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   IconButton(
                     icon: const Icon(Icons.g_translate),
                     iconSize: 30,
-                    tooltip: 'Sign in with Google',
+                    tooltip: translate('Sign in with Google'),
                     onPressed: googleSignIn,
                   ),
                 ],
@@ -132,12 +145,12 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   Column(children: [
                     Text(
-                      "You already have an account?",
+                      translate("Already have an account?"),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     TextButton(
                       onPressed: (logInHere),
-                      child: const Text('Log In here'),
+                      child: Text(translate('Log In here')),
                     )
                   ])
                 ],
