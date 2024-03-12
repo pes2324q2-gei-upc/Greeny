@@ -1,11 +1,12 @@
-from api import views
+from api.views import *
 from django.urls import path
 
 
 urlpatterns = [
-    path('carregadors-electrics', views.CarregadorsElectricsView.as_view(), name='carregadors-electrics'),
-    path('stations', views.FetchPublicTransportStations.as_view(), name='estacions'),
-    #path('parades-metro', views.getParadesMetro, name='parades-metro'),
-    path('parades-bus', views.ParadesBus.as_view(), name='parades-bus'),
-    path('bicing', views.EstacionsBicing.as_view(), name='bicing')
+    path('carregadors-electrics', CarregadorsElectricsView.as_view(), name='carregadors-electrics'),
+    #path('fetch-stations', FetchPublicTransportStations.as_view(), name='estacions'),
+    path('get-stations', GetStations.as_view(), name="get-all-stations"),
+    #path('parades-metro', getParadesMetro, name='parades-metro'),
+    path('parades-bus', ParadesBus.as_view(), name='parades-bus'),
+    path('bicing', EstacionsBicing.as_view(), name='bicing')
 ]

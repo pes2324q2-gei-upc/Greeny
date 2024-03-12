@@ -2,11 +2,13 @@ import requests
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
+from rest_framework import generics
 from pathlib import Path
 #from .serializers import MetroSerializer
 import os
 
 from .models import *
+from .serializers import *
 
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
 headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
@@ -170,7 +172,12 @@ class FetchPublicTransportStations(View):
 #     serializer = MetroSerializer(elements, many=True)
 #     return JsonResponse(serializer.data, safe=False)
 
-    
+class GetStations(generics.ListAPIView):
+    def get(self, request):
+        queryset = PublicTransportStation.objects.all()
+        serializer = PublicTransportStationSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
 #GET parades de bus Barcelona
 class ParadesBus(View):
     def get(self, request):
