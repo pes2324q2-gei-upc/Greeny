@@ -1,39 +1,39 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
-class Estacio(models.Model):
-    nom = models.CharField(max_length=100)
-    latitud = models.FloatField()
-    longitud = models.FloatField()
+class Station(models.Model):
+    name = models.CharField(max_length=100)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
     rating = models.FloatField(default= 0.0)
     def __str__(self):
-        return self.nom
+        return self.name
 
-class EstacioTransportPublic(Estacio):
+class PublicTransportStation(Station):
     pass
 
-class TipusTransport(models.Model):
+class TransportType(models.Model):
     class TTransport(models.TextChoices):
         METRO = "METRO", "metro"
         TRAM = "TRAM", "tram"
         FGC = "FGC", "fgc"
         RENFE = "RENFE", "renfe"
-    tipus = models.CharField(max_length=5, choices=TTransport.choices)
+    type = models.CharField(max_length=5, choices=TTransport.choices)
 
-class Parada(models.Model):
-    estacio = models.ForeignKey(EstacioTransportPublic, on_delete=models.CASCADE)
-    tipus_transport = models.ForeignKey(TipusTransport, on_delete=models.CASCADE)
-    linies = ArrayField(models.CharField(max_length=2), blank=False)
+class Stop(models.Model):
+    station = models.ForeignKey(PublicTransportStation, on_delete=models.CASCADE)
+    transport_type = models.ForeignKey(TransportType, on_delete=models.CASCADE)
+    lines = ArrayField(models.CharField(max_length=2), blank=False)
 
-class EstacioBus(Estacio):
-    linies = ArrayField(models.CharField(max_length=5), blank=False)
+class BusStation(Station):
+    lines = ArrayField(models.CharField(max_length=5), blank=False)
 
-class EstacioBicing(Estacio):
+class BicingStation(Station):
     capacitat = models.IntegerField(default=0)
 
-class PuntsRecarrega(Estacio):
+class ChargingStation(Station):
     acces= models.CharField(max_length=100)
-    velocitatCarrega = models.CharField(max_length=100)
-    potencia = models.IntegerField(default=0)
-    tipusCorrent = models.CharField(max_length=100)
-    tipusConnexio = models.CharField(max_length=100)
+    charging_velocity = models.CharField(max_length=100)
+    power = models.IntegerField(default=0)
+    current_type = models.CharField(max_length=100)
+    connexion_type = models.CharField(max_length=100)
