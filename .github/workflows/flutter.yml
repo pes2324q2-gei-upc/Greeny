@@ -30,9 +30,12 @@ jobs:
           flutter pub get
 
       - name: Analyze project source
-        working-directory: App/green
-        run: dart analyze
+        run: |
+          cd App/greeny
+          dart analyze
 
       - name: Run tests
         working-directory: App/greeny
-        run: flutter test
+        run: |
+          cd App/greeny
+          flutter test
