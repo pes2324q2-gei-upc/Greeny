@@ -25,7 +25,7 @@ jobs:
           version: 3.19.3
 
       - name: Install dependencies
-        run: ls
+        run: ls App
         #working-directory: App/greeny
         #run: flutter pub get
 
