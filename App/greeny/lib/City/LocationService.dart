@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 
 //singleton per trackejar els km recorreguts
 class LocationService {
-  static LocationService? _instance; //instancia de la clase
+  //instancia de la clase
+  static LocationService? _instance;
 
   //constructora
   LocationService._();
 
+  //stream dúbicacions que trackejara els km recorreguts
   late StreamSubscription<Position>? positionStream;
 
   //obtenir instancia de la clase
@@ -26,6 +28,8 @@ class LocationService {
     // ignore: unused_local_variable
     positionStream = Geolocator.getPositionStream(
       desiredAccuracy: LocationAccuracy.high,
+      distanceFilter:
+          10, // filtre per els metres que han de pasar per actualitzar els km
     ).listen((Position position) {
       if (appState.previousPosition != null) {
         double distanceInMeters = Geolocator.distanceBetween(

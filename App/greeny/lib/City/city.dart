@@ -30,6 +30,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         vsync: this); //inicialitzar el animation controller
     super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
+    if (appState.isPlaying) {
+      _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+        // Actualizar el widget KmTravelled con la distancia actualizada
+        setState(() {});
+      });
+    }
   }
 
   @override
@@ -87,9 +93,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       appState.totalDistance = 0;
       appState.isPlaying = true;
     });
-
     _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
-      // Actualizar el contador de kilómetros cada 2 segundos
+      // Actualizar el widget KmTravelled con la distancia actualizada
       setState(() {});
     });
     LocationService.instance.startLocationUpdates(context);
