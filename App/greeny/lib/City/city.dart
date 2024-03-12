@@ -49,38 +49,22 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('City'),
+            const Text('Model City'),
+            /* AQUI VA EL MODEL DE LA CIUTAT
+           
+
+
+
+            AQUI VA EL MODEL DE LA CIUTAT */
             if (!appState.isPlaying)
               BarraProgres(punts: punts, onProgressChanged: updateProgress),
             if (appState.isPlaying)
               Icon(Icons.directions_walk,
                   size: 50), // icona per indicar que sésta fent un recorregut
-            if (appState.isPlaying)
-              Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.symmetric(horizontal: 110.0),
-                child: Text(
-                  'Km recorreguts: ${(km).toStringAsFixed(2)} km',
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
-                  textAlign: TextAlign.center,
-                ), //imprimeix els km de lib/City/comptakm.dart
-              ),
+            if (appState.isPlaying) kmTravelled(km: km),
             SizedBox(height: 20.0),
             buildplaypause(),
-            if (!appState.isPlaying)
-              Container(
-                alignment: Alignment.center,
-                margin: EdgeInsets.symmetric(horizontal: 110.0),
-                child: Text(
-                  'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
-                  style: DefaultTextStyle.of(context)
-                      .style
-                      .apply(fontWeightDelta: 2),
-                  textAlign: TextAlign.center,
-                ), //imprimeix els km de lib/City/comptakm.dart
-              ),
+            if (!appState.isPlaying) lastTravel(km: km),
           ],
         ),
       ),
@@ -207,6 +191,52 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       }
       previousPosition = position;
     });
+  }
+}
+
+class lastTravel extends StatelessWidget {
+  const lastTravel({
+    super.key,
+    required this.km,
+  });
+
+  final double km;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.symmetric(horizontal: 110.0),
+      child: Text(
+        'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
+        style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
+        textAlign: TextAlign.center,
+      ), //imprimeix els km de lib/City/comptakm.dart
+    );
+  }
+}
+
+class kmTravelled extends StatelessWidget {
+  const kmTravelled({
+    super.key,
+    required this.km,
+  });
+
+  final double km;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.symmetric(horizontal: 110.0),
+      child: Text(
+        'Km recorreguts: ${(km).toStringAsFixed(2)} km',
+        style: DefaultTextStyle.of(context)
+            .style
+            .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+        textAlign: TextAlign.center,
+      ), //imprimeix els km de lib/City/comptakm.dart
+    );
   }
 }
 
