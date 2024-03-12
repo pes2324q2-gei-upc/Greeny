@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
+env: 
+  POSTGRES_NAME: db_greeny
+  POSTGRES_USER: greeny
+  POSTGRES_PASSWORD: GreenyPES24;
+
 jobs:
   build:
 
