@@ -35,7 +35,6 @@ class FetchEstacionsTransportPublic(View):
             full_name = item.get("EQUIPAMENT")
             #Metro: ej METRO (L1) - CATALUNYA
             if "METRO" in full_name:
-                continue
                 nom_parada = full_name.split(" - ")[1].replace("-","");
                 linia = [full_name.split("(")[1].split(")")[0]];
 
@@ -49,7 +48,7 @@ class FetchEstacionsTransportPublic(View):
                 #Buscamos por nombre por si ya existe la parada
                 
                 try:
-                    estacio = EstacioTransportPublic.objects.get(nom=nom_parada)
+                    estacio = EstacioTransportPublic.objects.get(nom__iexact=nom_parada)
                 except EstacioTransportPublic.DoesNotExist:
                     estacio = None
                 
@@ -71,15 +70,18 @@ class FetchEstacionsTransportPublic(View):
 
                     #print("Parada de la estacion " + nom_parada + "de tipo Metro")
                 else:                                   #Si existe la parada, actualizamos las lineas del Metro Asociado     
-                    parada = Parada.objects.get(estacio=estacio, tipus_transport=tipusTrans)
-                    parada.linies = parada.linies + linia
-                    parada.save()
+                    
+                    try:
+                        parada = Parada.objects.get(estacio=estacio, tipus_transport=tipusTrans)
+                        parada.linies = parada.linies + linia
+                        parada.save()
+                    except:
+                        Parada.objects.create(estacio=estacio, tipus_transport=tipusTrans, linies=linia)
                     #print("Añadida linea " + str(linia) + "a " + nom_parada)
 
             
             #Tramvia: ej TRAMVIA (T1,T2) - LES AIGÜES- 
             if "TRAM" in full_name:
-                continue
                 nom_parada = full_name.split(" - ")[1].replace("-","");
                 #linies_parada = full_name.split(" - ")[0].split(" ")[1].replace("(","").replace(")","").split(",");
                 linies_parada = full_name.split(" - ")[0].replace(" ", "").split("(")[1].replace(")", "").split(",")
@@ -114,38 +116,77 @@ class FetchEstacionsTransportPublic(View):
             
             # RENFE: ej RENFE - CATALUNYA-
             elif "RENFE" in full_name:
-                nom_parada = full_name.split(" - ")[1].replace("-","");
+                print(full_name)
+                if "(RENFE)" in full_name:
+                    nom_parada = full_name.split(" (")[0]
+                else: 
+                    try:   
+                        nom_parada = full_name.split(" - ")[1].replace("-","");
+                    except:
+                        continue
+                
                 
                 try:
-                    estacio = EstacioTransportPublic.objects.get(name=nom_parada)
+                    estacio = EstacioTransportPublic.objects.get(nom__iexact=nom_parada)
                 except EstacioTransportPublic.DoesNotExist:
                     estacio = None
                 
                 try:
                     tipusTrans = TipusTransport.objects.get(tipus=TipusTransport.TTransport.RENFE)
                 except:
-                    tipusTrans = TipusTransport.object.create(tipus=TipusTransport.TTransport.RENFE)
+                    tipusTrans = TipusTransport.objects.create(tipus=TipusTransport.TTransport.RENFE)
                 
                 if estacio is None:
-                    new_estacio_tp = EstacioTransportPublic.objects.create(
-                         nom = nom_parada,
+                    estacio = EstacioTransportPublic.objects.create(
+                        nom = nom_parada,
                         latitud = item.get('LATITUD'),
                         longitud = item.get('LONGITUD'),
                     )
                 
-                #TODO: SI AL FINAL NO HACEMOS LINIAS EN RENFE NI FGC, MODIFICAR DB PARA QUE PERMITA LISTAS VACIAS.
+                
                 try:
-                    parada = Parada.objects.get(estacio=estacio)
+                    parada = Parada.objects.get(estacio=estacio, tipus_transport=tipusTrans)
                 except:
-                    Parada.objects.create(estacio=estacio, tipus_transport=tipusTrans) 
+                    Parada.objects.create(estacio=estacio, tipus_transport=tipusTrans, linies=[]) 
             
+            #FGC ej: FGC - CATALUNYA (C. de Rossello)-
+            #       FGC - L'HOSPITALET-AV.CARRILET-
+            #       FGC - ESPANYA-
+            elif "FGC" in full_name:
+                print(full_name)
+                if "/ FGC" in full_name:
+                    nom_parada = "DIAGONAL"
+                elif "- FGC-" in full_name:
+                    nom_parada = full_name.split(" - ")[0]
+                else :
+                    nom_parada = full_name.split(" - ")[1][:-1]
+                    if '(' in nom_parada:
+                        nom_parada = nom_parada.split(" (")[0]
 
-            # elif "FGC" in item.get('EQUIPAMENT'):
-            #     FGC.objects.create(
-            #         nom = item.get('EQUIPAMENT'),
-            #         latitud = item.get('LATITUD'),
-            #         longitud = item.get('LONGITUD')
-            #     )
+                print(nom_parada)
+
+                try:
+                    estacio = EstacioTransportPublic.objects.get(nom__iexact=nom_parada)
+                except EstacioTransportPublic.DoesNotExist:
+                    estacio = None
+                
+                try:
+                    tipusTrans = TipusTransport.objects.get(tipus=TipusTransport.TTransport.FGC)
+                except:
+                    tipusTrans = TipusTransport.objects.create(tipus=TipusTransport.TTransport.FGC)
+                
+                if estacio is None:
+                    estacio = EstacioTransportPublic.objects.create(
+                        nom=nom_parada,
+                        longitud=item.get("LONGITUD"),
+                        latitud=item.get("LATITUD")
+                    )
+                
+                try:
+                    parada = Parada.objects.get(estacio=estacio, tipus_transport=tipusTrans)
+                except:
+                    Parada.objects.create(estacio=estacio, tipus_transport=tipusTrans, linies=[]) 
+
         return JsonResponse(data, safe=False)
 
 # def getParadesMetro(request):
