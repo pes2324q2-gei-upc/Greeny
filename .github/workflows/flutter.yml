@@ -25,9 +25,8 @@ jobs:
           version: 3.19.3
 
       - name: Install dependencies
-        run: ls App
-        #working-directory: App/greeny
-        #run: flutter pub get
+        working-directory: /App/greeny
+        run: flutter pub get
 
       - name: Analyze project source
         working-directory: App/greeny
