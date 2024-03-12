@@ -168,12 +168,19 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             play();
           }
         },
-        child: AnimatedIcon(
-          icon: AnimatedIcons.play_pause,
-          progress: _controller,
-          size: 50.0,
-          color: Colors.white,
-        ),
+        child: appState.isPlaying
+            ? Icon(
+                Icons.pause,
+                key: Key('pause_icon_key'),
+                size: 50.0,
+                color: Colors.white,
+              )
+            : Icon(
+                Icons.play_arrow,
+                key: Key('play_icon_key'),
+                size: 50.0,
+                color: Colors.white,
+              ),
       ),
     );
   }
