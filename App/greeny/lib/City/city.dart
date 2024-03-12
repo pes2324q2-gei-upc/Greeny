@@ -59,17 +59,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             if (!appState.isPlaying)
               BarraProgres(punts: punts, onProgressChanged: updateProgress),
             if (appState.isPlaying)
-              Icon(Icons.directions_walk,
+              const Icon(Icons.directions_walk,
                   size: 50), // icona per indicar que sésta fent un recorregut
-            if (appState.isPlaying) kmTravelled(km: km),
-            SizedBox(height: 20.0),
+            if (appState.isPlaying) KmTravelled(km: km),
+            const SizedBox(height: 20.0),
             buildplaypause(),
-            if (!appState.isPlaying) lastTravel(km: km),
+            if (!appState.isPlaying) LastTravel(km: km),
           ],
         ),
       ),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Greeny',
           style: TextStyle(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
@@ -134,7 +134,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     return Container(
       width: 70,
       height: 70,
-      margin: EdgeInsets.all(8.0),
+      margin: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22.0),
@@ -153,13 +153,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           }
         },
         child: appState.isPlaying
-            ? Icon(
+            ? const Icon(
                 Icons.pause,
                 key: Key('pause_icon_key'),
                 size: 50.0,
                 color: Colors.white,
               )
-            : Icon(
+            : const Icon(
                 Icons.play_arrow,
                 key: Key('play_icon_key'),
                 size: 50.0,
@@ -194,8 +194,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 }
 
-class lastTravel extends StatelessWidget {
-  const lastTravel({
+class LastTravel extends StatelessWidget {
+  const LastTravel({
     super.key,
     required this.km,
   });
@@ -206,7 +206,7 @@ class lastTravel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.symmetric(horizontal: 110.0),
+      margin: const EdgeInsets.symmetric(horizontal: 110.0),
       child: Text(
         'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
@@ -216,8 +216,8 @@ class lastTravel extends StatelessWidget {
   }
 }
 
-class kmTravelled extends StatelessWidget {
-  const kmTravelled({
+class KmTravelled extends StatelessWidget {
+  const KmTravelled({
     super.key,
     required this.km,
   });
@@ -228,7 +228,7 @@ class kmTravelled extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.symmetric(horizontal: 110.0),
+      margin: const EdgeInsets.symmetric(horizontal: 110.0),
       child: Text(
         'Km recorreguts: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context)
