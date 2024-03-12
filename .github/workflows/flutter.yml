@@ -1,0 +1,38 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Flutter
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Flutter SDK
+        uses: flutter-actions/setup-flutter@v2
+        with:
+          channel: stable
+          version: 3.19.3
+
+      - name: Install dependencies
+        run: |
+          cd App/greeny
+          flutter pub get
+
+      - name: Analyze project source
+        run: |
+          cd App/greeny
+          dart analyze
+
+      #- name: Run tests
+        #run: | cd App/greeny flutter test
