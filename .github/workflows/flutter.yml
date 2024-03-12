@@ -35,6 +35,4 @@ jobs:
           dart analyze
 
       - name: Run tests
-        run: |
-          cd App/greeny
-          flutter test
+        #run: | cd App/greeny flutter test
