@@ -2,8 +2,8 @@
 /DB
 .idea
 Backend/.env
+.vscode/
 
-App/greeny/ios/Runner.xcodeproj/
-App/greeny/ios/Runner/
+
 Backend/api/migrations/
 
