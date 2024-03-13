@@ -1,0 +1,39 @@
+PODS:
+  - Flutter (1.0.0)
+  - geolocator_apple (1.2.0):
+    - Flutter
+  - google_maps_flutter_ios (0.0.1):
+    - Flutter
+    - GoogleMaps (< 9.0)
+  - GoogleMaps (7.4.0):
+    - GoogleMaps/Maps (= 7.4.0)
+  - GoogleMaps/Base (7.4.0)
+  - GoogleMaps/Maps (7.4.0):
+    - GoogleMaps/Base
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - GoogleMaps
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  geolocator_apple:
+    :path: ".symlinks/plugins/geolocator_apple/ios"
+  google_maps_flutter_ios:
+    :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  geolocator_apple: 9157311f654584b9bb72686c55fc02a97b73f461
+  google_maps_flutter_ios: f135b968a67c05679e0a53538e900b5c174b0d99
+  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
+
+PODFILE CHECKSUM: d3560d5d9f5b3a8a9da90530fb8e36e93b4073ae
+
+COCOAPODS: 1.15.2
