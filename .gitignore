@@ -4,4 +4,7 @@
 Backend/.env
 App/greeny/ios/Runner.xcodeproj/
 App/greeny/ios/Runner/
+<<<<<<< HEAD
 Backend/api/migrations/
+=======
+>>>>>>> feature/visualitzarMapa
