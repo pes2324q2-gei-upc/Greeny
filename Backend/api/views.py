@@ -176,7 +176,7 @@ class GetStations(generics.ListAPIView):
     def get(self, request):
         queryset = PublicTransportStation.objects.all()
         serializer = PublicTransportStationSerializer(queryset, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return JsonResponse({'stations':serializer.data}, safe=False)
 
 #GET parades de bus Barcelona
 class ParadesBus(View):
