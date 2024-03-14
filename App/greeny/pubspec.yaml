@@ -40,10 +40,14 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  model_viewer_plus: ^1.6.0 # https://pub.dev/packages/model_viewer_plus
+
+
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
+  mockito: ^5.4.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
