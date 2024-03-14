@@ -42,7 +42,7 @@ class LocationService {
         // Convertir la distancia de metros a kilómetros y actualizar el contador.
         double distanceInKm = distanceInMeters / 1000;
         appState.totalDistance += distanceInKm;
-        print(appState.totalDistance); //chivato per comprovar els km
+        //print(appState.totalDistance); //chivato per comprovar els km
       }
       appState.previousPosition = position;
     });
