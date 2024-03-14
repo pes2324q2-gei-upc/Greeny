@@ -23,6 +23,19 @@ class CarregadorsElectricsView(View):
     def get(self, request):
         response = requests.get(url=(BASE_URL_OD + "tb2m-m33b.json?" + "$limit=1000"), headers=headers_OD);
         data = response.json()
+
+        for point in data:
+            ChargingStation.objects.create(
+                name = point.get("designaci_descriptiva"),
+                latitude = point.get("latitud"),
+                longitude = point.get("longitud"),
+                acces = point.get("acces"),
+                charging_velocity = point.get("tipus_velocitat"),
+                power = point.get("kw"),
+                current_type = point.get("ac_dc"),
+                connexion_type = point.get("tipus_connexi")
+            )
+        
         return JsonResponse(data, safe=False)
     
 # #GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
@@ -191,6 +204,14 @@ class EstacionsBicing(View):
         url = "https://opendata-ajuntament.barcelona.cat/data/dataset/informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/download/Informacio_Estacions_Bicing_securitzat.json"
         response = requests.get(url=url, headers=headers_AJT)
         response.raise_for_status()
-        data = response.json()
-        print(data)
+        data = response.json().get("data").get("stations")
+
+        for stop in data:
+            BicingStation.objects.create(
+                name = stop.get("name"),
+                latitude = stop.get("lat"),
+                longitude = stop.get("lon"),
+                capacitat = stop.get("capacity")
+            )
+
         return JsonResponse(data)
