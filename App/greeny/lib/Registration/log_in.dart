@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'sign_up.dart';
 import '../main_page.dart';
+import '../translate.dart' as t;
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -24,10 +26,11 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Welcome to Greeny!'),
+          title: Text(translate('Welcome to Greeny!')),
         ),
         body: Center(
           child: Column(
@@ -37,9 +40,20 @@ class _LogInPageState extends State<LogInPage> {
                 padding: const EdgeInsets.all(40),
                 child: Column(
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.language),
+                          onPressed: () {
+                            t.showLanguageDialog(context);
+                          },
+                        )
+                      ],
+                    ),
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Text(
-                        'Log In',
+                        translate('Log In'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ]),
@@ -49,9 +63,9 @@ class _LogInPageState extends State<LogInPage> {
                     TextField(
                       obscureText: false,
                       controller: usernameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Username',
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: translate('Username'),
                       ),
                     ),
                     const SizedBox(
@@ -60,9 +74,9 @@ class _LogInPageState extends State<LogInPage> {
                     TextField(
                       obscureText: true,
                       controller: passwordController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: translate('Password'),
                       ),
                     ),
                     Row(
@@ -70,7 +84,7 @@ class _LogInPageState extends State<LogInPage> {
                       children: [
                         TextButton(
                           onPressed: forgotPassword,
-                          child: const Text('Forgot password?'),
+                          child: Text(translate('Forgot password?')),
                         ),
                       ],
                     ),
@@ -79,7 +93,7 @@ class _LogInPageState extends State<LogInPage> {
                     ),
                     ElevatedButton(
                       onPressed: sendLogIn,
-                      child: const Text('Log In'),
+                      child: Text(translate('Log In')),
                     ),
                   ],
                 ),
@@ -87,13 +101,17 @@ class _LogInPageState extends State<LogInPage> {
               Column(
                 children: [
                   Text(
-                    'Or sign in with:',
+                    '${translate('Or sign in with')}:',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   IconButton(
-                    icon: const Icon(Icons.g_translate),
+                    icon: const Image(
+                        image: AssetImage('assets/icons/google.png'),
+                        height: 40,
+                        width: 40,
+                    ),
                     iconSize: 30,
-                    tooltip: 'Sign in with Google',
+                    tooltip: translate('Sign in with Google'),
                     onPressed: googleSignIn,
                   ),
                 ],
@@ -104,12 +122,12 @@ class _LogInPageState extends State<LogInPage> {
                 children: [
                   Column(children: [
                     Text(
-                      "You don't have an account?",
+                      translate("Don't have an account?"),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     TextButton(
                       onPressed: (signUpHere),
-                      child: const Text('Sign Up here'),
+                      child: Text(translate('Sign Up here')),
                     )
                   ])
                 ],
