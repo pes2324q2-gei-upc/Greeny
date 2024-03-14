@@ -8,7 +8,7 @@ class FormFinalPage extends StatefulWidget {
 }
 
 class _FormFinalPageState extends State<FormFinalPage> {
-  final isSelected_ = <bool>[false, false, false, false, false, false];
+  final isSelected_ = <bool>[false, false, false, false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(5),
+                          padding: const EdgeInsets.all(1),
                           margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           decoration: BoxDecoration(
                             color: isSelected_[index]
@@ -67,8 +67,10 @@ class _FormFinalPageState extends State<FormFinalPage> {
                                         : index == 3
                                             ? Icons.train
                                             : index == 4
-                                                ? Icons.electric_car
-                                                : Icons.directions_car,
+                                                ? Icons.motorcycle
+                                                : index == 5
+                                                    ? Icons.electric_car
+                                                    : Icons.directions_car,
                             size: 40,
                           ),
                         ),
@@ -108,7 +110,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
               _buildRow(Icons.directions_bike, 'Cycling'),
               _buildRow(Icons.directions_bus, 'By bus'),
               _buildRow(Icons.train, 'By train, tram, metro or FGC'),
-              //_buildRow(Icons.subway, 'By metro'),
+              _buildRow(Icons.motorcycle, 'By motorcycle'),
               _buildRow(Icons.electric_car, 'By electric car'),
               _buildRow(Icons.directions_car, 'By car'),
               TextButton(onPressed: close, child: const Text('Exit')),
