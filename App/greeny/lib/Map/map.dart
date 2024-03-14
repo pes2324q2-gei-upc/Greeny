@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'locations.dart' as locations;
+import 'utils/locations.dart' as locations;
 import 'station.dart';
+import 'utils/markers.dart' as markers;
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -23,13 +24,15 @@ class _MapPageState extends State<MapPage> {
   LocationPermission permission = LocationPermission.denied;
 
   double iconSize = 35;
-  bool enabledTram = true;
-  bool enabledBus = true;
-  bool enabledFgc = true;
-  bool enabledBicing = true;
-  bool enabledRenfe = true;
-  bool enabledCar = true;
-  bool enabledMetro = true;
+  var transports = {
+    'tram': true,
+    'bus': true,
+    'fgc': true,
+    'bicing': true,
+    'renfe': true,
+    'car': true,
+    'metro': true
+  };
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
 
   Future<void> getLocation() async {
@@ -68,16 +71,19 @@ class _MapPageState extends State<MapPage> {
   final Map<String, Marker> _markers = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
+    final icons = await markers.createIcons(50);
     final stations = await locations.getStations();
     setState(() {
       _markers.clear();
       for (final station in stations.stations) {
-        final marker = Marker(
-            markerId: MarkerId(station.name),
-            position: LatLng(station.latitude, station.longitude),
-            icon: BitmapDescriptor.defaultMarker,
-            onTap: () => _gotoStation(station));
-        _markers[station.name] = marker;
+        for (final stops in station.stops) {
+          final marker = Marker(
+              markerId: MarkerId(station.name),
+              position: LatLng(station.latitude, station.longitude),
+              icon: BitmapDescriptor.fromBytes(icons[stops.transportType.type]),
+              onTap: () => _gotoStation(station));
+          _markers[station.name] = marker;
+        }
       }
     });
   }
@@ -101,70 +107,18 @@ class _MapPageState extends State<MapPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButton(
-                      onPressed: () => filter('tram'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/tram.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledTram ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('metro'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/metro.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledMetro ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('bus'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/bus.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledBus ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('fgc'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/fgc.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledFgc ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('bicing'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/bicing.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledBicing ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('renfe'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/renfe.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledRenfe ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                  IconButton(
-                      onPressed: () => filter('car'),
-                      icon: Image(
-                        image: const AssetImage('assets/transports/car.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: enabledCar ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
-                      )),
-                ],
+                    for (final transport in transports.keys)
+                          IconButton(
+                            onPressed: () => filter(transport),
+                            icon: Image(
+                              image: AssetImage('assets/transports/$transport.png'),
+                              height: iconSize,
+                              width: iconSize,
+                              color: transports[transport]! ? null : disabledColor,
+                              colorBlendMode: BlendMode.dstIn,
+                            ),
+                          ),
+                  ],
               ),
             ),
           ),
@@ -179,9 +133,6 @@ class _MapPageState extends State<MapPage> {
             target: _center,
             zoom: 14.4746,
           ),
-          onTap: (position) {
-            print(position);
-          },
           markers: _markers.values.toSet(),
         ),
       );
@@ -196,36 +147,10 @@ class _MapPageState extends State<MapPage> {
     )));
   }
 
-  void filter(String type) {
-    if (type == 'tram') {
-      setState(() {
-        enabledTram = !enabledTram;
-      });
-    } else if (type == 'bus') {
-      setState(() {
-        enabledBus = !enabledBus;
-      });
-    } else if (type == 'fgc') {
-      setState(() {
-        enabledFgc = !enabledFgc;
-      });
-    } else if (type == 'bicing') {
-      setState(() {
-        enabledBicing = !enabledBicing;
-      });
-    } else if (type == 'renfe') {
-      setState(() {
-        enabledRenfe = !enabledRenfe;
-      });
-    } else if (type == 'car') {
-      setState(() {
-        enabledCar = !enabledCar;
-      });
-    } else if (type == 'metro') {
-      setState(() {
-        enabledMetro = !enabledMetro;
-      });
-    }
+  Future<void> filter(String type) async {
+    setState(() {
+      transports[type] = !transports[type]!;
+    });
   }
 
   void _gotoStation(locations.Station station) {

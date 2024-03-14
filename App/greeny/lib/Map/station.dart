@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:greeny/Map/locations.dart';
+import 'package:greeny/Map/utils/locations.dart';
 
 class StationPage extends StatefulWidget {
   const StationPage({super.key, required this.station});
