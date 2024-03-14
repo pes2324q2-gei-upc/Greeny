@@ -39,6 +39,9 @@ dependencies:
   flutter_translate: ^4.0.4
   flutter_localizations:
     sdk: flutter
+  http: ^1.2.1
+  json_serializable: ^6.7.1
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
@@ -51,6 +54,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  build_runner: ^2.4.8
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -68,6 +72,8 @@ flutter:
   - assets/i18n/
   - assets/icons/
   - assets/transports/
+  - assets/transports/markers/
+  - assets/locations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

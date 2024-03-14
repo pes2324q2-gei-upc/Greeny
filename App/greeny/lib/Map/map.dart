@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'locations.dart' as locations;
+import 'station.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -61,6 +63,23 @@ class _MapPageState extends State<MapPage> {
     getLocation();
     _gotoLocation();
     super.initState();
+  }
+
+  final Map<String, Marker> _markers = {};
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    final stations = await locations.getStations();
+    setState(() {
+      _markers.clear();
+      for (final station in stations.stations) {
+        final marker = Marker(
+            markerId: MarkerId(station.name),
+            position: LatLng(station.latitude, station.longitude),
+            icon: BitmapDescriptor.defaultMarker,
+            onTap: () => _gotoStation(station));
+        _markers[station.name] = marker;
+      }
+    });
   }
 
   @override
@@ -155,9 +174,7 @@ class _MapPageState extends State<MapPage> {
           myLocationButtonEnabled: true,
           mapType: MapType.normal,
           mapToolbarEnabled: true,
-          onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
-          },
+          onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
             target: _center,
             zoom: 14.4746,
@@ -165,6 +182,7 @@ class _MapPageState extends State<MapPage> {
           onTap: (position) {
             print(position);
           },
+          markers: _markers.values.toSet(),
         ),
       );
     }
@@ -208,5 +226,12 @@ class _MapPageState extends State<MapPage> {
         enabledMetro = !enabledMetro;
       });
     }
+  }
+
+  void _gotoStation(locations.Station station) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => StationPage(station: station)),
+    );
   }
 }
