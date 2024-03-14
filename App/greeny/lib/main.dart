@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:greeny/appState.dart';
+import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() async {
+Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en_US', supportedLocales: ['en_US', 'es', 'ca']);
 
-  runApp(LocalizedApp(delegate, const Greeny()));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AppState(),
+      child: LocalizedApp(
+        delegate,
+        const Greeny(),
+      ),
+    ),
+  );
 }
-
 
 class Greeny extends StatelessWidget {
   const Greeny({super.key});
@@ -31,6 +40,7 @@ class Greeny extends StatelessWidget {
         ],
         supportedLocales: localizationDelegate.supportedLocales,
         locale: localizationDelegate.currentLocale,
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
               seedColor: const Color.fromARGB(255, 1, 167, 164)),
