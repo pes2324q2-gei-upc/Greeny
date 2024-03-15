@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en_US', supportedLocales: ['en_US', 'es', 'ca']);
 
+  await dotenv.load(fileName: ".env");
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),
@@ -22,7 +24,6 @@ Future<void> main() async {
 
 class Greeny extends StatelessWidget {
   const Greeny({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

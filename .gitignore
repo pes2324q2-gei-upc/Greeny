@@ -4,10 +4,12 @@
 Backend/.env
 .vscode/
 
-
 Backend/api/migrations/
+App/greeny/macos/Flutter
+App/greeny/windows/flutter
 
 App/greeny/pubspec.lock
 App/greeny/linux/flutter/generated_plugin_registrant.cc
 App/greeny/linux/flutter/generated_plugins.cmake
 App/greeny/macos/Flutter/GeneratedPluginRegistrant.swift
+

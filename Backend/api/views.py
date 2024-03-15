@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import generics
@@ -23,6 +23,19 @@ class CarregadorsElectricsView(View):
     def get(self, request):
         response = requests.get(url=(BASE_URL_OD + "tb2m-m33b.json?" + "$limit=1000"), headers=headers_OD);
         data = response.json()
+
+        for point in data:
+            ChargingStation.objects.create(
+                name = point.get("designaci_descriptiva"),
+                latitude = point.get("latitud"),
+                longitude = point.get("longitud"),
+                acces = point.get("acces"),
+                charging_velocity = point.get("tipus_velocitat"),
+                power = point.get("kw"),
+                current_type = point.get("ac_dc"),
+                connexion_type = point.get("tipus_connexi")
+            )
+        data = {"status" : "fetched_successfully"}
         return JsonResponse(data, safe=False)
     
 # #GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
@@ -164,7 +177,7 @@ class FetchPublicTransportStations(View):
                 except:
                     Stop.objects.create(station=station, transport_type=trans_type, lines=[]) 
 
-        return JsonResponse(data, safe=False)
+        return redirect('bus_stops')
 
 
 # def getParadesMetro(request):
@@ -181,9 +194,35 @@ class GetStations(generics.ListAPIView):
 #GET parades de bus Barcelona
 class ParadesBus(View):
     def get(self, request):
-        response = requests.get(url=(BASE_URL_AJT + "2d190658-93ac-4c43-a23f-c5d313b1ae9c" + "$limit=3250"));
-        data = response.json()
-        return JsonResponse(data, safe=False)
+        response = requests.get(url=(BASE_URL_AJT + "2d190658-93ac-4c43-a23f-c5d313b1ae9c" + "&limit=3226"));
+        data = response.json().get("result").get("records")
+
+        for bus in data:
+            if "Estació" in bus.get("EQUIPAMENT"):
+                continue
+            lines_bus = bus.get("EQUIPAMENT").split(" -")[1].replace("--", "").split("-")
+            lat = bus.get("LATITUD")
+            long = bus.get("LONGITUD")
+
+            try:
+                stat = Station.objects.get(latitude=lat, longitude=long)
+            except Station.DoesNotExist:
+                stat = None
+            
+            if stat is None:
+                BusStation.objects.create(
+                    name = "BUS " + str(bus.get("_id")) + " (" + bus.get("NOM_BARRI") + ")",
+                    latitude = lat,
+                    longitude = long,
+                    lines = lines_bus
+                )
+            
+            else:
+                bus_station = BusStation.objects.get(station_ptr_id=stat.id)
+                bus_station.lines = bus_station.lines + lines_bus
+                bus_station.save()
+
+        return redirect('bicing')
 
 #GET estacions Bicing
 class EstacionsBicing(View):
@@ -191,6 +230,14 @@ class EstacionsBicing(View):
         url = "https://opendata-ajuntament.barcelona.cat/data/dataset/informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/download/Informacio_Estacions_Bicing_securitzat.json"
         response = requests.get(url=url, headers=headers_AJT)
         response.raise_for_status()
-        data = response.json()
-        print(data)
-        return JsonResponse(data)
+        data = response.json().get("data").get("stations")
+
+        for stop in data:
+            BicingStation.objects.create(
+                name = stop.get("name"),
+                latitude = stop.get("lat"),
+                longitude = stop.get("lon"),
+                capacitat = stop.get("capacity")
+            )
+
+        return redirect('charging_points')
