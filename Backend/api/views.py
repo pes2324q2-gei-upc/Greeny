@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import generics
@@ -35,7 +35,7 @@ class CarregadorsElectricsView(View):
                 current_type = point.get("ac_dc"),
                 connexion_type = point.get("tipus_connexi")
             )
-        
+        data = {"status" : "fetched_successfully"}
         return JsonResponse(data, safe=False)
     
 # #GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
@@ -177,7 +177,7 @@ class FetchPublicTransportStations(View):
                 except:
                     Stop.objects.create(station=station, transport_type=trans_type, lines=[]) 
 
-        return JsonResponse(data, safe=False)
+        return redirect('bus_stops')
 
 
 # def getParadesMetro(request):
@@ -194,9 +194,35 @@ class GetStations(generics.ListAPIView):
 #GET parades de bus Barcelona
 class ParadesBus(View):
     def get(self, request):
-        response = requests.get(url=(BASE_URL_AJT + "2d190658-93ac-4c43-a23f-c5d313b1ae9c" + "$limit=3250"));
-        data = response.json()
-        return JsonResponse(data, safe=False)
+        response = requests.get(url=(BASE_URL_AJT + "2d190658-93ac-4c43-a23f-c5d313b1ae9c" + "&limit=3226"));
+        data = response.json().get("result").get("records")
+
+        for bus in data:
+            if "Estació" in bus.get("EQUIPAMENT"):
+                continue
+            lines_bus = bus.get("EQUIPAMENT").split(" -")[1].replace("--", "").split("-")
+            lat = bus.get("LATITUD")
+            long = bus.get("LONGITUD")
+
+            try:
+                stat = Station.objects.get(latitude=lat, longitude=long)
+            except Station.DoesNotExist:
+                stat = None
+            
+            if stat is None:
+                BusStation.objects.create(
+                    name = "BUS " + str(bus.get("_id")) + " (" + bus.get("NOM_BARRI") + ")",
+                    latitude = lat,
+                    longitude = long,
+                    lines = lines_bus
+                )
+            
+            else:
+                bus_station = BusStation.objects.get(station_ptr_id=stat.id)
+                bus_station.lines = bus_station.lines + lines_bus
+                bus_station.save()
+
+        return redirect('bicing')
 
 #GET estacions Bicing
 class EstacionsBicing(View):
@@ -214,4 +240,4 @@ class EstacionsBicing(View):
                 capacitat = stop.get("capacity")
             )
 
-        return JsonResponse(data)
+        return redirect('charging_points')
