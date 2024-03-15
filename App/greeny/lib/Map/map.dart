@@ -34,7 +34,6 @@ class _MapPageState extends State<MapPage> {
     'metro': true
   };
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
-  // ignore: prefer_typing_uninitialized_variables
   var icons;
   // ignore: prefer_typing_uninitialized_variables
   var stations;
@@ -49,6 +48,8 @@ class _MapPageState extends State<MapPage> {
   bool _areMarkersLoading = true;
   MapType _currentMapType = MapType.normal;
   final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
+  bool isLoading = true;
+  bool gettingLocation = true;
 
   void _initMarkers() async {
     final List<MapMarker> markers = [];
@@ -59,7 +60,7 @@ class _MapPageState extends State<MapPage> {
           id: station.name,
           position: LatLng(station.latitude, station.longitude),
           icon: BitmapDescriptor.fromBytes(
-              icons[station.stops[0].transportType.type]),
+              icons[station.stops[0].transportType.type]!),
           onTap: () => _gotoStation(station),
         ),
       );
@@ -113,6 +114,9 @@ class _MapPageState extends State<MapPage> {
   Future<void> getInfo() async {
     stations = await locations.getStations();
     icons = await markers.createIcons(60);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> getLocation() async {
@@ -137,6 +141,7 @@ class _MapPageState extends State<MapPage> {
 
     Position position = await Geolocator.getCurrentPosition();
     setState(() {
+      gettingLocation = false;
       _center = LatLng(position.latitude, position.longitude);
     });
   }
@@ -148,7 +153,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!serviceEnabled) {
+    if (!serviceEnabled || isLoading || gettingLocation) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
