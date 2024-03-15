@@ -6,6 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'utils/locations.dart' as locations;
 import 'station.dart';
 import 'utils/markers.dart' as markers;
+import 'package:fluster/fluster.dart';
+import 'utils/map_marker.dart';
+import 'utils/map_helper.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -17,12 +20,9 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-
   LatLng _center = const LatLng(0.0, 0.0);
-
   bool serviceEnabled = false;
   LocationPermission permission = LocationPermission.denied;
-
   double iconSize = 35;
   var transports = {
     'tram': true,
@@ -34,6 +34,86 @@ class _MapPageState extends State<MapPage> {
     'metro': true
   };
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
+  // ignore: prefer_typing_uninitialized_variables
+  var icons;
+  // ignore: prefer_typing_uninitialized_variables
+  var stations;
+
+  //nous
+  final Set<Marker> _markerss = {};
+  final int _minClusterZoom = 0;
+  final int _maxClusterZoom = 19;
+  Fluster<MapMarker>? _clusterManager;
+  double _currentZoom = 15;
+  // ignore: unused_field
+  bool _areMarkersLoading = true;
+  MapType _currentMapType = MapType.normal;
+  final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
+
+  void _initMarkers() async {
+    final List<MapMarker> markers = [];
+
+    for (final station in stations.stations) {
+      markers.add(
+        MapMarker(
+          id: station.name,
+          position: LatLng(station.latitude, station.longitude),
+          icon: BitmapDescriptor.fromBytes(
+              icons[station.stops[0].transportType.type]),
+          onTap: () => _gotoStation(station),
+        ),
+      );
+    }
+
+    _clusterManager = await MapHelper.initClusterManager(
+      markers,
+      _minClusterZoom,
+      _maxClusterZoom,
+    );
+
+    await _updateMarkers();
+  }
+
+  Future<void> _updateMarkers([double? updatedZoom]) async {
+    if (_clusterManager == null || updatedZoom == _currentZoom) return;
+
+    if (updatedZoom != null) {
+      _currentZoom = updatedZoom;
+    }
+
+    setState(() {
+      _areMarkersLoading = true;
+    });
+
+    final updatedMarkers = await MapHelper.getClusterMarkers(
+      _clusterManager,
+      _currentZoom,
+      Theme.of(context).colorScheme.primary,
+      Colors.white,
+      60,
+    );
+
+    _markerss
+      ..clear()
+      ..addAll(updatedMarkers);
+
+    setState(() {
+      _areMarkersLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    getLocation();
+    getInfo();
+    _gotoLocation();
+    super.initState();
+  }
+
+  Future<void> getInfo() async {
+    stations = await locations.getStations();
+    icons = await markers.createIcons(60);
+  }
 
   Future<void> getLocation() async {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -61,36 +141,15 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  @override
-  void initState() {
-    getLocation();
-    _gotoLocation();
-    super.initState();
-  }
-
-  final Map<String, Marker> _markers = {};
-
   Future<void> _onMapCreated(GoogleMapController controller) async {
-    final icons = await markers.createIcons(50);
-    final stations = await locations.getStations();
-    setState(() {
-      _markers.clear();
-      for (final station in stations.stations) {
-        for (final stops in station.stops) {
-          final marker = Marker(
-              markerId: MarkerId(station.name),
-              position: LatLng(station.latitude, station.longitude),
-              icon: BitmapDescriptor.fromBytes(icons[stops.transportType.type]),
-              onTap: () => _gotoStation(station));
-          _markers[station.name] = marker;
-        }
-      }
-    });
+    icons = await markers.createIcons(50);
+
+    _initMarkers();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (serviceEnabled == false) {
+    if (!serviceEnabled) {
       return const Scaffold(
         body: Center(
           child: Text('Loading...'),
@@ -107,33 +166,47 @@ class _MapPageState extends State<MapPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                    for (final transport in transports.keys)
-                          IconButton(
-                            onPressed: () => filter(transport),
-                            icon: Image(
-                              image: AssetImage('assets/transports/$transport.png'),
-                              height: iconSize,
-                              width: iconSize,
-                              color: transports[transport]! ? null : disabledColor,
-                              colorBlendMode: BlendMode.dstIn,
-                            ),
-                          ),
-                  ],
+                  for (final transport in transports.keys)
+                    IconButton(
+                      onPressed: () => filter(transport),
+                      icon: Image(
+                        image: AssetImage('assets/transports/$transport.png'),
+                        height: iconSize,
+                        width: iconSize,
+                        color: transports[transport]! ? null : disabledColor,
+                        colorBlendMode: BlendMode.dstIn,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
         ),
-        body: GoogleMap(
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-          mapType: MapType.normal,
-          mapToolbarEnabled: true,
-          onMapCreated: _onMapCreated,
-          initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: 14.4746,
-          ),
-          markers: _markers.values.toSet(),
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              myLocationEnabled: true,
+              mapType: _currentMapType,
+              myLocationButtonEnabled: true,
+              mapToolbarEnabled: true,
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: _currentZoom,
+              ),
+              markers: _markerss,
+              onCameraMove: (position) => _updateMarkers(position.zoom),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: FloatingActionButton(
+                  onPressed: _mapType,
+                  child: const Icon(Icons.map),
+                ),
+              )
+            ]),
+          ],
         ),
       );
     }
@@ -158,5 +231,49 @@ class _MapPageState extends State<MapPage> {
       context,
       MaterialPageRoute(builder: (context) => StationPage(station: station)),
     );
+  }
+
+  void _mapType() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Map type'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                for (final type in mapTypeList)
+                  ListTile(
+                    title: Text(type),
+                    onTap: () {
+                      _changeMapType(type);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _changeMapType(String type) {
+    setState(() {
+      switch (type) {
+        case "Normal":
+          _currentMapType = MapType.normal;
+          break;
+        case "Hybrid":
+          _currentMapType = MapType.hybrid;
+          break;
+        case "Satellite":
+          _currentMapType = MapType.satellite;
+          break;
+        case "Terrain":
+          _currentMapType = MapType.terrain;
+          break;
+      }
+    });
   }
 }
