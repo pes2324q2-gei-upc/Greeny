@@ -142,9 +142,8 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-    icons = await markers.createIcons(50);
-
     _initMarkers();
+    _controller.complete(controller);
   }
 
   @override
@@ -152,7 +151,7 @@ class _MapPageState extends State<MapPage> {
     if (!serviceEnabled) {
       return const Scaffold(
         body: Center(
-          child: Text('Loading...'),
+          child: CircularProgressIndicator(),
         ),
       );
     } else {

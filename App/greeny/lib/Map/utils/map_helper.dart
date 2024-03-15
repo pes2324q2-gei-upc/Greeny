@@ -114,7 +114,8 @@ class MapHelper {
     List<MapMarker> markers,
     int minZoom,
     int maxZoom,
-  ) async {
+  )
+  async {
     return Fluster<MapMarker>(
       minZoom: minZoom,
       maxZoom: maxZoom,
