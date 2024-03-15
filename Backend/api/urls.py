@@ -3,10 +3,10 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('carregadors-electrics', CarregadorsElectricsView.as_view(), name='carregadors-electrics'),
-    #path('fetch-stations', FetchPublicTransportStations.as_view(), name='estacions'),
-    path('get-stations', GetStations.as_view(), name="get-all-stations"),
+    path('charging-points', CarregadorsElectricsView.as_view(), name='charging_points'),
+    path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
+    path('get-stations', GetStations.as_view(), name="get_all_stations"),
     #path('parades-metro', getParadesMetro, name='parades-metro'),
-    path('parades-bus', ParadesBus.as_view(), name='parades-bus'),
+    path('parades-bus', ParadesBus.as_view(), name='bus_stops'),
     path('bicing', EstacionsBicing.as_view(), name='bicing')
 ]
