@@ -1,4 +1,14 @@
+import 'dart:math';
+
+import 'dart:async';
+//import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/appState.dart';
+import 'package:provider/provider.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 double punts = 0.5;
 
@@ -9,10 +19,37 @@ class CityPage extends StatefulWidget {
   State<CityPage> createState() => _CityPageState();
 }
 
-class _CityPageState extends State<CityPage> {
+class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int currentPageIndex = 0;
+  late AppState appState; // estat de l'aplicació
+  late AnimationController
+      _controller; // controlador per l'animació del botó play/pause
+  Timer? _updateTimer;
+
   double progressPercentage = 0.3;
   double punts = 0.5;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+        duration: const Duration(seconds: 1),
+        vsync: this); //inicialitzar el animation controller
+    super.initState();
+    appState = context.read<AppState>(); // estat de l'aplicació
+    if (appState.isPlaying) {
+      _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+        // Actualizar el widget KmTravelled con la distancia actualizada
+        setState(() {});
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // per tancar el animation controller
+    _updateTimer?.cancel();
+    super.dispose();
+  }
 
   void updateProgress(double newProgress) {
     setState(() {
@@ -31,49 +68,222 @@ class _CityPageState extends State<CityPage> {
               "Julia's City",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BarraProgres(
-                  punts: punts,
-                  onProgressChanged: updateProgress,
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: play,
-                      icon: const Icon(Icons.play_arrow),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 50),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: viewHistory,
-                      icon: const Icon(Icons.restore),
-                    ),
-                  ],
-                ),
-              ],
+            Container(
+              margin: const EdgeInsets.all(10.0),
+              width: 300,
+              height: 300,
+              child: Stack(
+                children: [
+                  Opacity(
+                    opacity: min(75, 100 - 50) /
+                        100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                    child: Image.asset('assets/cities/fog.png'),
+                  ),
+                  const ModelViewer(
+                    key: Key('cityModelViewer'),
+                    src: 'assets/cities/city_1.glb',
+                    autoRotate: true,
+                    disableZoom: true,
+                    rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                    autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                    cameraControls:
+                        false, // Evita que el usuario controle la cámara (true por defecto)
+                  ),
+                  Opacity(
+                    opacity: min(75, 100 - 50) /
+                        100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                    child: Image.asset('assets/cities/fog.png'),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 16),
+            if (!appState.isPlaying)
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  BarraProgres(
+                    punts: punts,
+                    onProgressChanged: updateProgress,
+                  ),
+                ],
+              ),
+            if (appState.isPlaying)
+              const Icon(Icons.directions_walk,
+                  size: 50), // icona per indicar que sésta fent un recorregut
+            if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
+            const SizedBox(height: 20.0),
+            buildplaypause(),
+            if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
           ],
         ),
+      ),
+      appBar: AppBar(
+        title: const Text(
+          'Greeny',
+          style: TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        centerTitle: true,
+        leading: IconButton(
+            onPressed: viewHistory,
+            icon: const Icon(Icons.restore),
+            color: const Color.fromARGB(255, 1, 167, 164)),
       ),
     );
   }
 
+  // inicia el comptador de km i pasa al estat isPlaying true
   void play() {
+    _controller.forward();
+    setState(() {
+      appState.totalDistance = 0;
+      appState.isPlaying = true;
+    });
+    _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+      // Actualizar el widget KmTravelled con la distancia actualizada
+      setState(() {});
+    });
+    LocationService.instance.startLocationUpdates(context);
     print('Playing');
+  }
+
+  //pausa el comptador de km i pasa al estat isPlaying false
+  void pause() {
+    _controller.reverse();
+    LocationService.instance.stopLocationUpdates(context);
+    _updateTimer?.cancel();
+    setState(() {
+      appState.isPlaying = false;
+    });
+    print('Paused');
   }
 
   void viewHistory() {
     print('Viewing history');
   }
+
+  // Boto animat de play/pause
+  Widget buildplaypause() {
+    return Container(
+      width: 70,
+      height: 70,
+      margin: const EdgeInsets.all(8.0),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22.0),
+        color: const Color.fromARGB(255, 1, 167, 164),
+      ),
+      child: GestureDetector(
+        onTap: () async {
+          if (appState.isPlaying) {
+            // Si está reproduciendo, pausar
+            pause();
+          } else {
+            bool ubiActiva = await comprovarUbicacio();
+            if (!ubiActiva) return;
+            // Si no está reproduciendo, reproducir
+            play();
+          }
+        },
+        child: appState.isPlaying
+            ? const Icon(
+                Icons.pause,
+                key: Key('pause_icon_key'),
+                size: 50.0,
+                color: Colors.white,
+              )
+            : const Icon(
+                Icons.play_arrow,
+                key: Key('play_icon_key'),
+                size: 50.0,
+                color: Colors.white,
+              ),
+      ),
+    );
+  }
+}
+
+class LastTravel extends StatelessWidget {
+  const LastTravel({
+    super.key,
+    required this.km,
+  });
+
+  final double km;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(horizontal: 110.0),
+      child: Text(
+        'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
+        style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
+        textAlign: TextAlign.center,
+      ), //imprimeix els km de lib/City/comptakm.dart
+    );
+  }
+}
+
+class KmTravelled extends StatelessWidget {
+  const KmTravelled({
+    super.key,
+    required this.km,
+  });
+
+  final double km;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(horizontal: 110.0),
+      child: Text(
+        'Km recorreguts: ${(km).toStringAsFixed(2)} km',
+        style: DefaultTextStyle.of(context)
+            .style
+            .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+        textAlign: TextAlign.center,
+      ), //imprimeix els km de lib/City/comptakm.dart
+    );
+  }
+}
+/* Future<void> getLocation() async {
+  try {
+    Position position = await Geolocator.getCurrentPosition();
+    print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+  } catch (e) {
+    print('Error obtaining location: $e');
+  }
+} */
+
+// comprova que els servieis dúbicació estan activats i tenen permissos
+Future<bool> comprovarUbicacio() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    serviceEnabled = await Geolocator.openLocationSettings();
+    if (!serviceEnabled) {
+      print('Servei ubicació no habilitat');
+      return false;
+    }
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission != LocationPermission.whileInUse &&
+        permission != LocationPermission.always) {
+      print('Permis denegat');
+      return false;
+    }
+  }
+
+  print('Servei habilitat i permis otorgat');
+  return true;
 }
 
 class BarraProgres extends StatelessWidget {
