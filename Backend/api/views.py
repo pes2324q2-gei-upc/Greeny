@@ -189,19 +189,19 @@ class GetStations(generics.ListAPIView):
 
         queryset_pt = PublicTransportStation.objects.all()
         serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
-        data['public_transport_stations'] = serializer_pt.data
+        data['publicTransportStations'] = serializer_pt.data
 
         queryset_bus = BusStation.objects.all()
         serializer_bus = BusStationSerializer(queryset_bus, many=True)
-        data['bus_stations'] = serializer_bus.data
+        data['busStations'] = serializer_bus.data
 
         queryset_bicing = BicingStation.objects.all()
         serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
-        data['bicing_stations'] = serializer_bicing.data
+        data['bicingStations'] = serializer_bicing.data
 
         queryset_charging = ChargingStation.objects.all()
         serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
-        data['charging_stations'] = serializer_charging.data
+        data['chargingStations'] = serializer_charging.data
 
         return JsonResponse({'stations':data}, safe=False)
 
