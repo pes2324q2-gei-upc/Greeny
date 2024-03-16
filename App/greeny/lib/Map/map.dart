@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'utils/locations.dart' as locations;
@@ -29,7 +30,7 @@ class _MapPageState extends State<MapPage> {
     'bus': true,
     'fgc': true,
     'bicing': true,
-    'renfe': true,
+    'rodalies': true,
     'car': true,
     'metro': true
   };
@@ -51,6 +52,15 @@ class _MapPageState extends State<MapPage> {
   bool isLoading = true;
   bool gettingLocation = true;
 
+  BitmapDescriptor chooseIcon(station) {
+    if (station.stops.length > 1) {
+      return BitmapDescriptor.fromBytes(icons['TMB']);
+    } else {
+      return BitmapDescriptor.fromBytes(
+          icons[station.stops[0].transportType.type]!);
+    }
+  }
+
   void _initMarkers() async {
     final List<MapMarker> markers = [];
 
@@ -59,8 +69,7 @@ class _MapPageState extends State<MapPage> {
         MapMarker(
           id: station.name,
           position: LatLng(station.latitude, station.longitude),
-          icon: BitmapDescriptor.fromBytes(
-              icons[station.stops[0].transportType.type]!),
+          icon: chooseIcon(station),
           onTap: () => _gotoStation(station),
         ),
       );
@@ -162,7 +171,7 @@ class _MapPageState extends State<MapPage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Filter'),
+          title: Text(translate('Filter')),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
@@ -242,13 +251,13 @@ class _MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Map type'),
+          title: Text(translate('Map type')),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 for (final type in mapTypeList)
                   ListTile(
-                    title: Text(type),
+                    title: Text(translate(type)),
                     onTap: () {
                       _changeMapType(type);
                       Navigator.of(context).pop();

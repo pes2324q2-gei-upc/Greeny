@@ -13,5 +13,12 @@
     "Email Address": "Email Address",
     "Confirm Password": "Confirm Password",
     "Already have an account?": "Already have an account?",
-    "Log In here": "Log In here"
+    "Log In here": "Log In here",
+    "Map type": "Map type",
+    "Normal": "Normal",
+    "Satellite": "Satellite",
+    "Hybrid": "Hybrid",
+    "Terrain": "Terrain",
+    "Filter": "Filter"
+
 }
