@@ -12,5 +12,11 @@
     "Email Address": "Correu electrònic",
     "Confirm Password": "Confirma la contrasenya",
     "Already have an account?": "Ja tens un compte?",
-    "Log In here": "Inicia sessió aquí"
+    "Log In here": "Inicia sessió aquí",
+    "Map type": "Tipus de mapa",
+    "Normal": "Normal",
+    "Satellite": "Satèl·lit",
+    "Hybrid": "Híbrid",
+    "Terrain": "Terreny",
+    "Filter": "Filtre"
 }

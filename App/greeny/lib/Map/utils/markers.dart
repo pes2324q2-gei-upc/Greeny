@@ -26,12 +26,16 @@ Future<Map> createIcons(int size) async {
       path: 'assets/transports/bicing.png', //paste the custom image path
       width: size // size of custom image as marker
       );
-  final Uint8List renfeIcon = await getBytesFromAsset(
-      path: 'assets/transports/renfe.png', //paste the custom image path
+  final Uint8List rodaliesIcon = await getBytesFromAsset(
+      path: 'assets/transports/rodalies.png', //paste the custom image path
       width: size // size of custom image as marker
       );
   final Uint8List carIcon = await getBytesFromAsset(
       path: 'assets/transports/car.png', //paste the custom image path
+      width: size // size of custom image as marker
+      );
+  final Uint8List tmbIcon = await getBytesFromAsset(
+      path: 'assets/transports/tmb.png', //paste the custom image path
       width: size // size of custom image as marker
       );
   icons.addAll({
@@ -40,8 +44,9 @@ Future<Map> createIcons(int size) async {
     'BUS': busIcon,
     'FGC': fgcIcon,
     'BICING': bicingIcon,
-    'RENFE': renfeIcon,
-    'CAR': carIcon
+    'RENFE': rodaliesIcon,
+    'CAR': carIcon,
+    'TMB': tmbIcon
   });
   return icons;
 }

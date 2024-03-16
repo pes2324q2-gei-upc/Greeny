@@ -13,5 +13,11 @@
     "Email Address": "Correo electrónico",
     "Confirm Password": "Confirmar contraseña",
     "Already have an account?": "¿Ya tienes una cuenta?",
-    "Log In here": "Inicia sesión aquí"
+    "Log In here": "Inicia sesión aquí",
+    "Map type": "Tipo de mapa",
+    "Normal": "Normal",
+    "Satellite": "Satélite",
+    "Hybrid": "Híbrido",
+    "Terrain": "Terreno",
+    "Filter": "Filtro"
 }
