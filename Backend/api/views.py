@@ -255,3 +255,9 @@ class EstacionsBicing(View):
             )
 
         return redirect('charging_points')
+
+class TestView(View):
+    def get(self, request):
+        response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
+        data = response.json()
+        return JsonResponse(data, safe=False)
