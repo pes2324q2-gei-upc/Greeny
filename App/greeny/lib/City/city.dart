@@ -10,8 +10,6 @@ import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-double punts = 0.5;
-
 class CityPage extends StatefulWidget {
   const CityPage({Key? key}) : super(key: key);
 
@@ -27,18 +25,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   Timer? _updateTimer;
 
   double progressPercentage = 0.3;
-  double punts = 0.5;
+  double punts = 50.0;
+  String level = 'Nivell 1';
 
   @override
   void initState() {
-    _controller = AnimationController(
-        duration: const Duration(seconds: 1),
-        vsync: this); //inicialitzar el animation controller
+    _controller =
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
     super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
       _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
-        // Actualizar el widget KmTravelled con la distancia actualizada
         setState(() {});
       });
     }
@@ -55,49 +52,106 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       punts = newProgress;
     });
+
+    if (punts > 100) {
+      setState(() {
+        level = 'Nivell 2';
+        punts = 0;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    onPressed: removePoints,
+                    color: Colors.white,
+                    icon: const Icon(Icons.remove),
+                  ),
+                ),
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    color: Colors.white,
+                    onPressed: addPoints,
+                    icon: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
             const Text(
-              "Julia's City",
+              "Julia's City ",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 30.0),
             Container(
-              margin: const EdgeInsets.all(10.0),
-              width: 300,
-              height: 300,
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.width * 0.7,
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: min(75, 100 - 50) /
+                    opacity: max(min(75, 100 - punts), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
-                  const ModelViewer(
-                    key: Key('cityModelViewer'),
-                    src: 'assets/cities/city_1.glb',
-                    autoRotate: true,
-                    disableZoom: true,
-                    rotationPerSecond: "25deg", // Rota 30 grados por segundo
-                    autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
-                    cameraControls:
-                        false, // Evita que el usuario controle la cámara (true por defecto)
-                  ),
+                  if (level == 'Nivell 1')
+                    const ModelViewer(
+                      key: Key('cityModelViewer'),
+                      src: 'assets/cities/city_1.glb',
+                      autoRotate: true,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
+                  if (level == 'Nivell 2')
+                    const ModelViewer(
+                      key: Key('city2ModelViewer'),
+                      src: 'assets/cities/city_2_def.glb',
+                      autoRotate: true,
+                      exposure: 6,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
                   Opacity(
-                    opacity: min(75, 100 - 50) /
+                    opacity: max(min(75, 100 - punts), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 30.0),
+
             if (!appState.isPlaying)
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,20 +159,21 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   BarraProgres(
                     punts: punts,
                     onProgressChanged: updateProgress,
+                    level: level,
                   ),
                 ],
               ),
             if (appState.isPlaying)
               const Icon(Icons.directions_walk,
-                  size: 50), // icona per indicar que sésta fent un recorregut
+                  size: 30), // icona per indicar que sésta fent un recorregut
             if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
-            const SizedBox(height: 20.0),
             buildplaypause(),
             if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
           ],
         ),
       ),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         title: const Text(
           'Greeny',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -166,12 +221,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   // Boto animat de play/pause
   Widget buildplaypause() {
     return Container(
-      width: 70,
-      height: 70,
+      width: 50,
+      height: 50,
       margin: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.0),
+        borderRadius: BorderRadius.circular(15.0),
         color: const Color.fromARGB(255, 1, 167, 164),
       ),
       child: GestureDetector(
@@ -190,17 +245,35 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ? const Icon(
                 Icons.pause,
                 key: Key('pause_icon_key'),
-                size: 50.0,
+                size: 30.0,
                 color: Colors.white,
               )
             : const Icon(
                 Icons.play_arrow,
                 key: Key('play_icon_key'),
-                size: 50.0,
+                size: 30.0,
                 color: Colors.white,
               ),
       ),
     );
+  }
+
+  void addPoints() {
+    setState(() {
+      punts += 10;
+    });
+    updateProgress(
+        punts); // Llama a la función para actualizar la barra de progreso
+    print(punts);
+  }
+
+  void removePoints() {
+    setState(() {
+      punts -= 10;
+    });
+    updateProgress(
+        punts); // Llama a la función para actualizar la barra de progreso
+    print(punts);
   }
 }
 
@@ -216,9 +289,9 @@ class LastTravel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(horizontal: 110.0),
+      margin: const EdgeInsets.symmetric(horizontal: 40.0),
       child: Text(
-        'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
+        'Últim recorregut: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
@@ -243,7 +316,7 @@ class KmTravelled extends StatelessWidget {
         'Km recorreguts: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context)
             .style
-            .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+            .apply(fontWeightDelta: 4, fontSizeFactor: 1.0),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
     );
@@ -289,10 +362,12 @@ Future<bool> comprovarUbicacio() async {
 class BarraProgres extends StatelessWidget {
   final double punts;
   final Function(double) onProgressChanged;
+  final String level;
 
   const BarraProgres({
     required this.punts,
     required this.onProgressChanged,
+    required this.level,
   });
 
   @override
@@ -300,31 +375,50 @@ class BarraProgres extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 30.0),
-        Container(
-          alignment: Alignment.centerRight,
-          margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Nivell ${(punts * 100).toInt()}',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              alignment: Alignment.centerRight,
+              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              child: Text(
+                level,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
         ),
         SizedBox(height: 5.0),
-        Container(
-          height: 23,
-          margin: EdgeInsets.symmetric(horizontal: 100.0),
-          child: LinearProgressIndicator(
-            value: punts,
-            backgroundColor: Color.fromARGB(255, 205, 197, 197),
-            borderRadius: BorderRadius.circular(10.0),
-            valueColor: AlwaysStoppedAnimation<Color>(
-                const Color.fromARGB(255, 1, 167, 164)),
-          ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              height: 23,
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              margin: EdgeInsets.symmetric(horizontal: 100.0),
+              child: LinearProgressIndicator(
+                value: punts / 100,
+                backgroundColor: Color.fromARGB(255, 205, 197, 197),
+                borderRadius: BorderRadius.circular(10.0),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  const Color.fromARGB(255, 1, 167, 164),
+                ),
+              ),
+            );
+          },
         ),
         SizedBox(height: 5.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              child: Text(
+                'Punts: ${(punts).toStringAsFixed(1)}/100',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
         ),
         SizedBox(height: 20.0),
       ],
