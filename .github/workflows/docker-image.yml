@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
 
 jobs:
 
@@ -17,4 +17,4 @@ jobs:
     - name: Build the Docker image
       run: |
         cd Backend
-        docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+        docker build . --file Dockerfile --tag greeny-backend:$(date +%s)
