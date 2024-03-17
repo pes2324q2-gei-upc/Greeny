@@ -20,6 +20,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build the hello-docker Docker image
       run: |
+            cat ${{ secrets.GITHUB_TOKEN }}
             cd Backend
             docker build . --tag ghcr.io/pes2324q2-gei-upc/greeny:latest
             docker run ghcr.io/pes2324q2-gei-upc/greeny:latest
