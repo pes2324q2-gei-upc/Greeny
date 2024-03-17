@@ -25,7 +25,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   Timer? _updateTimer;
 
   double progressPercentage = 0.3;
-  double punts = 0.5;
+  double punts = 50.0;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void updateProgress(double newProgress) {
     setState(() {
-      punts = newProgress;
+      this.punts = newProgress;
     });
   }
 
@@ -63,23 +63,57 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    onPressed: removePoints,
+                    icon: const Icon(Icons.remove),
+                  ),
+                ),
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    onPressed: addPoints,
+                    icon: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
             const Text(
               "Julia's City",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 30.0),
             Container(
-              width: 300,
-              height: 300,
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.width * 0.7,
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: min(75, 100 - 100) /
+                    opacity: min(75, 100 - punts) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
                   const ModelViewer(
                     key: Key('cityModelViewer'),
-                    src: 'assets/cities/CitySnowy.glb',
+                    src: 'assets/cities/city_1.glb',
                     autoRotate: true,
                     disableZoom: true,
                     rotationPerSecond: "25deg", // Rota 30 grados por segundo
@@ -88,13 +122,15 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         false, // Evita que el usuario controle la cámara (true por defecto)
                   ),
                   Opacity(
-                    opacity: min(75, 100 - 100) /
+                    opacity: min(75, 100 - punts) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
                 ],
               ),
             ),
+            SizedBox(height: 30.0),
+
             if (!appState.isPlaying)
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -163,12 +199,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   // Boto animat de play/pause
   Widget buildplaypause() {
     return Container(
-      width: 60,
-      height: 60,
+      width: 50,
+      height: 50,
       margin: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22.0),
+        borderRadius: BorderRadius.circular(15.0),
         color: const Color.fromARGB(255, 1, 167, 164),
       ),
       child: GestureDetector(
@@ -187,17 +223,35 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ? const Icon(
                 Icons.pause,
                 key: Key('pause_icon_key'),
-                size: 50.0,
+                size: 30.0,
                 color: Colors.white,
               )
             : const Icon(
                 Icons.play_arrow,
                 key: Key('play_icon_key'),
-                size: 50.0,
+                size: 30.0,
                 color: Colors.white,
               ),
       ),
     );
+  }
+
+  void addPoints() {
+    setState(() {
+      punts += 10;
+    });
+    updateProgress(
+        punts); // Llama a la función para actualizar la barra de progreso
+    print(punts);
+  }
+
+  void removePoints() {
+    setState(() {
+      punts -= 10;
+    });
+    updateProgress(
+        punts); // Llama a la función para actualizar la barra de progreso
+    print(punts);
   }
 }
 
@@ -213,7 +267,7 @@ class LastTravel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(horizontal: 110.0),
+      margin: const EdgeInsets.symmetric(horizontal: 40.0),
       child: Text(
         'Últim recorregut: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
@@ -297,33 +351,50 @@ class BarraProgres extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 300,
-          alignment: Alignment.centerRight,
-          margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Nivell ${(punts * 100).toInt()}',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              alignment: Alignment.centerRight,
+              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              child: Text(
+                'Nivell 1',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
         ),
         SizedBox(height: 5.0),
-        Container(
-          height: 23,
-          width: 300,
-          margin: EdgeInsets.symmetric(horizontal: 100.0),
-          child: LinearProgressIndicator(
-            value: punts,
-            backgroundColor: Color.fromARGB(255, 205, 197, 197),
-            borderRadius: BorderRadius.circular(10.0),
-            valueColor: AlwaysStoppedAnimation<Color>(
-                const Color.fromARGB(255, 1, 167, 164)),
-          ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              height: 23,
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              margin: EdgeInsets.symmetric(horizontal: 100.0),
+              child: LinearProgressIndicator(
+                value: punts / 100,
+                backgroundColor: Color.fromARGB(255, 205, 197, 197),
+                borderRadius: BorderRadius.circular(10.0),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  const Color.fromARGB(255, 1, 167, 164),
+                ),
+              ),
+            );
+          },
         ),
         SizedBox(height: 5.0),
-        Container(
-          width: 300,
-          alignment: Alignment.centerLeft,
-          margin: EdgeInsets.symmetric(horizontal: 110.0),
-          child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return Container(
+              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              child: Text(
+                'Punts: ${(punts).toStringAsFixed(1)}/100',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            );
+          },
         ),
         SizedBox(height: 20.0),
       ],
