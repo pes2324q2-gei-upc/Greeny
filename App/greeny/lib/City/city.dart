@@ -10,8 +10,6 @@ import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
-double punts = 0.5;
-
 class CityPage extends StatefulWidget {
   const CityPage({Key? key}) : super(key: key);
 
@@ -60,6 +58,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -69,19 +68,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Container(
-              margin: const EdgeInsets.all(10.0),
               width: 300,
               height: 300,
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: min(75, 100 - 50) /
+                    opacity: min(75, 100 - 100) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
                   const ModelViewer(
                     key: Key('cityModelViewer'),
-                    src: 'assets/cities/city_1.glb',
+                    src: 'assets/cities/CitySnowy.glb',
                     autoRotate: true,
                     disableZoom: true,
                     rotationPerSecond: "25deg", // Rota 30 grados por segundo
@@ -90,14 +88,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         false, // Evita que el usuario controle la cámara (true por defecto)
                   ),
                   Opacity(
-                    opacity: min(75, 100 - 50) /
+                    opacity: min(75, 100 - 100) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             if (!appState.isPlaying)
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,15 +107,15 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               ),
             if (appState.isPlaying)
               const Icon(Icons.directions_walk,
-                  size: 50), // icona per indicar que sésta fent un recorregut
+                  size: 30), // icona per indicar que sésta fent un recorregut
             if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
-            const SizedBox(height: 20.0),
             buildplaypause(),
             if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
           ],
         ),
       ),
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         title: const Text(
           'Greeny',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -166,8 +163,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   // Boto animat de play/pause
   Widget buildplaypause() {
     return Container(
-      width: 70,
-      height: 70,
+      width: 60,
+      height: 60,
       margin: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -218,7 +215,7 @@ class LastTravel extends StatelessWidget {
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(horizontal: 110.0),
       child: Text(
-        'Ultim recorregut: ${(km).toStringAsFixed(2)} km',
+        'Últim recorregut: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
@@ -243,7 +240,7 @@ class KmTravelled extends StatelessWidget {
         'Km recorreguts: ${(km).toStringAsFixed(2)} km',
         style: DefaultTextStyle.of(context)
             .style
-            .apply(fontWeightDelta: 4, fontSizeFactor: 2.0),
+            .apply(fontWeightDelta: 4, fontSizeFactor: 1.0),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
     );
@@ -300,8 +297,8 @@ class BarraProgres extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SizedBox(height: 30.0),
         Container(
+          width: 300,
           alignment: Alignment.centerRight,
           margin: EdgeInsets.symmetric(horizontal: 110.0),
           child: Text('Nivell ${(punts * 100).toInt()}',
@@ -310,6 +307,7 @@ class BarraProgres extends StatelessWidget {
         SizedBox(height: 5.0),
         Container(
           height: 23,
+          width: 300,
           margin: EdgeInsets.symmetric(horizontal: 100.0),
           child: LinearProgressIndicator(
             value: punts,
@@ -321,6 +319,7 @@ class BarraProgres extends StatelessWidget {
         ),
         SizedBox(height: 5.0),
         Container(
+          width: 300,
           alignment: Alignment.centerLeft,
           margin: EdgeInsets.symmetric(horizontal: 110.0),
           child: Text('Punts: ${(punts * 100).toStringAsFixed(1)}/100',
