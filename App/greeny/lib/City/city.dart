@@ -105,7 +105,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               ],
             ),
             const Text(
-              "Julia's City",
+              "Julia's City ",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 30.0),
