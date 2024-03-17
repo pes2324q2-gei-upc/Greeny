@@ -32,7 +32,7 @@ Future<Map> createIcons(int size) async {
       width: size // size of custom image as marker
       );
   final Uint8List rodaliesIcon = await getBytesFromAsset(
-      path: 'assets/transports/rodalies.png', //paste the custom image path
+      path: 'assets/transports/renfe.png', //paste the custom image path
       width: size // size of custom image as marker
       );
   final Uint8List carIcon = await getBytesFromAsset(
@@ -98,14 +98,19 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
 
   for (final pts in stations.stations.publicTransportStations) {
     if (bounds.contains(LatLng(pts.latitude, pts.longitude))) {
-      markers.add(
-        MapMarker(
-          id: pts.name,
-          position: LatLng(pts.latitude, pts.longitude),
-          icon: chooseIcon(pts, icons),
-          onTap: () => _gotoStation(pts, context),
-        ),
-      );
+      for (final stop in pts.stops) {
+        if (transports[stop.transportType.type.toString().toLowerCase()]!) {
+          markers.add(
+            MapMarker(
+              id: pts.name,
+              position: LatLng(pts.latitude, pts.longitude),
+              icon: chooseIcon(pts, icons),
+              onTap: () => _gotoStation(pts, context),
+            ),
+          );
+          break;
+        }
+      }
     }
   }
 

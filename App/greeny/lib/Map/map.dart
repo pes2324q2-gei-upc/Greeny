@@ -29,7 +29,7 @@ class _MapPageState extends State<MapPage> {
     'bus': true,
     'fgc': true,
     'bicing': true,
-    'rodalies': true,
+    'renfe': true,
     'car': true,
     'metro': true
   };
