@@ -110,8 +110,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ),
             SizedBox(height: 30.0),
             Container(
-              width: min(MediaQuery.of(context).size.width * 0.7, 400),
-              height: min(MediaQuery.of(context).size.width * 0.7, 400),
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: MediaQuery.of(context).size.width * 0.7,
               child: Stack(
                 children: [
                   Opacity(
@@ -135,6 +135,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       key: Key('city2ModelViewer'),
                       src: 'assets/cities/city_2_def.glb',
                       autoRotate: true,
+                      exposure: 6,
                       disableZoom: true,
                       rotationPerSecond: "25deg", // Rota 30 grados por segundo
                       autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
