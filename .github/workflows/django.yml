@@ -7,9 +7,9 @@ on:
     branches: [ "main", "develop" ]
 
 env: 
-  POSTGRES_NAME: db_greeny
-  POSTGRES_USER: greeny
-  POSTGRES_PASSWORD: GreenyPES24;
+  POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
 jobs:
   build:
