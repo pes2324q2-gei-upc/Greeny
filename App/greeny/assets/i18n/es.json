@@ -19,5 +19,10 @@
     "Satellite": "Satélite",
     "Hybrid": "Híbrido",
     "Terrain": "Terreno",
-    "Filter": "Filtro"
+    "Filter": "Filtro",
+    "Location services are disabled.": "Los servicios de localización están desactivados.",
+    "Location permissions are denied, we cannot request permissions.": "Los permisos de localización están denegados, no podemos solicitar permisos.",
+    "Location permissions are permanently denied, we cannot request permissions.": "Los permisos de localización están denegados permanentemente, no podemos solicitar permisos.",
+    "This is taking more than expected.": "Esto está tomando más de lo esperado.",
+    "Close": "Cerrar"
 }

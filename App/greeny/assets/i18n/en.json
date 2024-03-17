@@ -19,6 +19,11 @@
     "Satellite": "Satellite",
     "Hybrid": "Hybrid",
     "Terrain": "Terrain",
-    "Filter": "Filter"
+    "Filter": "Filter",
+    "Location services are disabled.": "Location services are disabled.",
+    "Location permissions are denied, we cannot request permissions.": "Location permissions are denied, we cannot request permissions.",
+    "Location permissions are permanently denied, we cannot request permissions.": "Location permissions are permanently denied, we cannot request permissions.",
+    "This is taking more than expected.": "This is taking more than expected.",
+    "Close": "Close"
 
 }

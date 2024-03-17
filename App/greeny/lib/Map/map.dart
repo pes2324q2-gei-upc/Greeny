@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'utils/locations.dart' as locations;
+// ignore: library_prefixes
 import 'utils/markers_helper.dart' as markersHelper;
 import 'package:fluster/fluster.dart';
 import 'utils/map_marker.dart';
@@ -45,7 +46,7 @@ class _MapPageState extends State<MapPage> {
   final int _maxClusterZoom = 19;
   Fluster<MapMarker>? _clusterManager;
   double _currentZoom = 14;
-  
+
   // ignore: unused_field
   bool _areMarkersLoading = true;
   MapType _currentMapType = MapType.normal;
@@ -79,15 +80,19 @@ class _MapPageState extends State<MapPage> {
     21: 0,
     22: 0
   };
+  // ignore: prefer_typing_uninitialized_variables
+  var t;
 
   Future<void> _updateMarkers(CameraPosition position, bool moving) async {
     var dist = markersHelper.distanceBetweenTwoCoords(
         position.target, _currentPosition!);
 
-    if (moving && dist < _zoomToDistance[position.zoom.toInt()]! && _currentZoom.toInt() == position.zoom.toInt()) {
+    if (moving &&
+        dist < _zoomToDistance[position.zoom.toInt()]! &&
+        _currentZoom.toInt() == position.zoom.toInt()) {
       return;
     }
-    
+
     var visible = await mapController!.getVisibleRegion();
 
     _currentZoom = position.zoom;
@@ -98,6 +103,7 @@ class _MapPageState extends State<MapPage> {
     });
 
     final List<MapMarker> markers = markersHelper.getMarkers(
+        // ignore: use_build_context_synchronously
         transports, icons, stations, visible, _currentPosition, context);
 
     _clusterManager = await MapHelper.initClusterManager(
@@ -109,6 +115,7 @@ class _MapPageState extends State<MapPage> {
     final updatedMarkers = await MapHelper.getClusterMarkers(
       _clusterManager,
       _currentZoom,
+      // ignore: use_build_context_synchronously
       Theme.of(context).colorScheme.primary,
       Colors.white,
       60,
@@ -125,6 +132,9 @@ class _MapPageState extends State<MapPage> {
 
   @override
   void initState() {
+    t = Timer(const Duration(seconds: 5), () {
+      showMessage('This is taking more than expected');
+    });
     getLocation();
     getInfo();
     _gotoLocation();
@@ -142,21 +152,26 @@ class _MapPageState extends State<MapPage> {
   Future<void> getLocation() async {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
+      showAlert('Location services are disabled.');
+      t.cancel();
+      return;
     }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        return Future.error(
+        showAlert(
             'Location permissions are denied, we cannot request permissions.');
+        t.cancel();
+        return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      showAlert('Location permissions are permanently denied, we cannot request permissions.');
+      t.cancel();
+      return;
     }
 
     Position position = await Geolocator.getCurrentPosition();
@@ -167,8 +182,10 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
+    t.cancel();
     mapController = controller;
-    _updateMarkers(CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
+    _updateMarkers(
+        CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
     _controller.complete(controller);
   }
 
@@ -295,5 +312,36 @@ class _MapPageState extends State<MapPage> {
           break;
       }
     });
+  }
+
+  void showAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(translate(message)),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(translate('Close')),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showMessage(String m) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(m),
+        duration: const Duration(seconds: 10),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+    );
   }
 }
