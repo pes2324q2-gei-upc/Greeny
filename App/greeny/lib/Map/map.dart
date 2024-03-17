@@ -5,8 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'utils/locations.dart' as locations;
-import 'station.dart';
-import 'utils/markers.dart' as markers;
+import 'utils/markers_helper.dart' as markersHelper;
 import 'package:fluster/fluster.dart';
 import 'utils/map_marker.dart';
 import 'utils/map_helper.dart';
@@ -35,6 +34,7 @@ class _MapPageState extends State<MapPage> {
     'metro': true
   };
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
+  // ignore: prefer_typing_uninitialized_variables
   var icons;
   // ignore: prefer_typing_uninitialized_variables
   var stations;
@@ -44,56 +44,65 @@ class _MapPageState extends State<MapPage> {
   final int _minClusterZoom = 0;
   final int _maxClusterZoom = 19;
   Fluster<MapMarker>? _clusterManager;
-  double _currentZoom = 15;
-  // ignore: unused_field
+  double _currentZoom = 14;
   bool _areMarkersLoading = true;
   MapType _currentMapType = MapType.normal;
   final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
   bool isLoading = true;
   bool gettingLocation = true;
+  LatLng? _currentPosition = const LatLng(0.0, 0.0);
+  GoogleMapController? mapController;
+  final Map<int, int> _zoomToDistance = {
+    0: 4294967296,
+    1: 4294967296,
+    2: 4294967296,
+    3: 4294967296,
+    4: 4294967296,
+    5: 4294967296,
+    6: 4294967296,
+    7: 15000,
+    8: 15000,
+    9: 10000,
+    10: 4000,
+    11: 3000,
+    12: 2000,
+    13: 1000,
+    14: 500,
+    15: 300,
+    16: 200,
+    17: 100,
+    18: 0,
+    19: 0,
+    20: 0,
+    21: 0,
+    22: 0
+  };
 
-  BitmapDescriptor chooseIcon(station) {
-    if (station.stops.length > 1) {
-      return BitmapDescriptor.fromBytes(icons['TMB']);
-    } else {
-      return BitmapDescriptor.fromBytes(
-          icons[station.stops[0].transportType.type]!);
+  Future<void> _updateMarkers(CameraPosition position, bool moving) async {
+    var dist = markersHelper.distanceBetweenTwoCoords(
+        position.target, _currentPosition!);
+
+    if (moving && dist < _zoomToDistance[position.zoom.toInt()]! && _currentZoom.toInt() == position.zoom.toInt()) {
+      return;
     }
-  }
+    
+    var visible = await mapController!.getVisibleRegion();
 
-  void _initMarkers() async {
-    final List<MapMarker> markers = [];
+    _currentZoom = position.zoom;
+    _currentPosition = position.target;
 
-    for (final station in stations.stations) {
-      markers.add(
-        MapMarker(
-          id: station.name,
-          position: LatLng(station.latitude, station.longitude),
-          icon: chooseIcon(station),
-          onTap: () => _gotoStation(station),
-        ),
-      );
-    }
+    setState(() {
+      _areMarkersLoading = true;
+    });
+
+    final List<MapMarker> markers = markersHelper.getMarkers(
+        transports, icons, stations, visible, _currentPosition, context);
 
     _clusterManager = await MapHelper.initClusterManager(
       markers,
       _minClusterZoom,
       _maxClusterZoom,
     );
-
-    await _updateMarkers();
-  }
-
-  Future<void> _updateMarkers([double? updatedZoom]) async {
-    if (_clusterManager == null || updatedZoom == _currentZoom) return;
-
-    if (updatedZoom != null) {
-      _currentZoom = updatedZoom;
-    }
-
-    setState(() {
-      _areMarkersLoading = true;
-    });
 
     final updatedMarkers = await MapHelper.getClusterMarkers(
       _clusterManager,
@@ -122,7 +131,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> getInfo() async {
     stations = await locations.getStations();
-    icons = await markers.createIcons(60);
+    icons = await markersHelper.createIcons(60);
     setState(() {
       isLoading = false;
     });
@@ -156,7 +165,8 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-    _initMarkers();
+    mapController = controller;
+    _updateMarkers(CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
     _controller.complete(controller);
   }
 
@@ -208,7 +218,7 @@ class _MapPageState extends State<MapPage> {
                 zoom: _currentZoom,
               ),
               markers: _markerss,
-              onCameraMove: (position) => _updateMarkers(position.zoom),
+              onCameraMove: (position) => _updateMarkers(position, true),
             ),
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               Padding(
@@ -229,7 +239,7 @@ class _MapPageState extends State<MapPage> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: _center,
-      zoom: 14.4746,
+      zoom: _currentZoom,
     )));
   }
 
@@ -237,13 +247,8 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       transports[type] = !transports[type]!;
     });
-  }
-
-  void _gotoStation(locations.Station station) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => StationPage(station: station)),
-    );
+    _updateMarkers(
+        CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
   }
 
   void _mapType() {
