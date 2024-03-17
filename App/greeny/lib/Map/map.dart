@@ -45,6 +45,8 @@ class _MapPageState extends State<MapPage> {
   final int _maxClusterZoom = 19;
   Fluster<MapMarker>? _clusterManager;
   double _currentZoom = 14;
+  
+  // ignore: unused_field
   bool _areMarkersLoading = true;
   MapType _currentMapType = MapType.normal;
   final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
