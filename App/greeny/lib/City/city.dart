@@ -26,17 +26,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   double progressPercentage = 0.3;
   double punts = 50.0;
+  String level = 'Nivell 1';
 
   @override
   void initState() {
-    _controller = AnimationController(
-        duration: const Duration(seconds: 1),
-        vsync: this); //inicialitzar el animation controller
+    _controller =
+        AnimationController(duration: const Duration(seconds: 1), vsync: this);
     super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
       _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
-        // Actualizar el widget KmTravelled con la distancia actualizada
         setState(() {});
       });
     }
@@ -51,8 +50,15 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void updateProgress(double newProgress) {
     setState(() {
-      this.punts = newProgress;
+      punts = newProgress;
     });
+
+    if (punts > 100) {
+      setState(() {
+        level = 'Nivell 2';
+        punts = 0;
+      });
+    }
   }
 
   @override
@@ -77,6 +83,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   ),
                   child: IconButton(
                     onPressed: removePoints,
+                    color: Colors.white,
                     icon: const Icon(Icons.remove),
                   ),
                 ),
@@ -90,6 +97,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                     color: const Color.fromARGB(255, 1, 167, 164),
                   ),
                   child: IconButton(
+                    color: Colors.white,
                     onPressed: addPoints,
                     icon: const Icon(Icons.add),
                   ),
@@ -102,27 +110,39 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ),
             SizedBox(height: 30.0),
             Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.width * 0.7,
+              width: min(MediaQuery.of(context).size.width * 0.7, 400),
+              height: min(MediaQuery.of(context).size.width * 0.7, 400),
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: min(75, 100 - punts) /
+                    opacity: max(min(75, 100 - punts), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
-                  const ModelViewer(
-                    key: Key('cityModelViewer'),
-                    src: 'assets/cities/city_1.glb',
-                    autoRotate: true,
-                    disableZoom: true,
-                    rotationPerSecond: "25deg", // Rota 30 grados por segundo
-                    autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
-                    cameraControls:
-                        false, // Evita que el usuario controle la cámara (true por defecto)
-                  ),
+                  if (level == 'Nivell 1')
+                    const ModelViewer(
+                      key: Key('cityModelViewer'),
+                      src: 'assets/cities/city_1.glb',
+                      autoRotate: true,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
+                  if (level == 'Nivell 2')
+                    const ModelViewer(
+                      key: Key('city2ModelViewer'),
+                      src: 'assets/cities/city_2_def.glb',
+                      autoRotate: true,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
                   Opacity(
-                    opacity: min(75, 100 - punts) /
+                    opacity: max(min(75, 100 - punts), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
@@ -138,6 +158,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   BarraProgres(
                     punts: punts,
                     onProgressChanged: updateProgress,
+                    level: level,
                   ),
                 ],
               ),
@@ -340,10 +361,12 @@ Future<bool> comprovarUbicacio() async {
 class BarraProgres extends StatelessWidget {
   final double punts;
   final Function(double) onProgressChanged;
+  final String level;
 
   const BarraProgres({
     required this.punts,
     required this.onProgressChanged,
+    required this.level,
   });
 
   @override
@@ -358,7 +381,7 @@ class BarraProgres extends StatelessWidget {
               alignment: Alignment.centerRight,
               margin: EdgeInsets.symmetric(horizontal: 110.0),
               child: Text(
-                'Nivell 1',
+                level,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             );
