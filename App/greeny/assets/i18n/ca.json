@@ -18,5 +18,10 @@
     "Satellite": "Satèl·lit",
     "Hybrid": "Híbrid",
     "Terrain": "Terreny",
-    "Filter": "Filtre"
+    "Filter": "Filtre",
+    "Location services are disabled.": "Els serveis de localització estan desactivats.",
+    "Location permissions are denied, we cannot request permissions.": "Els permisos de localització estan denegats, no podem sol·licitar permisos.",
+    "Location permissions are permanently denied, we cannot request permissions.": "Els permisos de localització estan denegats permanentment, no podem sol·licitar permisos.",
+    "This is taking more than expected.": "Això està prenent més temps del previst.",
+    "Close": "Tancar"
 }
