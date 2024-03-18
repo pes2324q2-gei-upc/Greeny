@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:greeny/main_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FormFinalPage extends StatefulWidget {
   const FormFinalPage({super.key});
@@ -8,7 +12,16 @@ class FormFinalPage extends StatefulWidget {
 }
 
 class _FormFinalPageState extends State<FormFinalPage> {
-  final isSelected_ = <bool>[false, false, false, false, false, false, false];
+  final List<bool> isSelected = List.generate(7, (_) => false);
+  final List<String> transportModes = [
+    'Walking',
+    'By bike',
+    'By bus',
+    'By publicTransport',
+    'By motorcycle',
+    'By electricCar',
+    'By car'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,49 +41,34 @@ class _FormFinalPageState extends State<FormFinalPage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: information,
+                        onPressed: _showInformationDialog,
                         child: const Icon(Icons.info_outline_rounded, size: 35),
                       ),
                     ],
                   ),
-                  const Text("Which transports have \nyou used?",
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 21, fontWeight: FontWeight.bold)),
+                  const Text(
+                    "Which transports have \nyou used?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 20.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(isSelected_.length, (index) {
+                    children: List.generate(isSelected.length, (index) {
                       return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isSelected_[index] = !isSelected_[index];
-                          });
-                        },
+                        onTap: () => _toggleTransport(index),
                         child: Container(
                           padding: const EdgeInsets.all(1),
                           margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           decoration: BoxDecoration(
-                            color: isSelected_[index]
+                            color: isSelected[index]
                                 ? const Color.fromARGB(131, 1, 164, 167)
                                 : null,
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(color: Colors.transparent),
                           ),
                           child: Icon(
-                            index == 0
-                                ? Icons.directions_walk
-                                : index == 1
-                                    ? Icons.directions_bike
-                                    : index == 2
-                                        ? Icons.directions_bus
-                                        : index == 3
-                                            ? Icons.train
-                                            : index == 4
-                                                ? Icons.motorcycle
-                                                : index == 5
-                                                    ? Icons.electric_car
-                                                    : Icons.directions_car,
+                            _getTransportIcon(index),
                             size: 40,
                           ),
                         ),
@@ -82,8 +80,12 @@ class _FormFinalPageState extends State<FormFinalPage> {
             ),
             const SizedBox(height: 450),
             ElevatedButton(
-              onPressed: submit,
+              onPressed: _sendData,
               child: const Text('Submit'),
+            ),
+            TextButton(
+              onPressed: _showExitDialog,
+              child: const Text("Don't answer"),
             ),
           ],
         ),
@@ -91,7 +93,32 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
-  void information() {
+  IconData _getTransportIcon(int index) {
+    switch (index) {
+      case 0:
+        return Icons.directions_walk;
+      case 1:
+        return Icons.directions_bike;
+      case 2:
+        return Icons.directions_bus;
+      case 3:
+        return Icons.train;
+      case 4:
+        return Icons.motorcycle;
+      case 5:
+        return Icons.electric_car;
+      default:
+        return Icons.directions_car;
+    }
+  }
+
+  void _toggleTransport(int index) {
+    setState(() {
+      isSelected[index] = !isSelected[index];
+    });
+  }
+
+  void _showInformationDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -106,14 +133,11 @@ class _FormFinalPageState extends State<FormFinalPage> {
                       style: TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
-              _buildRow(Icons.directions_walk, 'Walking'),
-              _buildRow(Icons.directions_bike, 'Cycling'),
-              _buildRow(Icons.directions_bus, 'By bus'),
-              _buildRow(Icons.train, 'By train, tram, metro or FGC'),
-              _buildRow(Icons.motorcycle, 'By motorcycle'),
-              _buildRow(Icons.electric_car, 'By electric car'),
-              _buildRow(Icons.directions_car, 'By car'),
-              TextButton(onPressed: close, child: const Text('Exit')),
+              for (int i = 0; i < transportModes.length; i++)
+                _buildRow(transportModes[i], _getTransportIcon(i)),
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Exit')),
               const SizedBox(height: 10),
             ],
           ),
@@ -122,7 +146,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
-  Widget _buildRow(IconData icon, String name) {
+  Widget _buildRow(String name, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -147,11 +171,76 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
-  void submit() {
-    print('Submitted!');
+  void _showExitDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Are you sure?'),
+        content: const Text(
+            'You chose not to answer. You will not get extra points to improve your city and your transports statics won\'t be updated.',
+            textAlign: TextAlign.justify),
+        actions: <Widget>[
+          TextButton(
+            onPressed: _sendDataToServer,
+            child: const Text('OK'),
+          ),
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
-  void close() {
-    Navigator.of(context).pop();
+  void _sendDataToServer() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.only(left: 15),
+                child: Text('Sending data...'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    var url = Uri.http(dotenv.env['BACKEND_URL']!, 'api/send-form-transports');
+    await http.post(url,
+        body: jsonEncode({'selectedTransports': _getSelectedTransports()}));
+
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const MainPage()),
+      (Route<dynamic> route) => false,
+    );
+  }
+
+  Future<void> _sendData() async {
+    List<String> selectedTransports = _getSelectedTransports();
+    if (selectedTransports.isEmpty) {
+      _showExitDialog();
+    } else {
+      _sendDataToServer();
+    }
+  }
+
+  List<String> _getSelectedTransports() {
+    List<String> selectedTransports = [];
+    for (int i = 0; i < isSelected.length; i++) {
+      if (isSelected[i]) {
+        selectedTransports.add(transportModes[i]);
+      }
+    }
+    return selectedTransports;
   }
 }

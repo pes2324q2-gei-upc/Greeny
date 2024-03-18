@@ -21,7 +21,7 @@ class _CityPageState extends State<CityPage> {
             const Text('City'),
             IconButton(onPressed: play, icon: const Icon(Icons.play_arrow)),
             IconButton(onPressed: viewHistory, icon: const Icon(Icons.restore)),
-            IconButton(onPressed: final_form, icon: const Icon(Icons.pause))
+            IconButton(onPressed: finalForm, icon: const Icon(Icons.pause))
           ],
         ),
       ),
@@ -36,11 +36,11 @@ class _CityPageState extends State<CityPage> {
     print('Viewing history');
   }
 
-  void final_form() {
-    Navigator.push(
+  void finalForm() {
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const FormFinalPage()),
+      (route) => false,
     );
   }
-
 }
