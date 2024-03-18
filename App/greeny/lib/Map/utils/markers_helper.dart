@@ -98,66 +98,57 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
 
   for (final pts in stations.stations.publicTransportStations) {
     if (bounds.contains(LatLng(pts.latitude, pts.longitude))) {
-      for (final stop in pts.stops) {
-        if (transports[stop.transportType.type.toString().toLowerCase()]!) {
-          markers.add(
-            MapMarker(
-              id: pts.name,
-              position: LatLng(pts.latitude, pts.longitude),
-              icon: chooseIcon(pts, icons),
-              onTap: () => _gotoStation(pts, context),
-            ),
-          );
-          break;
-        }
-      }
+      markers.add(
+        MapMarker(
+          id: pts.name,
+          position: LatLng(pts.latitude, pts.longitude),
+          icon: chooseIcon(pts, icons),
+          onTap: () => _gotoStation(pts, context),
+        ),
+      );
+      break;
     }
   }
 
-  if (transports['bus']!) {
-    for (final bs in stations.stations.busStations) {
-      if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
-        markers.add(
-          MapMarker(
-            id: bs.name,
-            position: LatLng(bs.latitude, bs.longitude),
-            icon: BitmapDescriptor.fromBytes(icons['BUS']),
-            onTap: () => _gotoStation(bs, context),
-          ),
-        );
-      }
+  for (final bs in stations.stations.busStations) {
+    if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
+      markers.add(
+        MapMarker(
+          id: bs.name,
+          position: LatLng(bs.latitude, bs.longitude),
+          icon: BitmapDescriptor.fromBytes(icons['BUS']),
+          onTap: () => _gotoStation(bs, context),
+        ),
+      );
     }
   }
 
-  if (transports['bicing']!) {
-    for (final bs in stations.stations.bicingStations) {
-      if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
-        markers.add(
-          MapMarker(
-            id: bs.name,
-            position: LatLng(bs.latitude, bs.longitude),
-            icon: BitmapDescriptor.fromBytes(icons['BICING']),
-            onTap: () => _gotoStation(bs, context),
-          ),
-        );
-      }
+  for (final bs in stations.stations.bicingStations) {
+    if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
+      markers.add(
+        MapMarker(
+          id: bs.name,
+          position: LatLng(bs.latitude, bs.longitude),
+          icon: BitmapDescriptor.fromBytes(icons['BICING']),
+          onTap: () => _gotoStation(bs, context),
+        ),
+      );
     }
   }
 
-  if (transports['car']!) {
-    for (final cs in stations.stations.chargingStations) {
-      if (bounds.contains(LatLng(cs.latitude, cs.longitude))) {
-        markers.add(
-          MapMarker(
-            id: cs.name,
-            position: LatLng(cs.latitude, cs.longitude),
-            icon: BitmapDescriptor.fromBytes(icons['CAR']),
-            onTap: () => _gotoStation(cs, context),
-          ),
-        );
-      }
+  for (final cs in stations.stations.chargingStations) {
+    if (bounds.contains(LatLng(cs.latitude, cs.longitude))) {
+      markers.add(
+        MapMarker(
+          id: cs.name,
+          position: LatLng(cs.latitude, cs.longitude),
+          icon: BitmapDescriptor.fromBytes(icons['CAR']),
+          onTap: () => _gotoStation(cs, context),
+        ),
+      );
     }
   }
+
   return markers;
 }
 
