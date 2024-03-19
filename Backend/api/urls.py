@@ -8,5 +8,6 @@ urlpatterns = [
     path('get-stations', GetStations.as_view(), name="get_all_stations"),
     path('test', TestView.as_view(), name='test_view'),
     path('bus-stops', ParadesBus.as_view(), name='bus_stops'),
-    path('bicing', EstacionsBicing.as_view(), name='bicing')
+    path('bicing', EstacionsBicing.as_view(), name='bicing'),
+    path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
 ]

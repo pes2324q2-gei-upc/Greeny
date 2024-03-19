@@ -11,13 +11,13 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
 headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
 
 BASE_URL_AJT = "https://opendata-ajuntament.barcelona.cat/data/api/action/datastore_search?resource_id="
 ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
-headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"}from django.http import JsonResponse
+headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"} 
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')

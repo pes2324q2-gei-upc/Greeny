@@ -211,6 +211,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     _updateTimer?.cancel();
     setState(() {
       appState.isPlaying = false;
+      finalForm();
     });
     print('Paused');
   }
