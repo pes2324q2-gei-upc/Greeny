@@ -1,0 +1,83 @@
+{
+    "result" : {
+
+        "records":[
+            {
+                "LATITUD": "41.388108",
+                "CODI_CAPA": "K003",
+                "ED50_COORD_X": "430734.873",
+                "DISTRICTE": "2",
+                "ETRS89_COORD_X": "430642.939",
+                "ETRS89_COORD_Y": "4582174.179",
+                "NOM_DISTRICTE": "Eixample",
+                "TELEFON": "",
+                "EQUIPAMENT": "RENFE - CATALUNYA-",
+                "NOM_BARRI": "la Dreta de l'Eixample",
+                "ADRECA": "",
+                "NOM_CAPA": "RENFE",
+                "BARRI": "7",
+                "ED50_COORD_Y": "4582375.115",
+                "_id": 44,
+                "CAPA_GENERICA": "Transports i serveis relacionats",
+                "LONGITUD": "2.170436"
+            },
+            {
+                "LATITUD": "41.387517",
+                "CODI_CAPA": "K001",
+                "ED50_COORD_X": "430615.964",
+                "DISTRICTE": "2",
+                "ETRS89_COORD_X": "430524.031",
+                "ETRS89_COORD_Y": "4582109.729",
+                "NOM_DISTRICTE": "Eixample",
+                "TELEFON": "",
+                "EQUIPAMENT": "METRO (L1) - Catalunya-",
+                "NOM_BARRI": "la Dreta de l'Eixample",
+                "ADRECA": "",
+                "NOM_CAPA": "Metro i l\u00ednies urbanes FGC",
+                "BARRI": "7",
+                "ED50_COORD_Y": "4582310.664",
+                "_id": 410,
+                "CAPA_GENERICA": "Transports i serveis relacionats",
+                "LONGITUD": "2.169021"
+            },
+            {
+                "LATITUD": "41.38635",
+                "CODI_CAPA": "K001",
+                "ED50_COORD_X": "430706.443",
+                "DISTRICTE": "2",
+                "ETRS89_COORD_X": "430614.509",
+                "ETRS89_COORD_Y": "4581979.293",
+                "NOM_DISTRICTE": "Eixample",
+                "TELEFON": "",
+                "EQUIPAMENT": "METRO (L3) - Catalunya-",
+                "NOM_BARRI": "la Dreta de l'Eixample",
+                "ADRECA": "",
+                "NOM_CAPA": "Metro i l\u00ednies urbanes FGC",
+                "BARRI": "7",
+                "ED50_COORD_Y": "4582180.227",
+                "_id": 572,
+                "CAPA_GENERICA": "Transports i serveis relacionats",
+                "LONGITUD": "2.170118"
+            },
+            {
+                "LATITUD": "41.385795",
+                "CODI_CAPA": "K002",
+                "ED50_COORD_X": "430594.303",
+                "DISTRICTE": "2",
+                "ETRS89_COORD_X": "430502.37",
+                "ETRS89_COORD_Y": "4581918.654",
+                "NOM_DISTRICTE": "Eixample",
+                "TELEFON": "",
+                "EQUIPAMENT": "FGC - CATALUNYA-",
+                "NOM_BARRI": "la Dreta de l'Eixample",
+                "ADRECA": "",
+                "NOM_CAPA": "Ferrocarrils Generalitat (FGC)",
+                "BARRI": "7",
+                "ED50_COORD_Y": "4582119.587",
+                "_id": 576,
+                "CAPA_GENERICA": "Transports i serveis relacionats",
+                "LONGITUD": "2.168784"
+            }
+        ]
+    }
+}

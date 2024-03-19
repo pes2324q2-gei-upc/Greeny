@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.db.models import Case, When, Value, CharField
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
@@ -8,6 +9,8 @@ class Station(models.Model):
     rating = models.FloatField(default= 0.0)
     def __str__(self):
         return self.name
+    def subclass_name(self):
+        return self.__class__.__name__
 
 class PublicTransportStation(Station):
     pass

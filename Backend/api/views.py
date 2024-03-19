@@ -127,7 +127,6 @@ class FetchPublicTransportStations(View):
             
             # RENFE: ej RENFE - CATALUNYA-
             elif "RENFE" in full_name:
-                print(full_name)
                 if "(RENFE)" in full_name:
                     station_name = full_name.split(" (")[0]
                 else: 
@@ -163,8 +162,6 @@ class FetchPublicTransportStations(View):
                     if '(' in station_name:
                         station_name = station_name.split(" (")[0]
 
-                print(station_name)
-
                 station = self.getPublicTransportStation(station_name)
                 
                 trans_type = self.getType(TransportType.TTransport.FGC)
@@ -187,9 +184,26 @@ class FetchPublicTransportStations(View):
 
 class GetStations(generics.ListAPIView):
     def get(self, request):
-        queryset = PublicTransportStation.objects.all()
-        serializer = PublicTransportStationSerializer(queryset, many=True)
-        return JsonResponse({'stations':serializer.data}, safe=False)
+
+        data = {}
+
+        queryset_pt = PublicTransportStation.objects.all()
+        serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
+        data['publicTransportStations'] = serializer_pt.data
+
+        queryset_bus = BusStation.objects.all()
+        serializer_bus = BusStationSerializer(queryset_bus, many=True)
+        data['busStations'] = serializer_bus.data
+
+        queryset_bicing = BicingStation.objects.all()
+        serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
+        data['bicingStations'] = serializer_bicing.data
+
+        queryset_charging = ChargingStation.objects.all()
+        serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
+        data['chargingStations'] = serializer_charging.data
+
+        return JsonResponse({'stations':data}, safe=False)
 
 #GET parades de bus Barcelona
 class ParadesBus(View):
@@ -241,3 +255,9 @@ class EstacionsBicing(View):
             )
 
         return redirect('charging_points')
+
+class TestView(View):
+    def get(self, request):
+        response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
+        data = response.json()
+        return JsonResponse(data, safe=False)

@@ -4,14 +4,15 @@ from .models import *
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        #fields = '__all__'
+        fields = ['name', 'latitude', 'longitude' , 'rating']
+    
 
-class PublicTransportStationSerializer(serializers.ModelSerializer):
+class PublicTransportStationSerializer(StationSerializer):
     stops = serializers.SerializerMethodField()
 
     class Meta(StationSerializer.Meta):
         model = PublicTransportStation
-        exclude = ['id']
+        fields = StationSerializer.Meta.fields + ['stops']
     
     def get_stops(self, obj):
         stops = Stop.objects.filter(station=obj)
@@ -29,3 +30,18 @@ class StopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stop
         exclude = ['id']
+
+class BusStationSerializer(StationSerializer):
+    class Meta(StationSerializer.Meta):
+        model = BusStation
+        fields = StationSerializer.Meta.fields + ['lines']
+
+class BicingStationSerializer(StationSerializer):
+    class Meta(StationSerializer.Meta):
+        model = BicingStation
+        fields = StationSerializer.Meta.fields + ['capacitat']
+
+class ChargingStationSerializer(StationSerializer):
+    class Meta(StationSerializer.Meta):
+        model = ChargingStation
+        fields = StationSerializer.Meta.fields + ['acces', 'charging_velocity', 'power', 'current_type', 'connexion_type']
