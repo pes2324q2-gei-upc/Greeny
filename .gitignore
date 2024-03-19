@@ -1,6 +1,8 @@
 **/.DS_Store
 /DB
 .idea
+App/greeny/ios/Runner.xcodeproj/project.pbxproj
+
 Backend/.env
 .vscode/
 

@@ -9,6 +9,7 @@ import 'package:greeny/City/LocationService.dart';
 import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'form_final.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({Key? key}) : super(key: key);
@@ -216,6 +217,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void viewHistory() {
     print('Viewing history');
+  }
+
+  void finalForm() {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const FormFinalPage()),
+      (route) => false,
+    );
   }
 
   // Boto animat de play/pause
