@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'Map/map.dart';
 import 'City/city.dart';
 import 'Friends/friends.dart';
@@ -30,26 +31,26 @@ class _MainPageState extends State<MainPage> {
       indicatorColor: Theme.of(context).colorScheme.inversePrimary,
       selectedIndex: currentPageIndex,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-      destinations: const <Widget>[
+      destinations: <Widget>[
         NavigationDestination(
-          selectedIcon: Icon(Icons.location_city),
-          icon: Icon(Icons.location_city),
-          label: 'City',
+          selectedIcon: const Icon(Icons.location_city),
+          icon: const Icon(Icons.location_city),
+          label: translate('City'),
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.map),
-          icon: Icon(Icons.map_outlined),
-          label: 'Map',
+          selectedIcon: const Icon(Icons.map),
+          icon: const Icon(Icons.map_outlined),
+          label: translate('Map'),
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.people),
-          icon: Icon(Icons.people_outlined),
-          label: 'Friends',
+          selectedIcon: const Icon(Icons.people),
+          icon: const Icon(Icons.people_outlined),
+          label: translate('Friends'),
         ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.person),
-          icon: Icon(Icons.person_outline),
-          label: 'Profile',
+          selectedIcon: const Icon(Icons.person),
+          icon: const Icon(Icons.person_outline),
+          label: translate('Profile'),
         ),
       ],
     ),
