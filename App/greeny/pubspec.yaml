@@ -81,6 +81,7 @@ flutter:
   - assets/i18n/
   - assets/icons/
   - assets/transports/
+  - assets/transports/lines/
   - assets/locations/
   - .env
   - assets/cities/
