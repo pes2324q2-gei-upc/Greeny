@@ -39,5 +39,7 @@
     "bikes": "bicicletes",
     "Map": "Mapa",
     "Profile": "Perfil",
-    "Friends": "Amics"
+    "Friends": "Amics",
+    "Km travelled: ": "Km recorreguts: ",
+    "Last travel: ": "Últim recorregut: "
 }

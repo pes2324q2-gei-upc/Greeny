@@ -10,6 +10,7 @@ import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({Key? key}) : super(key: key);
@@ -201,7 +202,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       setState(() {});
     });
     LocationService.instance.startLocationUpdates(context);
-    print('Playing');
   }
 
   //pausa el comptador de km i pasa al estat isPlaying false
@@ -213,7 +213,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       appState.isPlaying = false;
       finalForm();
     });
-    print('Paused');
   }
 
   void viewHistory() {
@@ -297,11 +296,12 @@ class LastTravel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var translatedtext = translate('Last travel: ');
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(horizontal: 40.0),
       child: Text(
-        'Últim recorregut: ${(km).toStringAsFixed(2)} km',
+        "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
@@ -319,11 +319,12 @@ class KmTravelled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var translatedtext = translate('Km travelled: ');
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(horizontal: 110.0),
       child: Text(
-        'Km recorreguts: ${(km).toStringAsFixed(2)} km',
+        "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context)
             .style
             .apply(fontWeightDelta: 4, fontSizeFactor: 1.0),
@@ -350,7 +351,6 @@ Future<bool> comprovarUbicacio() async {
   if (!serviceEnabled) {
     serviceEnabled = await Geolocator.openLocationSettings();
     if (!serviceEnabled) {
-      print('Servei ubicació no habilitat');
       return false;
     }
   }
@@ -360,12 +360,10 @@ Future<bool> comprovarUbicacio() async {
     permission = await Geolocator.requestPermission();
     if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-      print('Permis denegat');
       return false;
     }
   }
 
-  print('Servei habilitat i permis otorgat');
   return true;
 }
 

@@ -21,7 +21,6 @@ jobs:
     - name: Build the hello-docker Docker image
       run: |
             cd Backend
-            docker compose run backend python manage.py makemigrations
             docker build . --tag ghcr.io/pes2324q2-gei-upc/greeny:latest
             docker run ghcr.io/pes2324q2-gei-upc/greeny:latest
             docker push ghcr.io/pes2324q2-gei-upc/greeny:latest

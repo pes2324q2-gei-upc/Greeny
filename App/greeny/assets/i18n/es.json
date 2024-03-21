@@ -40,5 +40,7 @@
     "bikes": "bicicletas",
     "Map": "Mapa",
     "Profile": "Perfil",
-    "Friends": "Amigos"
+    "Friends": "Amigos",
+    "Km travelled: ": "Km recorridos: ",
+    "Last travel: ": "Último recorrido: "
 }
