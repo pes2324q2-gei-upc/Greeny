@@ -97,12 +97,7 @@ class _StationPageState extends State<StationPage> {
                             child: Text(translate('Go')))
                       ],
                     ),
-                    Row(
-                      children: station.lines
-                          .map<Widget>((line) => (Text(line + ' ',
-                              style: const TextStyle(fontSize: 15))))
-                          .toList(),
-                    )
+                    busLines(),
                   ]));
         }
       case 'BICING':
@@ -253,6 +248,44 @@ class _StationPageState extends State<StationPage> {
       await launchUrl(googleMapsUri);
     } else {
       throw 'Could not launch $googleMapsUri';
+    }
+  }
+
+  busLines() {
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: station.lines
+              .map<Widget>((line) => RawMaterialButton(
+                constraints: BoxConstraints.tight(const Size(40, 40)),
+                  onPressed: () => {},
+                  shape: const CircleBorder(),
+                  fillColor: getColor(line),
+                  child: Text(line.toString(),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))))
+              .toList(),
+        ));
+  }
+
+  Color? getColor(line) {
+    switch (line[0]) {
+      case 'V':
+        return const Color.fromARGB(255, 107, 149, 67);
+      case 'H':
+        return const Color.fromARGB(255, 61, 65, 139);
+      case 'D':
+        return const Color.fromARGB(255, 144, 0, 206);
+      case 'L' || 'E' || 'B' || 'M' || 'J' || 'P':
+        return const Color.fromARGB(255, 241, 217, 0);
+      case 'N':
+        return const Color.fromARGB(255, 0, 95, 172);
+      case 'X':
+        return const Color.fromARGB(255, 148, 148, 148);
+      case 'A':
+        return const Color.fromARGB(255, 39, 183, 255);
+
+      default:
+        return const Color.fromARGB(255, 179, 0, 0);
     }
   }
 }
