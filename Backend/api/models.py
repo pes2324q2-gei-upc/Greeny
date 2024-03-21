@@ -64,4 +64,14 @@ class Statistics(models.Model):
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
 
+    class Meta:
+        constraints = [
+            # Km totals = summation of all km
+            CheckConstraint(
+                check=Q(
+                    km_Totals=F('km_Walked') + F('km_Biked') + F('km_ElectricCar') + F('km_PublicTransport') + F('km_Bus') + F('km_Motorcycle') + F('km_Car')),
+                name='km_totals_constraint'
+            ),
+        ]
+
     

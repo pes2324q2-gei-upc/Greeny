@@ -5,7 +5,9 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FormFinalPage extends StatefulWidget {
-  const FormFinalPage({super.key});
+  final double totalDistance;
+
+  const FormFinalPage({super.key, required this.totalDistance});
 
   @override
   State<FormFinalPage> createState() => _FormFinalPageState();
@@ -214,7 +216,10 @@ class _FormFinalPageState extends State<FormFinalPage> {
 
     var url = Uri.http(dotenv.env['BACKEND_URL']!, 'api/send-form-transports');
     await http.post(url,
-        body: jsonEncode({'selectedTransports': _getSelectedTransports()}));
+        body: jsonEncode({
+          'selectedTransports': _getSelectedTransports(),
+          'totalDistance': widget.totalDistance,
+        }));
 
     if (!mounted) return;
 
