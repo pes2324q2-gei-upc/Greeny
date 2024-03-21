@@ -19,9 +19,10 @@ ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
 headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"} 
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class FinalFormTransports(View):
+
+    #POST final form
     def post(self, request):
         if request.method == 'POST':
             
@@ -35,12 +36,34 @@ class FinalFormTransports(View):
 
             data = json.loads(request.body)
             transports = data['selectedTransports']
+            total_distance = data['totalDistance']
+            
+            update_fields = { 
+                    'km_Walked': 0.0,
+                    'km_Bus': 0.0,
+                    'km_PublicTransport': 0.0,
+                    'km_Biked': 0.0,
+                    'km_Car': 0.0,
+                    'km_Motorcycle': 0.0,
+                    'km_ElectricCar': 0.0,
+                    'km_Totals': 0.0,
+                }
             
             if (len(transports) != 0):
                 total_transports = len(transports)
                 transport_modes = ['Walking', 'By bus', 'By publicTransport', 'By bike', 'By car', 'By motorcycle', 'By electricCar']
-                transport_percentages = {mode: transports.count(mode) / total_transports * 100 for mode in transport_modes}
-        
+                
+                percentage = 100 / total_transports / 100 
+                km_mode = percentage * total_distance
+
+                transport_percentages = {}
+                for mode in transport_modes:
+                    if mode in transports:
+                        transport_percentages[mode] = km_mode
+                    else:
+                        transport_percentages[mode] = 0.0
+
+
                 field_mapping = {
                     'Walking': 'km_Walked',
                     'By bus': 'km_Bus',
@@ -50,21 +73,13 @@ class FinalFormTransports(View):
                     'By motorcycle': 'km_Motorcycle',
                     'By electricCar': 'km_ElectricCar'
                 }
+                
+                
+                for key, value in transport_percentages.items():
+                    update_fields[field_mapping[key]] = value
 
-                update_fields = {field_mapping[key]: value for key, value in transport_percentages.items()}
-                #MIRAR QUE FER AMB ELS KM_TOTALS
-            else:
-                update_fields = { 
-                    'km_Walked': 0.0,
-                    'km_Bus': 0.0,
-                    'km_PublicTransport': 0.0,
-                    'km_Biked': 0.0,
-                    'km_Car': 0.0,
-                    'km_Motorcycle': 0.0,
-                    'km_ElectricCar': 0.0
-                }
-                #MIRAR QUE FER AMB ELS KM_TOTALS
-            
+                update_fields['km_Totals'] = total_distance
+                
             try: 
                 user_statics = Statistics.objects.get(username=dummy_user)
                 for key, value in update_fields.items():

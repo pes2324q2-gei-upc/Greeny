@@ -223,7 +223,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   void finalForm() {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const FormFinalPage()),
+      MaterialPageRoute(
+          builder: (context) =>
+              FormFinalPage(totalDistance: appState.totalDistance)),
       (route) => false,
     );
   }
