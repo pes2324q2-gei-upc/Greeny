@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StationPage extends StatefulWidget {
   const StationPage({super.key, required this.station, required this.type});
@@ -123,7 +124,8 @@ class _StationPageState extends State<StationPage> {
                         child: Text(translate('Go')))
                   ],
                 ),
-                Text('${translate('Capacity')}: ${station.capacitat} ${translate('bikes')}',
+                Text(
+                    '${translate('Capacity')}: ${station.capacitat} ${translate('bikes')}',
                     style: const TextStyle(fontSize: 15)),
               ],
             ),
@@ -150,9 +152,11 @@ class _StationPageState extends State<StationPage> {
                 ),
                 Text('${translate('Access')}: ${station.acces}'),
                 Text('${translate('Power')}: ${station.power} kW'),
-                Text('${translate('Charging velocity')}: ${station.charging_velocity}'),
+                Text(
+                    '${translate('Charging velocity')}: ${station.charging_velocity}'),
                 Text('${translate('Current type')}: ${station.current_type}'),
-                Text('${translate('Connector type')}: ${station.connexion_type}'),
+                Text(
+                    '${translate('Connector type')}: ${station.connexion_type}'),
               ],
             ),
           );
@@ -242,9 +246,13 @@ class _StationPageState extends State<StationPage> {
         ));
   }
 
-  mapsGo(latitude, longitude) {
-    print('Go to maps');
-    print('Latitude: $latitude');
-    print('Longitude: $longitude');
+  mapsGo(latitude, longitude) async {
+    Uri googleMapsUri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+    if (await canLaunchUrl(googleMapsUri)) {
+      await launchUrl(googleMapsUri);
+    } else {
+      throw 'Could not launch $googleMapsUri';
+    }
   }
 }
