@@ -27,8 +27,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   double progressPercentage = 0.3;
   double punts = 50.0;
-  String level = 'Nivell 1';
-
+  double levelPoints = 100.0;
+  String level = 'Nivell 1 - Nou Barris';
   @override
   void initState() {
     _controller =
@@ -54,9 +54,21 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       punts = newProgress;
     });
 
-    if (punts > 100) {
+    if (punts <= 0) {
       setState(() {
-        level = 'Nivell 2';
+        level = 'Nivell 1 - Nou Barris';
+        punts = 0;
+      });
+    } else if (punts > 100 && level == 'Nivell 1 - Nou Barris') {
+      setState(() {
+        levelPoints = 200.0;
+        level = 'Nivell 2 - Horta-Guinardó';
+        punts = 0;
+      });
+    } else if (punts > 200 && level == 'Nivell 2 - Horta-Guinardó') {
+      setState(() {
+        level = 'Nivell 3 - Sants-Montjuïc';
+        levelPoints = 400.0;
         punts = 0;
       });
     }
@@ -116,11 +128,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: max(min(75, 100 - punts), 0) /
+                    opacity: max(
+                            min(75, 100 - (punts / levelPoints) * 100), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
-                  if (level == 'Nivell 1')
+                  if (level == 'Nivell 1 - Nou Barris')
                     const ModelViewer(
                       key: Key('cityModelViewer'),
                       src: 'assets/cities/city_1.glb',
@@ -131,12 +144,22 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       cameraControls:
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
-                  if (level == 'Nivell 2')
+                  if (level == 'Nivell 2 - Horta-Guinardó')
                     const ModelViewer(
                       key: Key('city2ModelViewer'),
-                      src: 'assets/cities/city_2_def.glb',
+                      src: 'assets/cities/Horta-Guinardo.glb',
                       autoRotate: true,
-                      exposure: 6,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
+                  if (level == 'Nivell 3 - Sants-Montjuïc')
+                    const ModelViewer(
+                      key: Key('city3ModelViewer'),
+                      src: 'assets/cities/Sants-Montjuic.glb',
+                      autoRotate: true,
                       disableZoom: true,
                       rotationPerSecond: "25deg", // Rota 30 grados por segundo
                       autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
@@ -144,7 +167,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
                   Opacity(
-                    opacity: max(min(75, 100 - punts), 0) /
+                    opacity: max(
+                            min(75, 100 - (punts / levelPoints) * 100), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
@@ -160,6 +184,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   BarraProgres(
                     punts: punts,
                     onProgressChanged: updateProgress,
+                    levelPoints: levelPoints,
                     level: level,
                   ),
                 ],
@@ -372,11 +397,13 @@ Future<bool> comprovarUbicacio() async {
 class BarraProgres extends StatelessWidget {
   final double punts;
   final Function(double) onProgressChanged;
+  final double levelPoints;
   final String level;
 
   const BarraProgres({
     required this.punts,
     required this.onProgressChanged,
+    required this.levelPoints,
     required this.level,
   });
 
@@ -406,7 +433,7 @@ class BarraProgres extends StatelessWidget {
               width: constraints.maxWidth * 0.7, // 70% del ancho disponible
               margin: EdgeInsets.symmetric(horizontal: 100.0),
               child: LinearProgressIndicator(
-                value: punts / 100,
+                value: punts / levelPoints,
                 backgroundColor: Color.fromARGB(255, 205, 197, 197),
                 borderRadius: BorderRadius.circular(10.0),
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -424,7 +451,7 @@ class BarraProgres extends StatelessWidget {
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.symmetric(horizontal: 110.0),
               child: Text(
-                'Punts: ${(punts).toStringAsFixed(1)}/100',
+                'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             );
