@@ -109,6 +109,7 @@ class _MapPageState extends State<MapPage> {
         stations,
         visible,
         _currentPosition,
+        // ignore: use_build_context_synchronously
         context);
 
     _clusterManager = await MapHelper.initClusterManager(

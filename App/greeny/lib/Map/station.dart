@@ -226,7 +226,6 @@ class _StationPageState extends State<StationPage> {
   }
 
   addReview() {
-    print('Add review');
   }
 
   tmbStops() {
@@ -303,6 +302,7 @@ class _StationPageState extends State<StationPage> {
       case 'L9':
         return const Color.fromARGB(255, 234, 146, 53);
     }
+    return null;
   }
 
   Color? getColorBus(line) {

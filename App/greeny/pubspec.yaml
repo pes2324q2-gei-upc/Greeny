@@ -49,6 +49,7 @@ dependencies:
   model_viewer_plus: ^1.6.0 # https://pub.dev/packages/model_viewer_plus
   provider: ^6.1.2
   shared_preferences: ^2.2.2
+  url_launcher: ^6.2.5
 
 
 dev_dependencies:

@@ -108,9 +108,12 @@ class ChargingStation {
     required this.latitude,
     required this.longitude,
     required this.acces,
+    // ignore: non_constant_identifier_names
     required this.charging_velocity,
     required this.power,
+    // ignore: non_constant_identifier_names
     required this.current_type,
+    // ignore: non_constant_identifier_names
     required this.connexion_type,
   });
 
@@ -123,9 +126,12 @@ class ChargingStation {
   final String name;
   final double rating;
   final String acces;
+  // ignore: non_constant_identifier_names
   final String charging_velocity;
   final int power;
+  // ignore: non_constant_identifier_names
   final String current_type;
+  // ignore: non_constant_identifier_names
   final String connexion_type;
 }
 

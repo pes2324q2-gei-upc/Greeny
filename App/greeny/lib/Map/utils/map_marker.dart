@@ -18,18 +18,14 @@ class MapMarker extends Clusterable {
       required this.position,
       this.icon,
       this.onTap = _defaultOnTap,
-      isCluster = false,
-      clusterId,
-      pointsSize,
-      childMarkerId,
+      super.isCluster = false,
+      super.clusterId,
+      super.pointsSize,
+      super.childMarkerId,
     }) : super(
             markerId: id,
             latitude: position.latitude,
             longitude: position.longitude,
-            isCluster: isCluster,
-            clusterId: clusterId,
-            pointsSize: pointsSize,
-            childMarkerId: childMarkerId,
             );
 
     static void _defaultOnTap() {
