@@ -65,7 +65,8 @@ class FetchPublicTransportStationsTest(TestCase):
 class FinalFormTransports(TestCase):
     def test_post_success(self):
         data = {
-            'selectedTransports': ['Walking', 'By bus', 'By bike']
+            'selectedTransports': ['Walking', 'By bus', 'By bike'],
+            'totalDistance': 100
         }
         response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -73,21 +74,52 @@ class FinalFormTransports(TestCase):
     
     def test_data_statistics(self):
         data = {
-            'selectedTransports': ['Walking', 'By bus', 'By bike']
+            'selectedTransports': ['Walking', 'By bus', 'By bike', 'By motorcycle'],
+            'totalDistance': 100
         }
         
         self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Walked, 33.33333333333333)
-        self.assertEqual(Statistics.objects.get().km_Bus, 33.33333333333333)
-        self.assertEqual(Statistics.objects.get().km_Biked, 33.33333333333333)
+
+        self.assertEqual(Statistics.objects.get().km_Walked, 25)
+        self.assertEqual(Statistics.objects.get().km_Bus, 25)
+        self.assertEqual(Statistics.objects.get().km_Biked, 25)
+        self.assertEqual(Statistics.objects.get().km_Motorcycle, 25)
     
     def test_not_answering_form(self):
         data = {
-            'selectedTransports': []
+            'selectedTransports': [],
+            'totalDistance': 100
         }
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        self.assertEqual(Statistics.objects.count(), 1)
+        self.assertEqual(Statistics.objects.get().km_Walked, 0)
+        self.assertEqual(Statistics.objects.get().km_Bus, 0)
+        self.assertEqual(Statistics.objects.get().km_Biked, 0)
+        self.assertEqual(Statistics.objects.get().km_Motorcycle, 0)
+        self.assertEqual(Statistics.objects.get().km_Car, 0)
+        self.assertEqual(Statistics.objects.get().km_PublicTransport, 0)
+        self.assertEqual(Statistics.objects.get().km_ElectricCar, 0)
+        self.assertEqual(Statistics.objects.get().km_Totals, 0)
+
+    def test_km_totals(self):
+        data = {
+            'selectedTransports': ['Walking', 'By bus', 'By bike'],
+            'totalDistance': 100
+        }
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+
+        self.assertEqual(Statistics.objects.count(), 1)
+        self.assertEqual(Statistics.objects.get().km_Totals, 100)
+
+    def test_no_answer(self):
+        data = {
+            'selectedTransports': [],
+            'totalDistance': 0
+        }
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 0)
         self.assertEqual(Statistics.objects.get().km_Bus, 0)
