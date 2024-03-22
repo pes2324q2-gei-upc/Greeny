@@ -110,7 +110,7 @@ class _StationPageState extends State<StationPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('${translate('Information')}:',
+                    Text('${translate('Capacity')}:',
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     ElevatedButton(
@@ -119,9 +119,21 @@ class _StationPageState extends State<StationPage> {
                         child: Text(translate('Go')))
                   ],
                 ),
-                Text(
-                    '${translate('Capacity')}: ${station.capacitat} ${translate('bikes')}',
-                    style: const TextStyle(fontSize: 15)),
+                RawMaterialButton(
+                    constraints: BoxConstraints.tight(const Size(80, 40)),
+                    onPressed: () => {},
+                    shape: const BeveledRectangleBorder(),
+                    fillColor: const Color.fromARGB(255, 207, 32, 32),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Icon(Icons.directions_bike, color: Colors.white),
+                        Text(' ${station.capacitat}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
+                      ],
+                    ))
               ],
             ),
           );
@@ -220,23 +232,27 @@ class _StationPageState extends State<StationPage> {
   tmbStops() {
     return Container(
       padding: const EdgeInsets.only(top: 10),
-      child: Column(children: [for (var stop in station.stops) tmbLines(stop)]),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [for (var stop in station.stops) tmbLines(stop)]),
     );
   }
 
   tmbLines(stop) {
-    return Container(
-        padding: const EdgeInsets.only(bottom: 10),
+    return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
         child: Row(
           children: stop.lines
-              .map<Widget>((line) => Container(
-                    padding: const EdgeInsets.only(right: 5),
-                    child: Image(
-                      image: AssetImage('assets/transports/lines/$line.png'),
-                      height: 25,
-                      width: 25,
-                    ),
-                  ))
+              .map<Widget>((line) => RawMaterialButton(
+                  constraints: BoxConstraints.tight(const Size(40, 40)),
+                  onPressed: () => onTapTmb(line),
+                  shape: const RoundedRectangleBorder(),
+                  fillColor: getColorTmb(line),
+                  child: Text(line.toString(),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold))))
               .toList(),
         ));
   }
@@ -257,17 +273,39 @@ class _StationPageState extends State<StationPage> {
         child: Row(
           children: station.lines
               .map<Widget>((line) => RawMaterialButton(
-                constraints: BoxConstraints.tight(const Size(40, 40)),
-                  onPressed: () => {},
+                  constraints: BoxConstraints.tight(const Size(40, 40)),
+                  onPressed: () => onTapBus(line),
                   shape: const CircleBorder(),
-                  fillColor: getColor(line),
+                  fillColor: getColorBus(line),
                   child: Text(line.toString(),
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))))
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold))))
               .toList(),
         ));
   }
 
-  Color? getColor(line) {
+  Color? getColorTmb(line) {
+    switch (line[0]) {
+      case 'T':
+        return const Color.fromARGB(255, 61, 139, 121);
+    }
+    switch (line) {
+      case 'L1':
+        return const Color.fromARGB(255, 205, 61, 62);
+      case 'L2':
+        return const Color.fromARGB(255, 142, 66, 136);
+      case 'L3':
+        return const Color.fromARGB(255, 91, 166, 76);
+      case 'L4':
+        return const Color.fromARGB(255, 242, 192, 66);
+      case 'L5':
+        return const Color.fromARGB(255, 51, 117, 183);
+      case 'L9':
+        return const Color.fromARGB(255, 234, 146, 53);
+    }
+  }
+
+  Color? getColorBus(line) {
     switch (line[0]) {
       case 'V':
         return const Color.fromARGB(255, 107, 149, 67);
@@ -286,6 +324,40 @@ class _StationPageState extends State<StationPage> {
 
       default:
         return const Color.fromARGB(255, 179, 0, 0);
+    }
+  }
+
+  onTapBus(line) async {
+    Uri tmbUri = Uri.parse(
+        'https://www.tmb.cat/ca/barcelona/autobusos/-/lineabus/$line');
+    if (await canLaunchUrl(tmbUri)) {
+      await launchUrl(tmbUri);
+    } else {
+      throw 'Could not launch $tmbUri';
+    }
+  }
+
+  onTapTmb(line) async {
+    switch (line[0]) {
+      case 'T':
+        {
+          Uri tmbUri = Uri.parse('https://www.tram.cat/ca/linies-i-horaris');
+          if (await canLaunchUrl(tmbUri)) {
+            await launchUrl(tmbUri);
+          } else {
+            throw 'Could not launch $tmbUri';
+          }
+        }
+      default:
+        {
+          Uri tmbUri = Uri.parse(
+              'https://www.tmb.cat/ca/barcelona/metro/-/lineametro/$line');
+          if (await canLaunchUrl(tmbUri)) {
+            await launchUrl(tmbUri);
+          } else {
+            throw 'Could not launch $tmbUri';
+          }
+        }
     }
   }
 }
