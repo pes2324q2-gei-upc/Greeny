@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-25u8vl1*fk=zt4ql@o-u&o(t9(9#_iz&i*pb4el5)ju(-sxamf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost']
+ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
 
 
 # Application definition
