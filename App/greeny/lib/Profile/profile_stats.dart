@@ -80,7 +80,7 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('dummy', style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900)), //Canviar dummy pel nom de l'usuari
+                  const Text('Julia', style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.w900)), //Canviar dummy pel nom de l'usuari
                   const Text('', style: TextStyle(fontSize: 10.0, fontWeight: FontWeight.bold)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -108,7 +108,7 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('$kmTotal kms', style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                              Text('${kmTotal.toStringAsFixed(2)} kms', style: const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
                               Text(translate('traveled'), style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500)),
                             ],
                           ),
