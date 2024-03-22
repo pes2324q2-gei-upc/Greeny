@@ -45,3 +45,8 @@ class ChargingStationSerializer(StationSerializer):
     class Meta(StationSerializer.Meta):
         model = ChargingStation
         fields = StationSerializer.Meta.fields + ['acces', 'charging_velocity', 'power', 'current_type', 'connexion_type']
+
+class statisticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Statistics
+        exclude = ['id']

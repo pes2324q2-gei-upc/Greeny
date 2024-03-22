@@ -10,4 +10,5 @@ urlpatterns = [
     path('bus-stops', ParadesBus.as_view(), name='bus_stops'),
     path('bicing', EstacionsBicing.as_view(), name='bicing'),
     path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
+    path('statistics/<str:username>/', StatsView.as_view(), name='stats'),
 ]
