@@ -334,4 +334,35 @@ class TestView(View):
     def get(self, request):
         response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
         data = response.json()
-        return JsonResponse(data, safe=False)    
+        return JsonResponse(data, safe=False)
+
+class StatsView(View):
+    def get(self, request, username):
+        
+        #This lines will be replaced by the user logged in
+        try: 
+            dummy_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            dummy_user = User.objects.create(username=username, email='dummy@example.com')
+            dummy_user.set_password('dummy_password')
+            dummy_user.save()
+        
+        try:
+            user_statistics = Statistics.objects.get(username=dummy_user)
+        except Statistics.DoesNotExist:
+            user_statistics = Statistics.objects.create(
+                username=dummy_user,
+                kg_CO2=0.0,
+                km_Totals=0.0,
+                km_Walked=0.0,
+                km_Biked=0.0,
+                km_ElectricCar=0.0,
+                km_PublicTransport=0.0,
+                km_Bus=0.0,
+                km_Motorcycle=0.0,
+                km_Car=0.0
+            )
+            user_statistics.save()
+        
+        serializer = statisticsSerializer(user_statistics)
+        return JsonResponse(serializer.data)
