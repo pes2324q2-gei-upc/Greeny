@@ -17,12 +17,12 @@ class _FormFinalPageState extends State<FormFinalPage> {
   final List<bool> isSelected = List.generate(7, (_) => false);
   final List<String> transportModes = [
     'Walking',
-    'By bike',
-    'By bus',
-    'By publicTransport',
-    'By motorcycle',
-    'By electricCar',
-    'By car'
+    'Bike',
+    'Bus',
+    'Train, Metro, Tram, FGC',
+    'Motorcycle',
+    'Electric Car',
+    'Car'
   ];
 
   @override
