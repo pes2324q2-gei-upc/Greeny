@@ -47,5 +47,6 @@
     "traveled": "recorridos",
     "PERCENTAGE OF USE": "PORCENTAJE DE USO",
     "Settings": "Ajustes",
-    "Log Out": "Cerrar sesión"
+    "Log Out": "Cerrar sesión",
+    "Error loading statistics": "Error cargando estadísticas"
 }
