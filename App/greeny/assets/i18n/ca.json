@@ -46,5 +46,6 @@
     "traveled": "recorreguts",
     "PERCENTAGE OF USE": "PERCENTATGE D'ÚS",
     "Settings": "Configuració",
-    "Log Out": "Tanca la sessió"
+    "Log Out": "Tanca la sessió",
+    "Error loading statistics": "Error en carregar les estadístiques"
 }
