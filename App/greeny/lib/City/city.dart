@@ -10,6 +10,7 @@ import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({Key? key}) : super(key: key);
@@ -27,8 +28,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   double progressPercentage = 0.3;
   double punts = 50.0;
-  String level = 'Nivell 1';
-
+  double levelPoints = 100.0;
+  String level = 'Nivell 1 - Nou Barris';
   @override
   void initState() {
     _controller =
@@ -54,9 +55,21 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       punts = newProgress;
     });
 
-    if (punts > 100) {
+    if (punts <= 0) {
       setState(() {
-        level = 'Nivell 2';
+        level = 'Nivell 1 - Nou Barris';
+        punts = 0;
+      });
+    } else if (punts > 100 && level == 'Nivell 1 - Nou Barris') {
+      setState(() {
+        levelPoints = 200.0;
+        level = 'Nivell 2 - Horta-Guinardó';
+        punts = 0;
+      });
+    } else if (punts > 200 && level == 'Nivell 2 - Horta-Guinardó') {
+      setState(() {
+        level = 'Nivell 3 - Sants-Montjuïc';
+        levelPoints = 400.0;
         punts = 0;
       });
     }
@@ -116,11 +129,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               child: Stack(
                 children: [
                   Opacity(
-                    opacity: max(min(75, 100 - punts), 0) /
+                    opacity: max(
+                            min(75, 100 - (punts / levelPoints) * 100), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
-                  if (level == 'Nivell 1')
+                  if (level == 'Nivell 1 - Nou Barris')
                     const ModelViewer(
                       key: Key('cityModelViewer'),
                       src: 'assets/cities/city_1.glb',
@@ -131,12 +145,22 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       cameraControls:
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
-                  if (level == 'Nivell 2')
+                  if (level == 'Nivell 2 - Horta-Guinardó')
                     const ModelViewer(
                       key: Key('city2ModelViewer'),
-                      src: 'assets/cities/city_2_def.glb',
+                      src: 'assets/cities/Horta-Guinardo.glb',
                       autoRotate: true,
-                      exposure: 6,
+                      disableZoom: true,
+                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
+                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
+                      cameraControls:
+                          false, // Evita que el usuario controle la cámara (true por defecto)
+                    ),
+                  if (level == 'Nivell 3 - Sants-Montjuïc')
+                    const ModelViewer(
+                      key: Key('city3ModelViewer'),
+                      src: 'assets/cities/Sants-Montjuic.glb',
+                      autoRotate: true,
                       disableZoom: true,
                       rotationPerSecond: "25deg", // Rota 30 grados por segundo
                       autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
@@ -144,7 +168,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
                   Opacity(
-                    opacity: max(min(75, 100 - punts), 0) /
+                    opacity: max(
+                            min(75, 100 - (punts / levelPoints) * 100), 0) /
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
@@ -160,6 +185,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   BarraProgres(
                     punts: punts,
                     onProgressChanged: updateProgress,
+                    levelPoints: levelPoints,
                     level: level,
                   ),
                 ],
@@ -201,7 +227,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       setState(() {});
     });
     LocationService.instance.startLocationUpdates(context);
-    print('Playing');
   }
 
   //pausa el comptador de km i pasa al estat isPlaying false
@@ -213,7 +238,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       appState.isPlaying = false;
       finalForm();
     });
-    print('Paused');
   }
 
   void viewHistory() {
@@ -299,11 +323,12 @@ class LastTravel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var translatedtext = translate('Last travel: ');
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(horizontal: 40.0),
       child: Text(
-        'Últim recorregut: ${(km).toStringAsFixed(2)} km',
+        "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
         textAlign: TextAlign.center,
       ), //imprimeix els km de lib/City/comptakm.dart
@@ -321,11 +346,12 @@ class KmTravelled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var translatedtext = translate('Km travelled: ');
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.symmetric(horizontal: 110.0),
       child: Text(
-        'Km recorreguts: ${(km).toStringAsFixed(2)} km',
+        "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context)
             .style
             .apply(fontWeightDelta: 4, fontSizeFactor: 1.0),
@@ -352,7 +378,6 @@ Future<bool> comprovarUbicacio() async {
   if (!serviceEnabled) {
     serviceEnabled = await Geolocator.openLocationSettings();
     if (!serviceEnabled) {
-      print('Servei ubicació no habilitat');
       return false;
     }
   }
@@ -362,23 +387,23 @@ Future<bool> comprovarUbicacio() async {
     permission = await Geolocator.requestPermission();
     if (permission != LocationPermission.whileInUse &&
         permission != LocationPermission.always) {
-      print('Permis denegat');
       return false;
     }
   }
 
-  print('Servei habilitat i permis otorgat');
   return true;
 }
 
 class BarraProgres extends StatelessWidget {
   final double punts;
   final Function(double) onProgressChanged;
+  final double levelPoints;
   final String level;
 
   const BarraProgres({
     required this.punts,
     required this.onProgressChanged,
+    required this.levelPoints,
     required this.level,
   });
 
@@ -408,7 +433,7 @@ class BarraProgres extends StatelessWidget {
               width: constraints.maxWidth * 0.7, // 70% del ancho disponible
               margin: EdgeInsets.symmetric(horizontal: 100.0),
               child: LinearProgressIndicator(
-                value: punts / 100,
+                value: punts / levelPoints,
                 backgroundColor: Color.fromARGB(255, 205, 197, 197),
                 borderRadius: BorderRadius.circular(10.0),
                 valueColor: AlwaysStoppedAnimation<Color>(
@@ -426,7 +451,7 @@ class BarraProgres extends StatelessWidget {
               alignment: Alignment.centerLeft,
               margin: EdgeInsets.symmetric(horizontal: 110.0),
               child: Text(
-                'Punts: ${(punts).toStringAsFixed(1)}/100',
+                'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             );

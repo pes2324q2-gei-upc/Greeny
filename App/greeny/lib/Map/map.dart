@@ -104,7 +104,13 @@ class _MapPageState extends State<MapPage> {
 
     final List<MapMarker> markers = markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
-        transports, icons, stations, visible, _currentPosition, context);
+        transports,
+        icons,
+        stations,
+        visible,
+        _currentPosition,
+        // ignore: use_build_context_synchronously
+        context);
 
     _clusterManager = await MapHelper.initClusterManager(
       markers,
@@ -133,7 +139,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     t = Timer(const Duration(seconds: 5), () {
-      showMessage('This is taking more than expected');
+      showMessage('This is taking more than expected.');
     });
     getLocation();
     getInfo();
@@ -169,7 +175,8 @@ class _MapPageState extends State<MapPage> {
     }
 
     if (permission == LocationPermission.deniedForever) {
-      showAlert('Location permissions are permanently denied, we cannot request permissions.');
+      showAlert(
+          'Location permissions are permanently denied, we cannot request permissions.');
       t.cancel();
       return;
     }
@@ -335,13 +342,15 @@ class _MapPageState extends State<MapPage> {
   }
 
   void showMessage(String m) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(m),
-        duration: const Duration(seconds: 10),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
   }
 }

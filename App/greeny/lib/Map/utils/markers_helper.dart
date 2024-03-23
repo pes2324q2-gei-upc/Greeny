@@ -103,7 +103,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
           id: pts.name,
           position: LatLng(pts.latitude, pts.longitude),
           icon: chooseIcon(pts, icons),
-          onTap: () => _gotoStation(pts, context),
+          onTap: () => _gotoStation(pts, context, 'TMB'),
         ),
       );
       break;
@@ -117,7 +117,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
           id: bs.name,
           position: LatLng(bs.latitude, bs.longitude),
           icon: BitmapDescriptor.fromBytes(icons['BUS']),
-          onTap: () => _gotoStation(bs, context),
+          onTap: () => _gotoStation(bs, context, 'BUS'),
         ),
       );
     }
@@ -130,7 +130,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
           id: bs.name,
           position: LatLng(bs.latitude, bs.longitude),
           icon: BitmapDescriptor.fromBytes(icons['BICING']),
-          onTap: () => _gotoStation(bs, context),
+          onTap: () => _gotoStation(bs, context, 'BICING'),
         ),
       );
     }
@@ -143,7 +143,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
           id: cs.name,
           position: LatLng(cs.latitude, cs.longitude),
           icon: BitmapDescriptor.fromBytes(icons['CAR']),
-          onTap: () => _gotoStation(cs, context),
+          onTap: () => _gotoStation(cs, context, 'CAR'),
         ),
       );
     }
@@ -152,9 +152,9 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
   return markers;
 }
 
-void _gotoStation(station, BuildContext context) {
+void _gotoStation(station, BuildContext context, type) {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => const StationPage()),
+    MaterialPageRoute(builder: (context) => StationPage(station: station, type: type)),
   );
 }
