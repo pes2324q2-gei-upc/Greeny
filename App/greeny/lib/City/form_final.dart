@@ -6,7 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FormFinalPage extends StatefulWidget {
   final double totalDistance;
-
   const FormFinalPage({super.key, required this.totalDistance});
 
   @override
