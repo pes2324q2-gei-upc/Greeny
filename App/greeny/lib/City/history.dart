@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
-class FriendsPage extends StatefulWidget {
-  const FriendsPage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<FriendsPage> createState() => _FriendsPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _FriendsPageState extends State<FriendsPage> {
+class _HistoryPageState extends State<HistoryPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       appBar: AppBar(
-        title: const Text('Friends', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+        title: const Text('History', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

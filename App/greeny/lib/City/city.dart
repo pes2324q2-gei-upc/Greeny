@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/City/history.dart';
 import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -85,8 +86,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           children: [
             const SizedBox(height: 30.0),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.width * 0.7,
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.width * 0.8,
               child: Stack(
                 children: [
                   Opacity(
@@ -199,11 +200,27 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         title: const Text(
           'Julia\'s City',
           style: TextStyle(fontWeight: FontWeight.bold),
-        ),    
+        ),
         leading: IconButton(
             onPressed: viewHistory,
             icon: const Icon(Icons.restore),
             color: const Color.fromARGB(255, 1, 167, 164)),
+        actions: [
+          IconButton(
+            onPressed: () {
+              addPoints();
+            },
+            icon: const Icon(Icons.add),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          IconButton(
+            onPressed: () {
+              removePoints();
+            },
+            icon: const Icon(Icons.remove),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+        ],
       ),
     );
   }
@@ -234,7 +251,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
-    print('Viewing history');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
   }
 
   void finalForm() {
@@ -393,7 +411,8 @@ class BarraProgres extends StatelessWidget {
   final double levelPoints;
   final String level;
 
-  const BarraProgres({super.key, 
+  const BarraProgres({
+    super.key,
     required this.punts,
     required this.onProgressChanged,
     required this.levelPoints,
@@ -430,7 +449,7 @@ class BarraProgres extends StatelessWidget {
                 backgroundColor: const Color.fromARGB(255, 205, 197, 197),
                 borderRadius: BorderRadius.circular(10.0),
                 valueColor: const AlwaysStoppedAnimation<Color>(
-                   Color.fromARGB(255, 1, 167, 164),
+                  Color.fromARGB(255, 1, 167, 164),
                 ),
               ),
             );

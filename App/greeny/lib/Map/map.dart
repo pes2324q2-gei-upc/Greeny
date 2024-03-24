@@ -200,6 +200,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     if (!serviceEnabled || isLoading || gettingLocation) {
       return const Scaffold(
+        backgroundColor:  Color.fromARGB(255, 220, 255, 255),
         body: Center(
           child: CircularProgressIndicator(),
         ),
