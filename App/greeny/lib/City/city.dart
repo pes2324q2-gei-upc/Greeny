@@ -157,6 +157,41 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
             buildplaypause(),
             if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    onPressed: removePoints,
+                    color: Colors.white,
+                    icon: const Icon(Icons.remove),
+                  ),
+                ),
+                Container(
+                  width: 50,
+                  height: 50,
+                  margin: const EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22.0),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  child: IconButton(
+                    color: Colors.white,
+                    onPressed: addPoints,
+                    icon: const Icon(Icons.add),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
