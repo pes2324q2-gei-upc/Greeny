@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/translate.dart' as t;
 
@@ -10,27 +11,27 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: const Text('Settings'),
-      ),
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Settings'),
-          TextButton(onPressed: logOut, child: const Text('Log Out')),
+        title: Text(translate('Settings')),
+        actions: [
           IconButton(
             icon: const Icon(Icons.language),
             onPressed: () {
               t.showLanguageDialog(context);
             },
           )
+        ],
+      ),
+      body: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(onPressed: logOut, child: const Text('Log Out')),
         ],
       )),
     );
