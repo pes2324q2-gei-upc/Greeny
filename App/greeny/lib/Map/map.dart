@@ -45,7 +45,7 @@ class _MapPageState extends State<MapPage> {
   final int _minClusterZoom = 0;
   final int _maxClusterZoom = 19;
   Fluster<MapMarker>? _clusterManager;
-  double _currentZoom = 14;
+  double _currentZoom = 16;
 
   // ignore: unused_field
   bool _areMarkersLoading = true;
@@ -200,6 +200,7 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     if (!serviceEnabled || isLoading || gettingLocation) {
       return const Scaffold(
+        backgroundColor:  Color.fromARGB(255, 220, 255, 255),
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -207,7 +208,7 @@ class _MapPageState extends State<MapPage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Text(translate('Filter')),
+          title: Text(translate('Filter'), style: const TextStyle(fontWeight: FontWeight.bold)),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
@@ -248,9 +249,10 @@ class _MapPageState extends State<MapPage> {
             ),
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(10.0),
                 child: FloatingActionButton(
                   onPressed: _mapType,
+                  backgroundColor: Colors.white,
                   child: const Icon(Icons.map),
                 ),
               )

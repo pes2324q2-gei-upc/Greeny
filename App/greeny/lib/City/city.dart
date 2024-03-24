@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/City/history.dart';
 import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -13,7 +14,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 class CityPage extends StatefulWidget {
-  const CityPage({Key? key}) : super(key: key);
+  const CityPage({super.key});
 
   @override
   State<CityPage> createState() => _CityPageState();
@@ -37,7 +38,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
-      _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+      _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
         setState(() {});
       });
     }
@@ -83,49 +84,10 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  margin: const EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22.0),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                  child: IconButton(
-                    onPressed: removePoints,
-                    color: Colors.white,
-                    icon: const Icon(Icons.remove),
-                  ),
-                ),
-                Container(
-                  width: 50,
-                  height: 50,
-                  margin: const EdgeInsets.all(8.0),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(22.0),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                  child: IconButton(
-                    color: Colors.white,
-                    onPressed: addPoints,
-                    icon: const Icon(Icons.add),
-                  ),
-                ),
-              ],
-            ),
-            const Text(
-              "Julia's City ",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 30.0),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              height: MediaQuery.of(context).size.width * 0.7,
+            const SizedBox(height: 30.0),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.width * 0.8,
               child: Stack(
                 children: [
                   Opacity(
@@ -176,8 +138,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            SizedBox(height: 30.0),
-
+            const SizedBox(height: 30.0),
             if (!appState.isPlaying)
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,15 +163,29 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         title: const Text(
-          'Greeny',
+          'Julia\'s City',
           style: TextStyle(fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
         ),
-        centerTitle: true,
         leading: IconButton(
             onPressed: viewHistory,
             icon: const Icon(Icons.restore),
             color: const Color.fromARGB(255, 1, 167, 164)),
+        actions: [
+          IconButton(
+            onPressed: () {
+              addPoints();
+            },
+            icon: const Icon(Icons.add),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          IconButton(
+            onPressed: () {
+              removePoints();
+            },
+            icon: const Icon(Icons.remove),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+        ],
       ),
     );
   }
@@ -222,7 +197,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       appState.totalDistance = 0;
       appState.isPlaying = true;
     });
-    _updateTimer = Timer.periodic(Duration(seconds: 2), (Timer timer) {
+    _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
       // Actualizar el widget KmTravelled con la distancia actualizada
       setState(() {});
     });
@@ -241,7 +216,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
-    print('Viewing history');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
   }
 
   void finalForm() {
@@ -401,6 +377,7 @@ class BarraProgres extends StatelessWidget {
   final String level;
 
   const BarraProgres({
+    super.key,
     required this.punts,
     required this.onProgressChanged,
     required this.levelPoints,
@@ -417,47 +394,47 @@ class BarraProgres extends StatelessWidget {
             return Container(
               width: constraints.maxWidth * 0.7, // 70% del ancho disponible
               alignment: Alignment.centerRight,
-              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              margin: const EdgeInsets.symmetric(horizontal: 110.0),
               child: Text(
                 level,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             );
           },
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         LayoutBuilder(
           builder: (context, constraints) {
             return Container(
               height: 23,
               width: constraints.maxWidth * 0.7, // 70% del ancho disponible
-              margin: EdgeInsets.symmetric(horizontal: 100.0),
+              margin: const EdgeInsets.symmetric(horizontal: 100.0),
               child: LinearProgressIndicator(
                 value: punts / levelPoints,
-                backgroundColor: Color.fromARGB(255, 205, 197, 197),
+                backgroundColor: const Color.fromARGB(255, 205, 197, 197),
                 borderRadius: BorderRadius.circular(10.0),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  const Color.fromARGB(255, 1, 167, 164),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 1, 167, 164),
                 ),
               ),
             );
           },
         ),
-        SizedBox(height: 5.0),
+        const SizedBox(height: 5.0),
         LayoutBuilder(
           builder: (context, constraints) {
             return Container(
               width: constraints.maxWidth * 0.7, // 70% del ancho disponible
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.symmetric(horizontal: 110.0),
+              margin: const EdgeInsets.symmetric(horizontal: 110.0),
               child: Text(
                 'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             );
           },
         ),
-        SizedBox(height: 20.0),
+        const SizedBox(height: 20.0),
       ],
     );
   }
