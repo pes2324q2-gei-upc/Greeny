@@ -30,7 +30,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   double progressPercentage = 0.3;
   double punts = 50.0;
   double levelPoints = 100.0;
-  String level = 'Nivell 1 - Nou Barris';
+  String level = 'Nou Barris';
   @override
   void initState() {
     _controller =
@@ -58,18 +58,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
     if (punts <= 0) {
       setState(() {
-        level = 'Nivell 1 - Nou Barris';
+        level = 'Nou Barris';
         punts = 0;
       });
-    } else if (punts > 100 && level == 'Nivell 1 - Nou Barris') {
+    } else if (punts > 100 && level == 'Nou Barris') {
       setState(() {
         levelPoints = 200.0;
-        level = 'Nivell 2 - Horta-Guinardó';
+        level = 'Horta-Guinardó';
         punts = 0;
       });
-    } else if (punts > 200 && level == 'Nivell 2 - Horta-Guinardó') {
+    } else if (punts > 200 && level == 'Horta-Guinardó') {
       setState(() {
-        level = 'Nivell 3 - Sants-Montjuïc';
+        level = 'Sants-Montjuïc';
         levelPoints = 400.0;
         punts = 0;
       });
@@ -96,7 +96,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                     child: Image.asset('assets/cities/fog.png'),
                   ),
-                  if (level == 'Nivell 1 - Nou Barris')
+                  if (level == 'Nou Barris')
                     const ModelViewer(
                       key: Key('cityModelViewer'),
                       src: 'assets/cities/city_1.glb',
@@ -107,7 +107,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       cameraControls:
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
-                  if (level == 'Nivell 2 - Horta-Guinardó')
+                  if (level == 'Horta-Guinardó')
                     const ModelViewer(
                       key: Key('city2ModelViewer'),
                       src: 'assets/cities/Horta-Guinardo.glb',
@@ -118,7 +118,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       cameraControls:
                           false, // Evita que el usuario controle la cámara (true por defecto)
                     ),
-                  if (level == 'Nivell 3 - Sants-Montjuïc')
+                  if (level == 'Sants-Montjuïc')
                     const ModelViewer(
                       key: Key('city3ModelViewer'),
                       src: 'assets/cities/Sants-Montjuic.glb',
