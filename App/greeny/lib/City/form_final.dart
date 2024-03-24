@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/main_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,13 +16,13 @@ class FormFinalPage extends StatefulWidget {
 class _FormFinalPageState extends State<FormFinalPage> {
   final List<bool> isSelected = List.generate(7, (_) => false);
   final List<String> transportModes = [
-    'Walking',
-    'Bike',
-    'Bus',
-    'Train, Metro, Tram, FGC',
-    'Motorcycle',
-    'Electric Car',
-    'Car'
+    translate('Walking'),
+    translate('Bike'),
+    translate('Bus'),
+    translate('Train, Metro, Tram, FGC'),
+    translate('Motorcycle'),
+    translate('Electric Car'),
+    translate('Car')
   ];
 
   @override
@@ -47,10 +48,11 @@ class _FormFinalPageState extends State<FormFinalPage> {
                       ),
                     ],
                   ),
-                  const Text(
-                    "Which transports have \nyou used?",
+                  Text(
+                    translate("Which transports have \nyou used?"),
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 21, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20.0),
                   Row(
@@ -82,11 +84,11 @@ class _FormFinalPageState extends State<FormFinalPage> {
             const SizedBox(height: 450),
             ElevatedButton(
               onPressed: _sendData,
-              child: const Text('Submit'),
+              child: Text(translate("Submit")),
             ),
             TextButton(
               onPressed: _showExitDialog,
-              child: const Text("Don't answer"),
+              child: Text(translate("Don't answer")),
             ),
           ],
         ),
@@ -129,16 +131,16 @@ class _FormFinalPageState extends State<FormFinalPage> {
             physics: const NeverScrollableScrollPhysics(),
             children: <Widget>[
               const SizedBox(height: 20),
-              const Center(
-                  child: Text('Information',
-                      style: TextStyle(
+              Center(
+                  child: Text(translate("Information"),
+                      style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
               for (int i = 0; i < transportModes.length; i++)
                 _buildRow(transportModes[i], _getTransportIcon(i)),
               TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Exit')),
+                  child: Text(translate("Exit"))),
               const SizedBox(height: 10),
             ],
           ),
@@ -176,17 +178,18 @@ class _FormFinalPageState extends State<FormFinalPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Are you sure?'),
-        content: const Text(
-            'You chose not to answer. You will not get extra points to improve your city and your transports statics won\'t be updated.',
+        title: Text(translate("Are you sure?")),
+        content: Text(
+            translate(
+                "You chose not to answer. You will not get extra points to improve your city and your transports statics won't be updated."),
             textAlign: TextAlign.justify),
         actions: <Widget>[
           TextButton(
             onPressed: _sendDataToServer,
-            child: const Text('OK'),
+            child: Text(translate("Ok")),
           ),
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(translate("Cancel")),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -199,13 +202,13 @@ class _FormFinalPageState extends State<FormFinalPage> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const AlertDialog(
+        return AlertDialog(
           content: Row(
             children: [
-              CircularProgressIndicator(),
+              const CircularProgressIndicator(),
               Padding(
-                padding: EdgeInsets.only(left: 15),
-                child: Text('Sending data...'),
+                padding: const EdgeInsets.only(left: 15),
+                child: Text(translate("Sending data...")),
               ),
             ],
           ),
