@@ -124,7 +124,7 @@ class _MapPageState extends State<MapPage> {
       // ignore: use_build_context_synchronously
       Theme.of(context).colorScheme.primary,
       Colors.white,
-      60,
+      (MediaQuery.of(context).devicePixelRatio.toInt() * 20),
     );
 
     _markerss
@@ -149,7 +149,8 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> getInfo() async {
     stations = await locations.getStations();
-    icons = await markersHelper.createIcons(60);
+    icons = await markersHelper
+        .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
     setState(() {
       isLoading = false;
     });
@@ -182,10 +183,12 @@ class _MapPageState extends State<MapPage> {
     }
 
     Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      gettingLocation = false;
-      _center = LatLng(position.latitude, position.longitude);
-    });
+    if (mounted) {
+      setState(() {
+        gettingLocation = false;
+        _center = LatLng(position.latitude, position.longitude);
+      });
+    }
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -194,13 +197,14 @@ class _MapPageState extends State<MapPage> {
     _updateMarkers(
         CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
     _controller.complete(controller);
+    print(MediaQuery.of(context).devicePixelRatio);
   }
 
   @override
   Widget build(BuildContext context) {
     if (!serviceEnabled || isLoading || gettingLocation) {
       return const Scaffold(
-        backgroundColor:  Color.fromARGB(255, 220, 255, 255),
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -208,7 +212,8 @@ class _MapPageState extends State<MapPage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Text(translate('Filter'), style: const TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(translate('Filter'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(

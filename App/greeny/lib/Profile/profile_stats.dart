@@ -58,8 +58,6 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         appBar: (AppBar(
-          title: const Text('Júlia',
-              style: TextStyle(fontWeight: FontWeight.bold)),
           backgroundColor: const Color.fromARGB(255, 220, 255, 255),
           leading: IconButton(
             onPressed: share,
@@ -78,8 +76,11 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
           child: Container(
             padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                const Text('Júlia',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.baseline,

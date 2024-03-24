@@ -84,10 +84,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 30.0),
+            const Text(
+              'Julia\'s City',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
+            ),
+            const SizedBox(height: 10.0),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.width * 0.9,
               child: Stack(
                 children: [
                   Opacity(
@@ -138,19 +142,15 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 5.0),
             if (!appState.isPlaying)
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  BarraProgres(
-                    punts: punts,
-                    onProgressChanged: updateProgress,
-                    levelPoints: levelPoints,
-                    level: level,
-                  ),
-                ],
+              BarraProgres(
+                punts: punts,
+                onProgressChanged: updateProgress,
+                levelPoints: levelPoints,
+                level: level,
               ),
+
             if (appState.isPlaying)
               const Icon(Icons.directions_walk,
                   size: 30), // icona per indicar que sésta fent un recorregut
@@ -162,10 +162,10 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       ),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: const Text(
-          'Julia\'s City',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        // title: const Text(
+        //   'Julia\'s City',
+        //   style: TextStyle(fontWeight: FontWeight.bold),
+        // ),
         leading: IconButton(
             onPressed: viewHistory,
             icon: const Icon(Icons.restore),
@@ -386,56 +386,58 @@ class BarraProgres extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Container(
-              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
-              alignment: Alignment.centerRight,
-              margin: const EdgeInsets.symmetric(horizontal: 110.0),
-              child: Text(
-                level,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 5.0),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Container(
-              height: 23,
-              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
-              margin: const EdgeInsets.symmetric(horizontal: 100.0),
-              child: LinearProgressIndicator(
-                value: punts / levelPoints,
-                backgroundColor: const Color.fromARGB(255, 205, 197, 197),
-                borderRadius: BorderRadius.circular(10.0),
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  Color.fromARGB(255, 1, 167, 164),
+    return Container(
+      width: MediaQuery.of(context).size.width *
+          0.8, // Establecer el ancho del contenedor
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                alignment: Alignment.centerRight,
+                //margin: const EdgeInsets.symmetric(horizontal: 110.0),
+                child: Text(
+                  level,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 5.0),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            return Container(
-              width: constraints.maxWidth * 0.7, // 70% del ancho disponible
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.symmetric(horizontal: 110.0),
-              child: Text(
-                'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 20.0),
-      ],
+              );
+            },
+          ),
+          const SizedBox(height: 5.0),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                height: 23,
+                //margin: const EdgeInsets.symmetric(horizontal: 100.0),
+                child: LinearProgressIndicator(
+                  value: punts / levelPoints,
+                  backgroundColor: const Color.fromARGB(255, 205, 197, 197),
+                  borderRadius: BorderRadius.circular(10.0),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color.fromARGB(255, 1, 167, 164),
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 5.0),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                alignment: Alignment.centerLeft,
+                // margin: const EdgeInsets.symmetric(
+                //     horizontal: MediaQuery.of(context).size.width * 0.1),
+                child: Text(
+                  'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20.0),
+        ],
+      ),
     );
   }
 }
