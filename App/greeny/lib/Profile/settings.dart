@@ -31,7 +31,7 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextButton(onPressed: logOut, child: const Text('Log Out')),
+          TextButton(onPressed: logOut, child: Text(translate('Log Out'))),
         ],
       )),
     );
