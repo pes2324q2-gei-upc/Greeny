@@ -37,28 +37,29 @@ class _SignInPageState extends State<SignInPage> {
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(translate('Welcome to Greeny!')),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.language),
+              onPressed: () {
+                t.showLanguageDialog(context);
+              },
+            )
+          ],
         ),
-        body: Center(
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-                padding: const EdgeInsets.all(40),
+                padding: EdgeInsets.fromLTRB(
+                    40,
+                    MediaQuery.of(context).devicePixelRatio.toInt() * 15,
+                    40,
+                    MediaQuery.of(context).devicePixelRatio.toInt() * 15),
                 child: Form(
                   key: signUpForm,
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.language),
-                            onPressed: () {
-                              t.showLanguageDialog(context);
-                            },
-                          )
-                        ],
-                      ),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -67,8 +68,10 @@ class _SignInPageState extends State<SignInPage> {
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                           ]),
-                      const SizedBox(
-                        height: 40,
+                      SizedBox(
+                        height:
+                            MediaQuery.of(context).devicePixelRatio.toInt() *
+                                13,
                       ),
                       TextFormField(
                         obscureText: false,
@@ -79,8 +82,9 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         validator: emailValidator,
                       ),
-                      const SizedBox(
-                        height: 20,
+                      SizedBox(
+                        height:
+                            MediaQuery.of(context).devicePixelRatio.toInt() * 5,
                       ),
                       TextFormField(
                         obscureText: false,
@@ -134,15 +138,18 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   IconButton(
                     icon: const Image(
-                        image: AssetImage('assets/icons/google.png'),
-                        height: 40,
-                        width: 40,
+                      image: AssetImage('assets/icons/google.png'),
+                      height: 40,
+                      width: 40,
                     ),
                     iconSize: 30,
                     tooltip: translate('Sign in with Google'),
                     onPressed: googleSignIn,
                   ),
                 ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height.toInt() / 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

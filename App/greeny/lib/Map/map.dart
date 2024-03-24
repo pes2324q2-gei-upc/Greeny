@@ -24,7 +24,6 @@ class _MapPageState extends State<MapPage> {
   LatLng _center = const LatLng(0.0, 0.0);
   bool serviceEnabled = false;
   LocationPermission permission = LocationPermission.denied;
-  double iconSize = 35;
   var transports = {
     'tram': true,
     'bus': true,
@@ -124,6 +123,7 @@ class _MapPageState extends State<MapPage> {
       // ignore: use_build_context_synchronously
       Theme.of(context).colorScheme.primary,
       Colors.white,
+      // ignore: use_build_context_synchronously
       (MediaQuery.of(context).devicePixelRatio.toInt() * 20),
     );
 
@@ -150,6 +150,7 @@ class _MapPageState extends State<MapPage> {
   Future<void> getInfo() async {
     stations = await locations.getStations();
     icons = await markersHelper
+        // ignore: use_build_context_synchronously
         .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
     setState(() {
       isLoading = false;
@@ -197,7 +198,6 @@ class _MapPageState extends State<MapPage> {
     _updateMarkers(
         CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
     _controller.complete(controller);
-    print(MediaQuery.of(context).devicePixelRatio);
   }
 
   @override
@@ -218,21 +218,28 @@ class _MapPageState extends State<MapPage> {
             preferredSize: const Size.fromHeight(kToolbarHeight),
             child: Container(
               padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  for (final transport in transports.keys)
-                    IconButton(
-                      onPressed: () => filter(transport),
-                      icon: Image(
-                        image: AssetImage('assets/transports/$transport.png'),
-                        height: iconSize,
-                        width: iconSize,
-                        color: transports[transport]! ? null : disabledColor,
-                        colorBlendMode: BlendMode.dstIn,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (final transport in transports.keys)
+                      IconButton(
+                        onPressed: () => filter(transport),
+                        icon: Image(
+                          image: AssetImage('assets/transports/$transport.png'),
+                          height:
+                              MediaQuery.of(context).devicePixelRatio.toInt() *
+                                  12,
+                          width:
+                              MediaQuery.of(context).devicePixelRatio.toInt() *
+                                  12,
+                          color: transports[transport]! ? null : disabledColor,
+                          colorBlendMode: BlendMode.dstIn,
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

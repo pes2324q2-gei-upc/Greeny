@@ -80,84 +80,95 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Julia\'s City',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
-            ),
-            const SizedBox(height: 10.0),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.width * 0.9,
-              child: Stack(
-                children: [
-                  Opacity(
-                    opacity: max(
-                            min(75, 100 - (punts / levelPoints) * 100), 0) /
-                        100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                    child: Image.asset('assets/cities/fog.png'),
-                  ),
-                  if (level == 'Nou Barris')
-                    const ModelViewer(
-                      key: Key('cityModelViewer'),
-                      src: 'assets/cities/city_1.glb',
-                      autoRotate: true,
-                      disableZoom: true,
-                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
-                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
-                      cameraControls:
-                          false, // Evita que el usuario controle la cámara (true por defecto)
-                    ),
-                  if (level == 'Horta-Guinardó')
-                    const ModelViewer(
-                      key: Key('city2ModelViewer'),
-                      src: 'assets/cities/Horta-Guinardo.glb',
-                      autoRotate: true,
-                      disableZoom: true,
-                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
-                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
-                      cameraControls:
-                          false, // Evita que el usuario controle la cámara (true por defecto)
-                    ),
-                  if (level == 'Sants-Montjuïc')
-                    const ModelViewer(
-                      key: Key('city3ModelViewer'),
-                      src: 'assets/cities/Sants-Montjuic.glb',
-                      autoRotate: true,
-                      disableZoom: true,
-                      rotationPerSecond: "25deg", // Rota 30 grados por segundo
-                      autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
-                      cameraControls:
-                          false, // Evita que el usuario controle la cámara (true por defecto)
-                    ),
-                  Opacity(
-                    opacity: max(
-                            min(75, 100 - (punts / levelPoints) * 100), 0) /
-                        100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                    child: Image.asset('assets/cities/fog.png'),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Julia\'s City',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0),
               ),
-            ),
-            const SizedBox(height: 5.0),
-            if (!appState.isPlaying)
-              BarraProgres(
-                punts: punts,
-                onProgressChanged: updateProgress,
-                levelPoints: levelPoints,
-                level: level,
+              SizedBox(
+                  height: MediaQuery.of(context).devicePixelRatio.toInt() * 5),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.width * 0.9,
+                child: Stack(
+                  children: [
+                    Opacity(
+                      opacity: max(
+                              min(75, 100 - (punts / levelPoints) * 100), 0) /
+                          100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                      child: Image.asset('assets/cities/fog.png'),
+                    ),
+                    if (level == 'Nou Barris')
+                      const ModelViewer(
+                        key: Key('cityModelViewer'),
+                        src: 'assets/cities/city_1.glb',
+                        autoRotate: true,
+                        disableZoom: true,
+                        rotationPerSecond:
+                            "25deg", // Rota 30 grados por segundo
+                        autoRotateDelay:
+                            1000, // Espera 1 segundos antes de rotar
+                        cameraControls:
+                            false, // Evita que el usuario controle la cámara (true por defecto)
+                      ),
+                    if (level == 'Horta-Guinardó')
+                      const ModelViewer(
+                        key: Key('city2ModelViewer'),
+                        src: 'assets/cities/Horta-Guinardo.glb',
+                        autoRotate: true,
+                        disableZoom: true,
+                        rotationPerSecond:
+                            "25deg", // Rota 30 grados por segundo
+                        autoRotateDelay:
+                            1000, // Espera 1 segundos antes de rotar
+                        cameraControls:
+                            false, // Evita que el usuario controle la cámara (true por defecto)
+                      ),
+                    if (level == 'Sants-Montjuïc')
+                      const ModelViewer(
+                        key: Key('city3ModelViewer'),
+                        src: 'assets/cities/Sants-Montjuic.glb',
+                        autoRotate: true,
+                        disableZoom: true,
+                        rotationPerSecond:
+                            "25deg", // Rota 30 grados por segundo
+                        autoRotateDelay:
+                            1000, // Espera 1 segundos antes de rotar
+                        cameraControls:
+                            false, // Evita que el usuario controle la cámara (true por defecto)
+                      ),
+                    Opacity(
+                      opacity: max(
+                              min(75, 100 - (punts / levelPoints) * 100), 0) /
+                          100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                      child: Image.asset('assets/cities/fog.png'),
+                    ),
+                  ],
+                ),
               ),
-
-            if (appState.isPlaying)
-              const Icon(Icons.directions_walk,
-                  size: 30), // icona per indicar que sésta fent un recorregut
-            if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
-            buildplaypause(),
-            if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
-          ],
+              SizedBox(
+                  height: MediaQuery.of(context).devicePixelRatio.toInt() * 8),
+              if (!appState.isPlaying)
+                BarraProgres(
+                  punts: punts,
+                  onProgressChanged: updateProgress,
+                  levelPoints: levelPoints,
+                  level: level,
+                ),
+              if (appState.isPlaying)
+                const Icon(Icons.directions_walk,
+                    size: 30), // icona per indicar que sésta fent un recorregut
+              if (appState.isPlaying) KmTravelled(km: appState.totalDistance),
+              buildplaypause(),
+              if (!appState.isPlaying) LastTravel(km: appState.totalDistance),
+              SizedBox(
+                  height: MediaQuery.of(context).devicePixelRatio.toInt() * 6),
+            ],
+          ),
         ),
       ),
       appBar: AppBar(

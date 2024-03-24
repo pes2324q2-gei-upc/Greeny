@@ -31,34 +31,36 @@ class _LogInPageState extends State<LogInPage> {
           automaticallyImplyLeading: false,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(translate('Welcome to Greeny!')),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.language),
+              onPressed: () {
+                t.showLanguageDialog(context);
+              },
+            )
+          ],
         ),
-        body: Center(
+        body: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(40),
+                padding: EdgeInsets.fromLTRB(
+                    40,
+                    MediaQuery.of(context).devicePixelRatio.toInt() * 20,
+                    40,
+                    MediaQuery.of(context).devicePixelRatio.toInt() * 20),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.language),
-                          onPressed: () {
-                            t.showLanguageDialog(context);
-                          },
-                        )
-                      ],
-                    ),
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Text(
                         translate('Log In'),
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ]),
-                    const SizedBox(
-                      height: 40,
+                    SizedBox(
+                      height:
+                          MediaQuery.of(context).devicePixelRatio.toInt() * 13,
                     ),
                     TextField(
                       obscureText: false,
@@ -88,8 +90,9 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height:
+                          MediaQuery.of(context).devicePixelRatio.toInt() * 5,
                     ),
                     ElevatedButton(
                       onPressed: sendLogIn,
@@ -106,15 +109,18 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                   IconButton(
                     icon: const Image(
-                        image: AssetImage('assets/icons/google.png'),
-                        height: 40,
-                        width: 40,
+                      image: AssetImage('assets/icons/google.png'),
+                      height: 40,
+                      width: 40,
                     ),
                     iconSize: 30,
                     tooltip: translate('Sign in with Google'),
                     onPressed: googleSignIn,
                   ),
                 ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height.toInt() / 7,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -72,65 +72,73 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
             ),
           ],
         )),
-        body: Center(
+        body: SingleChildScrollView(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Júlia',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.eco,
-                            size: 40.0,
-                            color: Color.fromARGB(255, 1, 167, 164)),
-                        const SizedBox(width: 5),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('$co2Saved kg',
-                                style: const TextStyle(
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.bold)),
-                            Text(translate('of CO2 saved'),
-                                style: const TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 20),
-                    Row(
-                      children: [
-                        const Icon(Icons.route,
-                            size: 40.0,
-                            color: Color.fromARGB(255, 1, 167, 164)),
-                        const SizedBox(width: 5),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${kmTotal.toStringAsFixed(2)} kms',
-                                style: const TextStyle(
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.bold)),
-                            Text(translate('traveled'),
-                                style: const TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                SizedBox(
+                    height:
+                        MediaQuery.of(context).devicePixelRatio.toInt() * 15),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.eco,
+                              size: 40.0,
+                              color: Color.fromARGB(255, 1, 167, 164)),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('$co2Saved kg',
+                                  style: const TextStyle(
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.bold)),
+                              Text(translate('of CO2 saved'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 20),
+                      Row(
+                        children: [
+                          const Icon(Icons.route,
+                              size: 40.0,
+                              color: Color.fromARGB(255, 1, 167, 164)),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${kmTotal.toStringAsFixed(2)} kms',
+                                  style: const TextStyle(
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.bold)),
+                              Text(translate('traveled'),
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+                SizedBox(
+                    height:
+                        MediaQuery.of(context).devicePixelRatio.toInt() * 20),
                 Column(
                   children: [
                     Row(
