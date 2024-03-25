@@ -34,7 +34,7 @@ class _MainPageState extends State<MainPage> {
       destinations: <Widget>[
         NavigationDestination(
           selectedIcon: const Icon(Icons.location_city),
-          icon: const Icon(Icons.location_city),
+          icon: const Icon(Icons.location_city_outlined),
           label: translate('City'),
         ),
         NavigationDestination(
