@@ -33,23 +33,23 @@ class _MainPageState extends State<MainPage> {
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       destinations: <Widget>[
         NavigationDestination(
-          selectedIcon: const Icon(Icons.location_city),
-          icon: const Icon(Icons.location_city_outlined),
+          selectedIcon: const Icon(Icons.location_city_rounded),
+          icon: const Icon(Icons.location_city_rounded),
           label: translate('City'),
         ),
         NavigationDestination(
-          selectedIcon: const Icon(Icons.map),
+          selectedIcon: const Icon(Icons.map_rounded),
           icon: const Icon(Icons.map_outlined),
           label: translate('Map'),
         ),
         NavigationDestination(
-          selectedIcon: const Icon(Icons.people),
-          icon: const Icon(Icons.people_outlined),
+          selectedIcon: const Icon(Icons.people_rounded),
+          icon: const Icon(Icons.people_outline_rounded),
           label: translate('Friends'),
         ),
         NavigationDestination(
-          selectedIcon: const Icon(Icons.person),
-          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person_rounded),
+          icon: const Icon(Icons.person_outline_rounded),
           label: translate('Profile'),
         ),
       ],
