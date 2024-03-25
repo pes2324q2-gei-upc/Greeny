@@ -26,121 +26,115 @@ class _LogInPageState extends State<LogInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(translate('Welcome to Greeny!')),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.language),
-              onPressed: () {
-                t.showLanguageDialog(context);
-              },
-            )
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(
-                    40,
-                    MediaQuery.of(context).devicePixelRatio.toInt() * 20,
-                    40,
-                    MediaQuery.of(context).devicePixelRatio.toInt() * 20),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(translate('Welcome to Greeny!')),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              t.showLanguageDialog(context);
+            },
+          )
+        ],
+      ),
+      body: CustomScrollView(
+        scrollDirection: Axis.vertical,
+        slivers: [
+          SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(40, 50, 40, 20),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      Text(
-                        translate('Log In'),
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ]),
-                    SizedBox(
-                      height:
-                          MediaQuery.of(context).devicePixelRatio.toInt() * 13,
-                    ),
-                    TextField(
-                      obscureText: false,
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: translate('Username'),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextField(
-                      obscureText: true,
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: translate('Password'),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        TextButton(
-                          onPressed: forgotPassword,
-                          child: Text(translate('Forgot password?')),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                translate('Log In'),
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ]),
+                        const SizedBox(height: 30),
+                        TextField(
+                          obscureText: false,
+                          controller: usernameController,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: translate('Username'),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextField(
+                          obscureText: true,
+                          controller: passwordController,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: translate('Password'),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: forgotPassword,
+                              child: Text(translate('Forgot password?')),
+                            ),
+                          ],
+                        ),
+                        ElevatedButton(
+                          onPressed: sendLogIn,
+                          child: Text(translate('Log In')),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height:
-                          MediaQuery.of(context).devicePixelRatio.toInt() * 5,
+                    Column(
+                      children: [
+                        Text(
+                          '${translate('Or sign in with')}:',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        IconButton(
+                          icon: const Image(
+                            image: AssetImage('assets/icons/google.png'),
+                            height: 40,
+                            width: 40,
+                          ),
+                          iconSize: 30,
+                          tooltip: translate('Sign in with Google'),
+                          onPressed: googleSignIn,
+                        ),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: sendLogIn,
-                      child: Text(translate('Log In')),
-                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(children: [
+                          Text(
+                            translate("Don't have an account?"),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          TextButton(
+                            onPressed: (signUpHere),
+                            child: Text(translate('Sign Up here')),
+                          )
+                        ])
+                      ],
+                    )
                   ],
                 ),
-              ),
-              Column(
-                children: [
-                  Text(
-                    '${translate('Or sign in with')}:',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  IconButton(
-                    icon: const Image(
-                      image: AssetImage('assets/icons/google.png'),
-                      height: 40,
-                      width: 40,
-                    ),
-                    iconSize: 30,
-                    tooltip: translate('Sign in with Google'),
-                    onPressed: googleSignIn,
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height.toInt() / 7,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(children: [
-                    Text(
-                      translate("Don't have an account?"),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: (signUpHere),
-                      child: Text(translate('Sign Up here')),
-                    )
-                  ])
-                ],
-              )
-            ],
-          ),
-        ));
+              ))
+        ],
+      ),
+    );
   }
 
   Future<void> sendLogIn() async {

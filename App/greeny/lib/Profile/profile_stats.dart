@@ -72,89 +72,84 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
             ),
           ],
         )),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(
-              children: [
-                const Text('Júlia',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 25.0)),
-                SizedBox(
-                    height:
-                        MediaQuery.of(context).devicePixelRatio.toInt() * 15),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.eco,
-                              size: 40.0,
-                              color: Color.fromARGB(255, 1, 167, 164)),
-                          const SizedBox(width: 5),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('$co2Saved kg',
-                                  style: const TextStyle(
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(translate('of CO2 saved'),
-                                  style: const TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 20),
-                      Row(
-                        children: [
-                          const Icon(Icons.route,
-                              size: 40.0,
-                              color: Color.fromARGB(255, 1, 167, 164)),
-                          const SizedBox(width: 5),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('${kmTotal.toStringAsFixed(2)} kms',
-                                  style: const TextStyle(
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold)),
-                              Text(translate('traveled'),
-                                  style: const TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w500)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                    height:
-                        MediaQuery.of(context).devicePixelRatio.toInt() * 20),
-                Column(
+        body: CustomScrollView(
+          shrinkWrap: false,
+          scrollDirection: Axis.vertical,
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 0,20,20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(translate('PERCENTAGE OF USE'),
-                            style: const TextStyle(
-                                fontSize: 12.0, fontWeight: FontWeight.w500)),
-                      ],
+                    const Text('Júlia',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25.0)),
+                    const SizedBox(height: 40),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.eco,
+                                    size: 40.0,
+                                    color: Color.fromARGB(255, 1, 167, 164)),
+                                const SizedBox(width: 5),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('$co2Saved kg',
+                                        style: const TextStyle(
+                                            fontSize: 24.0,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(translate('of CO2 saved'),
+                                        style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 20),
+                            Row(
+                              children: [
+                                const Icon(Icons.route,
+                                    size: 40.0,
+                                    color: Color.fromARGB(255, 1, 167, 164)),
+                                const SizedBox(width: 5),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${kmTotal.toStringAsFixed(2)} kms',
+                                        style: const TextStyle(
+                                            fontSize: 24.0,
+                                            fontWeight: FontWeight.bold)),
+                                    Text(translate('traveled'),
+                                        style: const TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w500)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ]),
                     ),
-                    const SizedBox(height: 10),
-                    ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.vertical,
+                    const SizedBox(height: 60),
+                    Column(
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(translate('PERCENTAGE OF USE'),
+                                style: const TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
                         ProgressBar(
                             icon: Icons.directions_walk,
                             percentage: kmTotal != 0 ? kmWalked / kmTotal : 0),
@@ -186,12 +181,12 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
                             icon: Icons.directions_car,
                             percentage: kmTotal != 0 ? kmCar / kmTotal : 0),
                       ],
-                    ),
+                    )
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ));
   }
 

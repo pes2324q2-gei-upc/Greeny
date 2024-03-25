@@ -29,12 +29,12 @@ class _FormFinalPageState extends State<FormFinalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(0, 40, 5, 0),
-              child: Column(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
                 children: [
                   const SizedBox(
                     height: 40,
@@ -55,42 +55,48 @@ class _FormFinalPageState extends State<FormFinalPage> {
                         fontSize: 21, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(isSelected.length, (index) {
-                      return GestureDetector(
-                        onTap: () => _toggleTransport(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(1),
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          decoration: BoxDecoration(
-                            color: isSelected[index]
-                                ? const Color.fromARGB(131, 1, 164, 167)
-                                : null,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: Colors.transparent),
-                          ),
-                          child: Icon(
-                            _getTransportIcon(index),
-                            size: 40,
-                          ),
-                        ),
-                      );
-                    }),
-                  )
+                  SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(isSelected.length, (index) {
+                          return GestureDetector(
+                            onTap: () => _toggleTransport(index),
+                            child: Container(
+                              padding: const EdgeInsets.all(1),
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              decoration: BoxDecoration(
+                                color: isSelected[index]
+                                    ? const Color.fromARGB(131, 1, 164, 167)
+                                    : null,
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(color: Colors.transparent),
+                              ),
+                              child: Icon(
+                                _getTransportIcon(index),
+                                size: 40,
+                              ),
+                            ),
+                          );
+                        }),
+                      )),
                 ],
               ),
-            ),
-            const SizedBox(height: 450),
-            ElevatedButton(
-              onPressed: _sendData,
-              child: Text(translate("Submit")),
-            ),
-            TextButton(
-              onPressed: _showExitDialog,
-              child: Text(translate("Don't answer")),
-            ),
-          ],
+              Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: _sendData,
+                    child: Text(translate("Submit")),
+                  ),
+                  TextButton(
+                    onPressed: _showExitDialog,
+                    child: Text(translate("Don't answer")),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
