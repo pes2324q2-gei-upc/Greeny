@@ -168,7 +168,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                             level: level,
                           ),
                           buildplaypause(),
-                          LastTravel(km: appState.totalDistance),
+                          if (appState.totalDistance != 0)
+                            LastTravel(km: appState.totalDistance),
                         ],
                       ),
                     )
@@ -177,7 +178,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         height: 300,
                         width: 300,
                         child: Column(children: [
-                          const Icon(Icons.directions_walk, size: 30),
                           KmTravelled(km: appState.totalDistance),
                           buildplaypause(),
                         ])),
@@ -256,12 +256,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   // Boto animat de play/pause
   Widget buildplaypause() {
     return Container(
-      width: 50,
-      height: 50,
+      width: 70,
+      height: 70,
       margin: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15.0),
+        borderRadius: BorderRadius.circular(100.0),
         color: const Color.fromARGB(255, 1, 167, 164),
       ),
       child: GestureDetector(
@@ -280,13 +280,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ? const Icon(
                 Icons.pause,
                 key: Key('pause_icon_key'),
-                size: 30.0,
+                size: 40.0,
                 color: Colors.white,
               )
             : const Icon(
                 Icons.play_arrow,
                 key: Key('play_icon_key'),
-                size: 30.0,
+                size: 40.0,
                 color: Colors.white,
               ),
       ),
@@ -322,10 +322,10 @@ class LastTravel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var translatedtext = translate('Last travel: ');
+    var translatedtext = translate('Previous travel: ');
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(horizontal: 40.0),
+      margin: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Text(
         "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context).style.apply(fontWeightDelta: 2),
@@ -348,7 +348,7 @@ class KmTravelled extends StatelessWidget {
     var translatedtext = translate('Km travelled: ');
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(horizontal: 110.0),
+      margin: const EdgeInsets.symmetric(horizontal: 70.0),
       child: Text(
         "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context)
