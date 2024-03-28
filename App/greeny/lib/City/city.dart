@@ -179,6 +179,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         width: 300,
                         child: Column(children: [
                           KmTravelled(km: appState.totalDistance),
+                          const SizedBox(height: 10),
                           buildplaypause(),
                         ])),
                 ],
@@ -348,7 +349,7 @@ class KmTravelled extends StatelessWidget {
     var translatedtext = translate('Km travelled: ');
     return Container(
       alignment: Alignment.center,
-      margin: const EdgeInsets.symmetric(horizontal: 70.0),
+      margin: const EdgeInsets.all(10),
       child: Text(
         "$translatedtext ${(km).toStringAsFixed(2)} km",
         style: DefaultTextStyle.of(context)
