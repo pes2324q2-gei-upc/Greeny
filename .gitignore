@@ -1,8 +1,14 @@
 **/.DS_Store
 /DB
 .idea
+App/greeny/ios/Runner.xcodeproj/project.pbxproj
+
 Backend/.env
-App/greeny/ios/Runner.xcodeproj/
-App/greeny/ios/Runner/
+.vscode/
+
 Backend/api/migrations/
-.vscode
+
+App/greeny/pubspec.lock
+App/greeny/linux/flutter/generated_plugin_registrant.cc
+App/greeny/linux/flutter/generated_plugins.cmake
+App/greeny/macos/Flutter/GeneratedPluginRegistrant.swift

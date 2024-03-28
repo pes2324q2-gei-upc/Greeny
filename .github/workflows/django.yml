@@ -7,31 +7,44 @@ on:
     branches: [ "main", "develop" ]
 
 env: 
-  POSTGRES_NAME: db_greeny
-  POSTGRES_USER: greeny
-  POSTGRES_PASSWORD: GreenyPES24;
+  POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_HOST: ${{ secrets.DB_HOST }}
 
 jobs:
-  build:
+ test:
+   runs-on: ubuntu-latest
+   
+   services:
+      postgres:
+        image: postgres
 
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.12]
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_NAME }}
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
-      working-directory: Backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run Tests
-      working-directory: Backend
-      run: |
-        python manage.py test 
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+   
+   steps:
+   - uses: actions/checkout@v4
+   - uses: actions/setup-python@v5
+     with:
+      python-version: '3.12'
+
+   - name: Install dependencies
+     working-directory: Backend
+     run: |
+       pip install -r requirements.txt
+       python manage.py makemigrations
+       python manage.py migrate
+   - name: Run tests
+     working-directory: Backend
+     run: python manage.py test
