@@ -40,7 +40,10 @@ jobs:
 
    - name: Install dependencies
      working-directory: Backend
-     run: pip install -r requirements.txt
+     run: |
+       pip install -r requirements.txt
+       python manage.py makemigrations
+       python manage.py migrate
    - name: Run tests
      working-directory: Backend
      run: python manage.py test
