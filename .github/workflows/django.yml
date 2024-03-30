@@ -9,19 +9,53 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    strategy:
+      max-parallel: 4
+      matrix:
+        db: [sqlite, postgres]
+        python-version: [3.12]
+        include:
+          - db: postgres
+            db_port: 5432
 
+    services:
+      postgres:
+        image: postgres:10
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_NAME }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
       with:
-       python-version: '3.12'
+        python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       working-directory: Backend
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install braintree mysqlclient apprise
     - name: Run Tests
       working-directory: Backend
+      env:
+        DB: ${{ matrix.db }}
+        DB_HOST: 127.0.0.1
+        DB_PORT: ${{ matrix.db_port }}
+        DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_HOST: ${{ secrets.DB_HOST }}
       run: |
         python manage.py test
