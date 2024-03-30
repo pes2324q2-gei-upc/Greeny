@@ -65,7 +65,7 @@ class FetchPublicTransportStationsTest(TestCase):
 class FinalFormTransports(TestCase):
     def test_post_success(self):
         data = {
-            'selectedTransports': ['Walking', 'By bus', 'By bike'],
+            'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100
         }
         response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
@@ -74,7 +74,7 @@ class FinalFormTransports(TestCase):
     
     def test_data_statistics(self):
         data = {
-            'selectedTransports': ['Walking', 'By bus', 'By bike', 'By motorcycle'],
+            'selectedTransports': ['Walking', 'Bus', 'Bike', 'Motorcycle'],
             'totalDistance': 100
         }
         
@@ -105,7 +105,7 @@ class FinalFormTransports(TestCase):
 
     def test_km_totals(self):
         data = {
-            'selectedTransports': ['Walking', 'By bus', 'By bike'],
+            'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100
         }
         self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
