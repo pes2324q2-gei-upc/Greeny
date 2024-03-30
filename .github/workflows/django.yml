@@ -45,6 +45,10 @@ jobs:
         DB_HOST: 127.0.0.1
         DB_PORT: 5432
         DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_HOST: ${{ secrets.DB_HOST }}
         
       run: |
         python manage.py test
