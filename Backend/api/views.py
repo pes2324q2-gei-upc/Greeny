@@ -51,7 +51,7 @@ class FinalFormTransports(View):
             
             if (len(transports) != 0):
                 total_transports = len(transports)
-                transport_modes = ['Walking', 'By bus', 'By publicTransport', 'By bike', 'By car', 'By motorcycle', 'By electricCar']
+                transport_modes = ['Walking', 'Bus', 'Train, Metro, Tram, FGC', 'Bike', 'Car', 'Motorcycle', 'Electric Car']
                 
                 percentage = 100 / total_transports / 100 
                 km_mode = percentage * total_distance
@@ -66,12 +66,12 @@ class FinalFormTransports(View):
 
                 field_mapping = {
                     'Walking': 'km_Walked',
-                    'By bus': 'km_Bus',
-                    'By publicTransport': 'km_PublicTransport',
-                    'By bike': 'km_Biked',
-                    'By car': 'km_Car',
-                    'By motorcycle': 'km_Motorcycle',
-                    'By electricCar': 'km_ElectricCar'
+                    'Bus': 'km_Bus',
+                    'Train, Metro, Tram, FGC': 'km_PublicTransport',
+                    'Bike': 'km_Biked',
+                    'Car': 'km_Car',
+                    'Motorcycle': 'km_Motorcycle',
+                    'Electric Car': 'km_ElectricCar'
                 }
                 
                 
