@@ -49,6 +49,11 @@ jobs:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_HOST: ${{ secrets.DB_HOST }}
+        API_KEY: 538py8pxlrx337e74ilf9ikkxvki431dbsjedt44ez13v5ol3t
+        API_KEY_ID: 2p8c3vgck1m2v6jiv47yfw3we
+        APP_TOKEN: T0XNnuny-WH-Ffj2kUOdYowx27Y85eptpD21
+        APP_ID: qMjlZwnGBKpjOKkkISs2Vxjd2
+        API_TOKEN_AJT: d76c9d14956cb596dc83f08fe4ff3976550dca27713fd03659e2665c9690c3ae
         
       run: |
         python manage.py test
