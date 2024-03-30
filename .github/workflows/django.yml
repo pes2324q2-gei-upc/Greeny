@@ -49,6 +49,11 @@ jobs:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_HOST: ${{ secrets.DB_HOST }}
+        API_KEY: ${{ secrets.API_KEY }}
+        API_KEY_ID: ${{ secrets.API_KEY_ID }}
+        APP_TOKEN: ${{ secrets.APP_TOKEN }}
+        APP_ID: ${{ secrets.APP_ID }}
+        API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
         
       run: |
         python manage.py test
