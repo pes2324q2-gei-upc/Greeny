@@ -16,13 +16,13 @@ class FormFinalPage extends StatefulWidget {
 class _FormFinalPageState extends State<FormFinalPage> {
   final List<bool> isSelected = List.generate(7, (_) => false);
   final List<String> transportModes = [
-    translate('Walking'),
-    translate('Bike'),
-    translate('Bus'),
-    translate('Train, Metro, Tram, FGC'),
-    translate('Motorcycle'),
-    translate('Electric Car'),
-    translate('Car')
+    'Walking',
+    'Bike',
+    'Bus',
+    'Train, Metro, Tram, FGC',
+    'Motorcycle',
+    'Electric Car',
+    'Car'
   ];
 
   @override
@@ -143,7 +143,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
                           fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
               for (int i = 0; i < transportModes.length; i++)
-                _buildRow(transportModes[i], _getTransportIcon(i)),
+                _buildRow(translate(transportModes[i]), _getTransportIcon(i)),
               TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(translate("Exit"))),
