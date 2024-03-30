@@ -10,14 +10,6 @@ jobs:
   build:
 
     runs-on: ubuntu-20.04
-    strategy:
-      max-parallel: 4
-      matrix:
-        db: [postgres]
-        python-version: [3.12]
-        include:
-          - db: postgres
-            db_port: 5432
 
     services:
       postgres:
@@ -35,11 +27,11 @@ jobs:
           - 5432:5432
       
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+       python-version: '3.12'
+    
     - name: Install Dependencies
       working-directory: Backend
       run: |
@@ -49,9 +41,9 @@ jobs:
     - name: Run Tests
       working-directory: Backend
       env:
-        DB: ${{ matrix.db }}
+        DB: postgres
         DB_HOST: 127.0.0.1
-        DB_PORT: ${{ matrix.db_port }}
+        DB_PORT: 5432
         DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
