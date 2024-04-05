@@ -52,6 +52,23 @@ class User(AbstractUser):
     password = models.CharField(max_length = 100)
 
 
+def validate_km_totals(instance):
+    # Calculate the sum of all km fields
+    total_kms = sum([
+        instance.km_Walked,
+        instance.km_Biked,
+        instance.km_ElectricCar,
+        instance.km_PublicTransport,
+        instance.km_Bus,
+        instance.km_Motorcycle,
+        instance.km_Car
+    ])
+
+    # Check if the sum matches km_Totals with a precision of 2
+    if abs(total_kms - instance.km_Totals) > 0.01:
+        raise ValidationError('Sum of kms does not match km_Totals')
+
+
 class Statistics(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
     kg_CO2 = models.FloatField(default=0.0)
@@ -64,14 +81,11 @@ class Statistics(models.Model):
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
 
-    class Meta:
-        constraints = [
-            # Km totals = summation of all km
-            CheckConstraint(
-                check=Q(
-                    km_Totals=F('km_Walked') + F('km_Biked') + F('km_ElectricCar') + F('km_PublicTransport') + F('km_Bus') + F('km_Motorcycle') + F('km_Car')),
-                name='km_totals_constraint'
-            ),
-        ]
+    def clean(self):
+        validate_km_totals(self)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     
