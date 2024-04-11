@@ -17,7 +17,8 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: Text(translate('Settings')),
+        title: Text(translate('Settings'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
             icon: const Icon(Icons.language),
