@@ -25,13 +25,13 @@ class _MapPageState extends State<MapPage> {
   bool serviceEnabled = false;
   LocationPermission permission = LocationPermission.denied;
   var transports = {
-    'tram': true,
-    'bus': true,
-    'fgc': true,
-    'bicing': true,
-    'renfe': true,
-    'car': true,
-    'metro': true
+    'tram': false,
+    'bus': false,
+    'fgc': false,
+    'bicing': false,
+    'renfe': false,
+    'car': false,
+    'metro': false
   };
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
   // ignore: prefer_typing_uninitialized_variables

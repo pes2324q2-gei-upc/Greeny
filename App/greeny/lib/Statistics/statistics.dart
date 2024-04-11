@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'settings.dart';
+import 'package:greeny/Statistics/trips.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class ProfileStatsPage extends StatefulWidget {
-  const ProfileStatsPage({super.key});
+class StatisticsPage extends StatefulWidget {
+  const StatisticsPage({super.key});
 
   @override
-  State<ProfileStatsPage> createState() => _ProfileStatsPageState();
+  State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
-class _ProfileStatsPageState extends State<ProfileStatsPage> {
+class _StatisticsPageState extends State<StatisticsPage> {
   double co2Saved = 0;
   double kmTotal = 0;
   double kmWalked = 0;
@@ -59,18 +59,13 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         appBar: (AppBar(
           backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          title: Text(translate('Statistics'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           leading: IconButton(
-            onPressed: share,
-            icon: const Icon(Icons.ios_share),
+            onPressed: trips,
+            icon: const Icon(Icons.history),
             color: const Color.fromARGB(255, 1, 167, 164),
           ),
-          actions: [
-            IconButton(
-              onPressed: showSettings,
-              icon: const Icon(Icons.settings),
-              color: const Color.fromARGB(255, 1, 167, 164),
-            ),
-          ],
         )),
         body: CustomScrollView(
           shrinkWrap: false,
@@ -79,14 +74,11 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
             SliverFillRemaining(
               hasScrollBody: false,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 0,20,20),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text('Júlia',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 25.0)),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 20),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -190,15 +182,11 @@ class _ProfileStatsPageState extends State<ProfileStatsPage> {
         ));
   }
 
-  void showSettings() {
+  void trips() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const SettingsPage()),
+      MaterialPageRoute(builder: (context) => const TripsPage()),
     );
-  }
-
-  void share() {
-    //Falta implementar funció de compartir estadístiques
   }
 
   void showMessage(String m) {
