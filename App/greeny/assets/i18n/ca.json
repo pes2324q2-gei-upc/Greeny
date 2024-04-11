@@ -65,5 +65,7 @@
     "Car": "Cotxe",
     "Error loading statistics": "Error en carregar les estadístiques",
     "History": "Històric",
-    "Log out": "Tanca la sessió"
+    "Log out": "Tanca la sessió",
+    "Statistics": "Estadístiques",
+    "Trips": "Viatges"
 }
