@@ -28,6 +28,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 # Application definition
 
@@ -40,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
-    'django_extensions'
+    'django_extensions',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
