@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/main_page.dart';
 import 'log_in.dart';
 import '../translate.dart' as t;
@@ -16,12 +17,14 @@ class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
+  final nameContoller = TextEditingController();
 
   final signUpForm = GlobalKey<FormState>();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
+    nameContoller.dispose();
     usernameController.dispose();
     passwordController.dispose();
     passwordConfirmController.dispose();
@@ -75,6 +78,15 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           TextFormField(
                             obscureText: false,
+                            controller: nameContoller,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translate('Name'),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            obscureText: false,
                             controller: emailController,
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
@@ -82,9 +94,7 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             validator: emailValidator,
                           ),
-                          const SizedBox(
-                            height: 20
-                          ),
+                          const SizedBox(height: 20),
                           TextFormField(
                             obscureText: false,
                             controller: usernameController,
@@ -128,9 +138,7 @@ class _SignInPageState extends State<SignInPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                            height: 20
-                          ),
+                    const SizedBox(height: 20),
                     Column(
                       children: [
                         Text(
@@ -149,9 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                            height: 20
-                          ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -178,9 +184,33 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> sendSignUp() async {
     if (signUpForm.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+      final username = usernameController.text;
+      final password = passwordController.text;
+      final email = emailController.text;
+      final name = nameContoller.text;
+      String res =
+          await UserAuth().userRegister(name, username, email, password);
+      if (res == 'ok') {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        showMessage(translate(res));
+      }
+    }
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
       );
     }
   }
@@ -198,7 +228,7 @@ class _SignInPageState extends State<SignInPage> {
 
   String? emailValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your email');
     }
 
     const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
@@ -211,29 +241,29 @@ class _SignInPageState extends State<SignInPage> {
     final regex = RegExp(pattern);
 
     return value.isNotEmpty && !regex.hasMatch(value)
-        ? 'Enter a valid email address'
+        ? translate('Enter a valid email address')
         : null;
   }
 
   String? usernameValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your username');
     }
     return null;
   }
 
   String? passwordValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your password');
     }
     return null;
   }
 
   String? passwordConfirmValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your password');
     } else if (passwordController.text != passwordConfirmController.text) {
-      return 'Passwords do not match';
+      return translate('Passwords do not match');
     }
     return null;
   }

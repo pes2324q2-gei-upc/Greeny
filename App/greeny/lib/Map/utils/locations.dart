@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:http/http.dart' as http;
+import 'package:greeny/API/requests.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 part 'locations.g.dart';
 
@@ -166,11 +165,9 @@ class TransportType {
 }
 
 Future<Locations> getStations() async {
-  var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/get-stations');
-
   // Retrieve the locations  offices
   try {
-    final response = await http.get(backendURL);
+    final response = await httpGet('api/get-stations');
     if (response.statusCode == 200) {
       return Locations.fromJson(
           json.decode(response.body) as Map<String, dynamic>);

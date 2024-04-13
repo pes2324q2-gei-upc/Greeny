@@ -5,6 +5,18 @@ class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
         fields = ['name', 'latitude', 'longitude' , 'rating']
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
+
+    class Meta:
+        model = User
+        fields = ['username', 'name', 'email','password']            
+        
     
 
 class PublicTransportStationSerializer(StationSerializer):

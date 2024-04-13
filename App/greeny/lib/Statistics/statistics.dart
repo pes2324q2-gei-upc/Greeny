@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
 import 'package:greeny/Statistics/trips.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -31,9 +30,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Future<void> getStats() async {
     Map<String, dynamic> statsData = {};
-    var url = Uri.http(dotenv.env['BACKEND_URL']!,
-        '/api/statistics/dummy'); //Canviar dummy pel nom de l'usuari
-    final response = await http.get(url);
+
+    final response = await httpGet('/api/statistics/');
 
     if (response.statusCode == 200) {
       setState(() {
