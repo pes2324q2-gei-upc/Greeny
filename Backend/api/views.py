@@ -15,6 +15,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser
 from django.contrib.auth import get_user_model
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import AllowAny
 
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
 headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
@@ -32,12 +38,19 @@ class FinalFormTransports(View):
         if request.method == 'POST':
             
             #This lines will be replaced by the user logged in
-            try: 
+            '''try: 
                 dummy_user = User.objects.get(username='dummy')
             except User.DoesNotExist:
                 dummy_user = User.objects.create(username='dummy', email='dummy@example.com')
                 dummy_user.set_password('dummy_password')
-                dummy_user.save()           
+                dummy_user.save()'''
+
+            # Authenticate the user
+            token_auth = TokenAuthentication()
+            try:
+                user, token = token_auth.authenticate(request)
+            except AuthenticationFailed:
+                return JsonResponse({'error': 'Invalid token'}, status=401)
 
             data = json.loads(request.body)
             transports = data['selectedTransports']
@@ -86,13 +99,13 @@ class FinalFormTransports(View):
                 update_fields['km_Totals'] = total_distance
                 
             try: 
-                user_statics = Statistics.objects.get(username=dummy_user)
+                user_statics = Statistics.objects.get(username=user)
                 for key, value in update_fields.items():
                     current_value = getattr(user_statics, key, 0)
                     setattr(user_statics, key, current_value + value)
                 user_statics.save()
             except Statistics.DoesNotExist:
-                user_statics = Statistics.objects.create(username=dummy_user, **update_fields)
+                user_statics = Statistics.objects.create(username=user, **update_fields)
                 user_statics.save()
                 
             return JsonResponse({'status': 'success'})
@@ -262,6 +275,7 @@ class FetchPublicTransportStations(View):
 #     return JsonResponse(serializer.data, safe=False)
 
 class GetStations(generics.ListAPIView):
+    
     def get(self, request):
 
         data = {}
@@ -342,21 +356,27 @@ class TestView(View):
         return JsonResponse(data, safe=False)
 
 class StatsView(View):
-    def get(self, request, username):
+    def get(self, request):
         
         #This lines will be replaced by the user logged in
-        try: 
+        '''try: 
             dummy_user = User.objects.get(username=username)
         except User.DoesNotExist:
             dummy_user = User.objects.create(username=username, email='dummy@example.com')
             dummy_user.set_password('dummy_password')
-            dummy_user.save()
+            dummy_user.save()'''
+        
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
         
         try:
-            user_statistics = Statistics.objects.get(username=dummy_user)
+            user_statistics = Statistics.objects.get(username=user)
         except Statistics.DoesNotExist:
             user_statistics = Statistics.objects.create(
-                username=dummy_user,
+                username=user,
                 kg_CO2=0.0,
                 km_Totals=0.0,
                 km_Walked=0.0,
@@ -373,19 +393,25 @@ class StatsView(View):
         return JsonResponse(serializer.data)
     
 
-class UserRecordView(APIView):
-    """
-    API View to create or get a list of all the registered
-    users. GET request returns the registered users whereas
-    a POST request allows to create a new user.
-    """
-    permission_classes = [IsAdminUser]
+class UserView(APIView):
+    authentication_classes = [TokenAuthentication]
 
-    def get(self, format=None):
-        User = get_user_model()
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(UserView, self).get_permissions()
+
+    def get(self, request):
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+        
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -394,6 +420,28 @@ class UserRecordView(APIView):
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {
+                "error": True,
+                "error_msg": serializer.error_messages,
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def patch(self, request):
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+        
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.update(instance=user, validated_data=request.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
             )
         return Response(
             {
