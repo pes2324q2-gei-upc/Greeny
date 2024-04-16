@@ -53,8 +53,6 @@ class UserAuth {
   Future userLogout() async {
     await SecureStorage().deleteSecureData('token');
     await SecureStorage().deleteSecureData('name');
-    await SecureStorage().deleteSecureData('email');
-    await SecureStorage().deleteSecureData('username');
   }
 
   getUserInfo() async {
@@ -69,8 +67,6 @@ class UserAuth {
 
   writeUserData(Map info) async {
     await SecureStorage().writeSecureData('name', info['name']);
-    await SecureStorage().writeSecureData('email', info['email']);
-    await SecureStorage().writeSecureData('username', info['username']);
   }
 
   Future<String> readUserInfo(String key) async {

@@ -103,6 +103,7 @@ class _LogInPageState extends State<LogInPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 20),
                     Column(
                       children: [
                         Text(
@@ -121,6 +122,7 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
