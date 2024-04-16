@@ -74,4 +74,18 @@ class Statistics(models.Model):
             ),
         ]
 
+class Neighborhood(models.Model):
+    points_total = models.FloatField(null=False)
+    path = models.CharField(null=False)
+
+class Level(models.Model):
+    number = models.IntegerField(null=False)
+    completed = models.BooleanField(default=False)
+    current = models.BooleanField(default=False)
+    points_user = models.FloatField(default=0.0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    Neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE)
+
+    
+
     
