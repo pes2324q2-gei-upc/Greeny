@@ -1,0 +1,29 @@
+name: Pylint
+
+on:
+    push:
+
+    pull_request:
+       
+
+jobs:
+    pylint:
+        runs-on: ubuntu-20.04
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                python-version: 3.x
+
+            - name: Install dependencies
+              run: |
+                pip install pylint
+                pip install Django
+    
+
+            - name: Run Pylint
+              run: pylint Backend/greeny && pylint --ignore=migrations Backend/api && pylint Backend/manage.py
