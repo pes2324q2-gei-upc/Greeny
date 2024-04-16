@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'django_extensions',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -141,3 +142,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'api.User'
+
+CRONJOBS = [
+    ('0 0 1 * *', 'api.tasks.check_update'), # Will execute every first day of each month at 00:00
+]
