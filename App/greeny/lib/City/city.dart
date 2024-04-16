@@ -78,6 +78,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    double opct = max(min(75, 100 - (punts / levelPoints) * 100),0) / 100;
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       body: CustomScrollView(
@@ -95,16 +96,19 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           fontWeight: FontWeight.bold, fontSize: 25.0)),
                   const SizedBox(height: 20),
                   SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.width * 0.9,
+                      width: MediaQuery.of(context).size.width*0.9,
+                      height: MediaQuery.of(context).size.width*0.9,
                       child: Stack(
                         children: [
                           Opacity(
-                            opacity: max(
-                                    min(75, 100 - (punts / levelPoints) * 100),
-                                    0) /
-                                100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset('assets/cities/fog.png'),
+                            opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                            child: Image.asset(
+                              opct > 0.66
+                                ? 'assets/cities/fog1.png'
+                                : opct > 0.33
+                                  ? 'assets/cities/fog2.png'
+                                  : 'assets/cities/fog3.png'
+                            ),
                           ),
                           if (level == 'Nou Barris')
                             const ModelViewer(
@@ -146,14 +150,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                   false, // Evita que el usuario controle la cámara (true por defecto)
                             ),
                           Opacity(
-                            opacity: max(
-                                    min(75, 100 - (punts / levelPoints) * 100),
-                                    0) /
-                                100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset('assets/cities/fog.png'),
+                            opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                            child: Image.asset(
+                              opct > 0.66
+                                ? 'assets/cities/fog1.png'
+                                : opct > 0.33
+                                  ? 'assets/cities/fog2.png'
+                                  : 'assets/cities/fog3.png'
+                            ),
                           ),
                         ],
-                      )),
+                      )
+                  ),
                   const SizedBox(height: 20),
                   if (!appState.isPlaying)
                     SizedBox(
