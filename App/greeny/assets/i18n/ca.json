@@ -5,7 +5,7 @@
     "Password": "Contrasenya",
     "Forgot password?": "Has oblidat la contrasenya?",
     "Or sign in with": "O inicia sessió amb",
-    "You don't have an account?": "No tens un compte?",
+    "Don't have an account?": "No tens un compte?",
     "Sign in with Google": "Inicia sessió amb Google",
     "Sign Up here": "Registra't aquí",
     "Sign Up": "Registra't",
@@ -67,5 +67,13 @@
     "History": "Històric",
     "Log out": "Tanca la sessió",
     "Statistics": "Estadístiques",
-    "Trips": "Viatges"
+    "Trips": "Viatges",
+    "user with this username already exists.": "L'usuari amb aquest nom d'usuari ja existeix",
+    "user with this email already exists.": "L'usuari amb aquest correu electrònic ja existeix",
+    "Could not log in. Please check your credentials": "No s'ha pogut iniciar la sessió. Comprova les teves credencials",
+    "Please enter your username": "Introdueix el teu nom d'usuari",
+    "Please enter your password": "Introdueix la teva contrasenya",
+    "Please enter your email": "Introdueix el teu correu electrònic",
+    "Enter a valid email address": "Introdueix una adreça de correu electrònic vàlida",
+    "Passwords do not match": "Les contrasenyes no coincideixen"
 }

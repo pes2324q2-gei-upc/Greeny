@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:greeny/API/secure_storage.dart';
 import 'package:greeny/appState.dart';
+import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -72,8 +74,30 @@ class Greeny extends StatelessWidget {
               seedColor: const Color.fromARGB(255, 1, 167, 164)),
           useMaterial3: true,
         ),
-        home: const LogInPage(),
+        home: FutureBuilder<Widget>(
+          future: mainScreen(),
+          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else {
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return snapshot.data ?? Container();
+              }
+            }
+          },
+        ),
       ),
     );
+  }
+}
+
+Future<Widget> mainScreen() async {
+  String? token = await SecureStorage().readSecureData('token');
+  if (token == null) {
+    return const LogInPage();
+  } else {
+    return const MainPage();
   }
 }

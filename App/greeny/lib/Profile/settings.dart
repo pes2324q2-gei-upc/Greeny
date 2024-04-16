@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/translate.dart' as t;
 
@@ -38,7 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void logOut() {
+  void logOut() async {
+    await UserAuth().userLogout();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LogInPage()),

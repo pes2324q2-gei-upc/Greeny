@@ -6,7 +6,7 @@
     "Password": "Contraseña",
     "Forgot password?": "¿Olvidaste tu contraseña?",
     "Or sign in with": "O inicia sesión con",
-    "You don't have an account?": "¿No tienes una cuenta?",
+    "Don't have an account?": "¿No tienes una cuenta?",
     "Sign in with Google": "Inicia sesión con Google",
     "Sign Up here": "Regístrate aquí",
     "Sign Up": "Regístrate",
@@ -68,5 +68,13 @@
     "History": "Histórico",
     "Log out": "Cerrar sesión",
     "Statistics": "Estadísticas",
-    "Trips": "Viajes"
+    "Trips": "Viajes",
+    "user with this username already exists.": "El usuario con este nombre de usuario ya existe",
+    "user with this email already exists.": "El usuario con este correo electrónico ya existe",
+    "Could not log in. Please check your credentials": "No se pudo iniciar sesión. Por favor, comprueba tus credenciales",
+    "Please enter your username": "Introduce tu nombre de usuario",
+    "Please enter your password": "Introduce tu contraseña",
+    "Please enter your email": "Introduce tu correo electrónico",
+    "Enter a valid email address": "Introduce una dirección de correo electrónico válida",
+    "Passwords do not match": "Las contraseñas no coinciden"
 }

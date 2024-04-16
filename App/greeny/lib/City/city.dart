@@ -1,12 +1,12 @@
 import 'dart:math';
 
 import 'dart:async';
-//import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/LocationService.dart';
 import 'package:greeny/City/history.dart';
+import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/appState.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -31,8 +31,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   double punts = 50.0;
   double levelPoints = 100.0;
   String level = 'Nou Barris';
+  String userName = '';
+
   @override
   void initState() {
+    obtenirNomUsuari();
     _controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
     super.initState();
@@ -49,6 +52,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     _controller.dispose(); // per tancar el animation controller
     _updateTimer?.cancel();
     super.dispose();
+  }
+
+  obtenirNomUsuari() async {
+    userName = await UserAuth().readUserInfo('name');
+    setState(() {
+      userName = userName;
+    });
   }
 
   void updateProgress(double newProgress) {
@@ -78,29 +88,37 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double opct = max(min(75, 100 - (punts / levelPoints) * 100),0) / 100;
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      body: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Text('Julia\'s City',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 25.0)),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width*0.9,
-                      height: MediaQuery.of(context).size.width*0.9,
-                      child: Stack(
-                        children: [
-                          Opacity(
+    if (userName == '') {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      double opct = max(min(75, 100 - (punts / levelPoints) * 100),0) / 100;
+      return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+        body: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text('$userName\'s City',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25.0)),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.width * 0.9,
+                        child: Stack(
+                          children: [
+                            Opacity(
                             opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                             child: Image.asset(
                               opct > 0.66
@@ -109,47 +127,46 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                   ? 'assets/cities/fog2.png'
                                   : 'assets/cities/fog3.png'
                             ),
-                          ),
-                          if (level == 'Nou Barris')
-                            const ModelViewer(
-                              key: Key('cityModelViewer'),
-                              src: 'assets/cities/city_1.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          if (level == 'Horta-Guinardó')
-                            const ModelViewer(
-                              key: Key('city2ModelViewer'),
-                              src: 'assets/cities/Horta-Guinardo.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          if (level == 'Sants-Montjuïc')
-                            const ModelViewer(
-                              key: Key('city3ModelViewer'),
-                              src: 'assets/cities/Sants-Montjuic.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          Opacity(
+                            if (level == 'Nou Barris')
+                              const ModelViewer(
+                                key: Key('cityModelViewer'),
+                                src: 'assets/cities/city_1.glb',
+                                autoRotate: true,
+                                disableZoom: true,
+                                rotationPerSecond:
+                                    "25deg", // Rota 30 grados por segundo
+                                autoRotateDelay:
+                                    1000, // Espera 1 segundos antes de rotar
+                                cameraControls:
+                                    false, // Evita que el usuario controle la cámara (true por defecto)
+                              ),
+                            if (level == 'Horta-Guinardó')
+                              const ModelViewer(
+                                key: Key('city2ModelViewer'),
+                                src: 'assets/cities/Horta-Guinardo.glb',
+                                autoRotate: true,
+                                disableZoom: true,
+                                rotationPerSecond:
+                                    "25deg", // Rota 30 grados por segundo
+                                autoRotateDelay:
+                                    1000, // Espera 1 segundos antes de rotar
+                                cameraControls:
+                                    false, // Evita que el usuario controle la cámara (true por defecto)
+                              ),
+                            if (level == 'Sants-Montjuïc')
+                              const ModelViewer(
+                                key: Key('city3ModelViewer'),
+                                src: 'assets/cities/Sants-Montjuic.glb',
+                                autoRotate: true,
+                                disableZoom: true,
+                                rotationPerSecond:
+                                    "25deg", // Rota 30 grados por segundo
+                                autoRotateDelay:
+                                    1000, // Espera 1 segundos antes de rotar
+                                cameraControls:
+                                    false, // Evita que el usuario controle la cámara (true por defecto)
+                              ),
+                            Opacity(
                             opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                             child: Image.asset(
                               opct > 0.66
@@ -158,7 +175,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                   ? 'assets/cities/fog2.png'
                                   : 'assets/cities/fog3.png'
                             ),
-                          ),
                         ],
                       )
                   ),
@@ -185,41 +201,60 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                     SizedBox(
                         height: 300,
                         width: 300,
-                        child: Column(children: [
-                          KmTravelled(km: appState.totalDistance),
-                          const SizedBox(height: 10),
-                          buildplaypause(),
-                        ])),
-                ],
+                        child: Column(
+                          children: [
+                            BarraProgres(
+                              punts: punts,
+                              onProgressChanged: updateProgress,
+                              levelPoints: levelPoints,
+                              level: level,
+                            ),
+                            buildplaypause(),
+                            if (appState.totalDistance != 0)
+                              LastTravel(km: appState.totalDistance),
+                          ],
+                        ),
+                      )
+                    else
+                      SizedBox(
+                          height: 300,
+                          width: 300,
+                          child: Column(children: [
+                            KmTravelled(km: appState.totalDistance),
+                            const SizedBox(height: 10),
+                            buildplaypause(),
+                          ])),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        leading: IconButton(
-            onPressed: viewHistory,
-            icon: const Icon(Icons.restore),
-            color: const Color.fromARGB(255, 1, 167, 164)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              addPoints();
-            },
-            icon: const Icon(Icons.add),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-          IconButton(
-            onPressed: () {
-              removePoints();
-            },
-            icon: const Icon(Icons.remove),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          leading: IconButton(
+              onPressed: viewHistory,
+              icon: const Icon(Icons.restore),
+              color: const Color.fromARGB(255, 1, 167, 164)),
+          actions: [
+            IconButton(
+              onPressed: () {
+                addPoints();
+              },
+              icon: const Icon(Icons.add),
+              color: const Color.fromARGB(255, 1, 167, 164),
+            ),
+            IconButton(
+              onPressed: () {
+                removePoints();
+              },
+              icon: const Icon(Icons.remove),
+              color: const Color.fromARGB(255, 1, 167, 164),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   // inicia el comptador de km i pasa al estat isPlaying true

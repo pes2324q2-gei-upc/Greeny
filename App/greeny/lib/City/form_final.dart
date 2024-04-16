@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
 import 'package:greeny/main_page.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FormFinalPage extends StatefulWidget {
   final double totalDistance;
@@ -222,12 +221,13 @@ class _FormFinalPageState extends State<FormFinalPage> {
       },
     );
 
-    var url = Uri.http(dotenv.env['BACKEND_URL']!, 'api/send-form-transports');
-    await http.post(url,
-        body: jsonEncode({
+    await httpPost(
+        'api/send-form-transports',
+        jsonEncode({
           'selectedTransports': _getSelectedTransports(),
           'totalDistance': widget.totalDistance,
-        }));
+        }),
+        'application/json');
 
     if (!mounted) return;
 

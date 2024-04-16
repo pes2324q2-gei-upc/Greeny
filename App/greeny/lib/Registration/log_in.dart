@@ -3,6 +3,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'sign_up.dart';
 import '../main_page.dart';
 import '../translate.dart' as t;
+import '../API/user_auth.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -14,6 +15,8 @@ class LogInPage extends StatefulWidget {
 class _LogInPageState extends State<LogInPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final logInForm = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -49,52 +52,58 @@ class _LogInPageState extends State<LogInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                translate('Log In'),
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ]),
-                        const SizedBox(height: 30),
-                        TextField(
-                          obscureText: false,
-                          controller: usernameController,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: translate('Username'),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        TextField(
-                          obscureText: true,
-                          controller: passwordController,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: translate('Password'),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            TextButton(
-                              onPressed: forgotPassword,
-                              child: Text(translate('Forgot password?')),
+                    Form(
+                      key: logInForm,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translate('Log In'),
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ]),
+                          const SizedBox(height: 30),
+                          TextFormField(
+                            obscureText: false,
+                            controller: usernameController,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translate('Username'),
                             ),
-                          ],
-                        ),
-                        ElevatedButton(
-                          onPressed: sendLogIn,
-                          child: Text(translate('Log In')),
-                        ),
-                      ],
+                            validator: usernameValidator,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            obscureText: true,
+                            controller: passwordController,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translate('Password'),
+                            ),
+                            validator: passwordValidator,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: forgotPassword,
+                                child: Text(translate('Forgot password?')),
+                              ),
+                            ],
+                          ),
+                          ElevatedButton(
+                            onPressed: sendLogIn,
+                            child: Text(translate('Log In')),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(height: 20),
                     Column(
                       children: [
                         Text(
@@ -113,6 +122,7 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -137,12 +147,48 @@ class _LogInPageState extends State<LogInPage> {
     );
   }
 
+  String? usernameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return translate('Please enter your username');
+    }
+    return null;
+  }
+
+  String? passwordValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return translate('Please enter your password');
+    }
+    return null;
+  }
+
   Future<void> sendLogIn() async {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainPage()),
-      (Route<dynamic> route) => false,
-    );
+    if (logInForm.currentState!.validate()) {
+      final username = usernameController.text;
+      final password = passwordController.text;
+      bool ok = await UserAuth().userAuth(username, password);
+      if (ok) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        showMessage('Could not log in. Please check your credentials');
+      }
+    }
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
   }
 
   Future<void> googleSignIn() async {

@@ -97,9 +97,11 @@ class _MapPageState extends State<MapPage> {
     _currentZoom = position.zoom;
     _currentPosition = position.target;
 
-    setState(() {
-      _areMarkersLoading = true;
-    });
+    if (mounted) {
+      setState(() {
+        _areMarkersLoading = true;
+      });
+    }
 
     final List<MapMarker> markers = markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
@@ -131,9 +133,11 @@ class _MapPageState extends State<MapPage> {
       ..clear()
       ..addAll(updatedMarkers);
 
-    setState(() {
-      _areMarkersLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _areMarkersLoading = false;
+      });
+    }
   }
 
   @override
