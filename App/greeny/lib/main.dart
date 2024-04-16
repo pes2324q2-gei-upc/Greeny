@@ -75,7 +75,7 @@ class Greeny extends StatelessWidget {
           useMaterial3: true,
         ),
         home: FutureBuilder<Widget>(
-          future: prova(),
+          future: mainScreen(),
           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
@@ -93,7 +93,7 @@ class Greeny extends StatelessWidget {
   }
 }
 
-Future<Widget> prova() async {
+Future<Widget> mainScreen() async {
   String? token = await SecureStorage().readSecureData('token');
   if (token == null) {
     return const LogInPage();
