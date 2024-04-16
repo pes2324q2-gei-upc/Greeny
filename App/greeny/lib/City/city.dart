@@ -119,13 +119,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         child: Stack(
                           children: [
                             Opacity(
-                            opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset(
-                              opct > 0.66
-                                ? 'assets/cities/fog1.png'
-                                : opct > 0.33
-                                  ? 'assets/cities/fog2.png'
-                                  : 'assets/cities/fog3.png'
+                              opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(
+                                opct > 0.66
+                                  ? 'assets/cities/fog1.png'
+                                  : opct > 0.33
+                                    ? 'assets/cities/fog2.png'
+                                    : 'assets/cities/fog3.png'
+                              ),
                             ),
                             if (level == 'Nou Barris')
                               const ModelViewer(
@@ -167,13 +168,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                     false, // Evita que el usuario controle la cámara (true por defecto)
                               ),
                             Opacity(
-                            opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset(
-                              opct > 0.66
-                                ? 'assets/cities/fog1.png'
-                                : opct > 0.33
-                                  ? 'assets/cities/fog2.png'
-                                  : 'assets/cities/fog3.png'
+                              opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(
+                                opct > 0.66
+                                  ? 'assets/cities/fog1.png'
+                                  : opct > 0.33
+                                    ? 'assets/cities/fog2.png'
+                                    : 'assets/cities/fog3.png'
+                              ),
                             ),
                         ],
                       )
@@ -198,32 +200,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       ),
                     )
                   else
-                    SizedBox(
-                        height: 300,
-                        width: 300,
-                        child: Column(
-                          children: [
-                            BarraProgres(
-                              punts: punts,
-                              onProgressChanged: updateProgress,
-                              levelPoints: levelPoints,
-                              level: level,
-                            ),
-                            buildplaypause(),
-                            if (appState.totalDistance != 0)
-                              LastTravel(km: appState.totalDistance),
-                          ],
-                        ),
-                      )
-                    else
                       SizedBox(
                           height: 300,
                           width: 300,
-                          child: Column(children: [
+                          child: Column(
+                            children: [
                             KmTravelled(km: appState.totalDistance),
                             const SizedBox(height: 10),
                             buildplaypause(),
-                          ])),
+                            ]
+                          )
+                      ),
                   ],
                 ),
               ),
