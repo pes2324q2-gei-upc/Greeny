@@ -78,7 +78,7 @@ class Greeny extends StatelessWidget {
           future: mainScreen(),
           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');

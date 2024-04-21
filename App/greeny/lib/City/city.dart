@@ -96,7 +96,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       );
     } else {
-      double opct = max(min(75, 100 - (punts / levelPoints) * 100),0) / 100;
+      double opct = max(min(75, 100 - (punts / levelPoints) * 100), 0) / 100;
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         body: CustomScrollView(
@@ -119,17 +119,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         child: Stack(
                           children: [
                             Opacity(
-                              opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(
-                                opct > 0.66
+                              opacity:
+                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
                                   ? 'assets/cities/fog1.png'
                                   : opct > 0.33
-                                    ? 'assets/cities/fog2.png'
-                                    : 'assets/cities/fog3.png'
-                              ),
+                                      ? 'assets/cities/fog2.png'
+                                      : 'assets/cities/fog3.png'),
                             ),
                             if (level == 'Nou Barris')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('cityModelViewer'),
                                 src: 'assets/cities/city_1.glb',
                                 autoRotate: true,
@@ -143,6 +143,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               ),
                             if (level == 'Horta-Guinardó')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('city2ModelViewer'),
                                 src: 'assets/cities/Horta-Guinardo.glb',
                                 autoRotate: true,
@@ -156,6 +157,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               ),
                             if (level == 'Sants-Montjuïc')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('city3ModelViewer'),
                                 src: 'assets/cities/Sants-Montjuic.glb',
                                 autoRotate: true,
@@ -168,49 +170,44 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                     false, // Evita que el usuario controle la cámara (true por defecto)
                               ),
                             Opacity(
-                              opacity: opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(
-                                opct > 0.66
+                              opacity:
+                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
                                   ? 'assets/cities/fog1.png'
                                   : opct > 0.33
-                                    ? 'assets/cities/fog2.png'
-                                    : 'assets/cities/fog3.png'
-                              ),
+                                      ? 'assets/cities/fog2.png'
+                                      : 'assets/cities/fog3.png'),
                             ),
-                        ],
+                          ],
+                        )),
+                    const SizedBox(height: 20),
+                    if (!appState.isPlaying)
+                      SizedBox(
+                        height: 300,
+                        width: 300,
+                        child: Column(
+                          children: [
+                            BarraProgres(
+                              punts: punts,
+                              onProgressChanged: updateProgress,
+                              levelPoints: levelPoints,
+                              level: level,
+                            ),
+                            buildplaypause(),
+                            if (appState.totalDistance != 0)
+                              LastTravel(km: appState.totalDistance),
+                          ],
+                        ),
                       )
-                  ),
-                  const SizedBox(height: 20),
-                  if (!appState.isPlaying)
-                    SizedBox(
-                      height: 300,
-                      width: 300,
-                      child: Column(
-                        children: [
-                          BarraProgres(
-                            punts: punts,
-                            onProgressChanged: updateProgress,
-                            levelPoints: levelPoints,
-                            level: level,
-                          ),
-                          buildplaypause(),
-                          if (appState.totalDistance != 0)
-                            LastTravel(km: appState.totalDistance),
-                        ],
-                      ),
-                    )
-                  else
+                    else
                       SizedBox(
                           height: 300,
                           width: 300,
-                          child: Column(
-                            children: [
+                          child: Column(children: [
                             KmTravelled(km: appState.totalDistance),
                             const SizedBox(height: 10),
                             buildplaypause(),
-                            ]
-                          )
-                      ),
+                          ])),
                   ],
                 ),
               ),
