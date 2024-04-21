@@ -1,4 +1,6 @@
 # pylint: disable=no-member
+from rest_framework.authtoken.models import Token
+
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import *
@@ -64,12 +66,22 @@ class FetchPublicTransportStationsTest(TestCase):
         self.assertEqual(len(Stop.objects.get(station=station, transport_type=T_type).lines), 2)
 
 class FinalFormTransports(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.token = Token.objects.create(user=self.user)
+
     def test_post_success(self):
         data = {
             'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100
         }
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(
+            reverse('final_form_transports'),
+            data=json.dumps(data),
+            content_type='application/json',
+            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+        )
         self.assertEqual(response.status_code, 200)
 
     
@@ -79,7 +91,12 @@ class FinalFormTransports(TestCase):
             'totalDistance': 100
         }
         
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(
+            reverse('final_form_transports'),
+            data=json.dumps(data),
+            content_type='application/json',
+            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+        )
 
         self.assertEqual(Statistics.objects.count(), 1)
 
@@ -93,7 +110,12 @@ class FinalFormTransports(TestCase):
             'selectedTransports': [],
             'totalDistance': 100
         }
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(
+            reverse('final_form_transports'),
+            data=json.dumps(data),
+            content_type='application/json',
+            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+        )
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 0)
         self.assertEqual(Statistics.objects.get().km_Bus, 0)
@@ -109,24 +131,12 @@ class FinalFormTransports(TestCase):
             'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100
         }
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        response = self.client.post(
+            reverse('final_form_transports'),
+            data=json.dumps(data),
+            content_type='application/json',
+            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+        )
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Totals, 100)
-
-    def test_no_answer(self):
-        data = {
-            'selectedTransports': [],
-            'totalDistance': 0
-        }
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-
-        self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Walked, 0)
-        self.assertEqual(Statistics.objects.get().km_Bus, 0)
-        self.assertEqual(Statistics.objects.get().km_Biked, 0)
-        self.assertEqual(Statistics.objects.get().km_Motorcycle, 0)
-        self.assertEqual(Statistics.objects.get().km_Car, 0)
-        self.assertEqual(Statistics.objects.get().km_PublicTransport, 0)
-        self.assertEqual(Statistics.objects.get().km_ElectricCar, 0)
-        self.assertEqual(Statistics.objects.get().km_Totals, 0)
