@@ -62,3 +62,4 @@ class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         exclude = ['id']
+        

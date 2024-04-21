@@ -141,4 +141,3 @@ class FinalFormTransports(TestCase):
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Totals, 100)
-

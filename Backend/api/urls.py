@@ -23,4 +23,3 @@ urlpatterns = [
     path('statistics/', StatsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
 ]
-
