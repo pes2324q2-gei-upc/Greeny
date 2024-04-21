@@ -1,10 +1,9 @@
 # pylint: disable=no-member
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import generics
-from pathlib import Path
 import os
 from .models import *
 from .serializers import *
@@ -14,13 +13,10 @@ from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
-from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"

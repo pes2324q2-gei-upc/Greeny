@@ -1,20 +1,23 @@
+"""
+This module contains unit tests for the Greeny application.
+
+It includes tests for the Statistics functionality, and for the FetchPublicTransportStations methods.
+"""
+
 # pylint: disable=no-member
 from rest_framework.authtoken.models import Token
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import *
-from .views import FetchPublicTransportStations
+from .models import Station, PublicTransportStation, TransportType, Stop, Statistics, User
 from unittest.mock import patch
 import json
 import os
-import requests
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse("fetch_all_stations")  # replace with the actual URL name for the view
-
 
     def test_get(self):
         response = self.client.get(self.url, follow=True)
@@ -41,7 +44,6 @@ class FetchPublicTransportStationsTest(TestCase):
         # Use the script directory to build the path to the json file
         json_file_path = os.path.join(script_dir, 'fixtures', 'mock_api.json')
 
-
         # Read the mock data from the json file
         with open(json_file_path, 'r') as file:
             mock_data = json.load(file)
@@ -53,11 +55,10 @@ class FetchPublicTransportStationsTest(TestCase):
         # Check that the status code is 200
         self.assertEqual(response.status_code, 302)
 
-
         # Check that the data has been parsed correctly
         # Replace 'key1' and 'key2' with the actual keys in the response data
-        self.assertEqual(Station.objects.count(), 1);
-        self.assertEqual(PublicTransportStation.objects.count(), 1);
+        self.assertEqual(Station.objects.count(), 1)
+        self.assertEqual(PublicTransportStation.objects.count(), 1)
 
         station = Station.objects.get(name__iexact='Catalunya')
         T_type = TransportType.objects.get(type=TransportType.TTransport.METRO)
@@ -91,7 +92,7 @@ class FinalFormTransports(TestCase):
             'totalDistance': 100
         }
         
-        response = self.client.post(
+        self.client.post(
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
@@ -110,7 +111,7 @@ class FinalFormTransports(TestCase):
             'selectedTransports': [],
             'totalDistance': 100
         }
-        response = self.client.post(
+        self.client.post(
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
@@ -131,7 +132,7 @@ class FinalFormTransports(TestCase):
             'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100
         }
-        response = self.client.post(
+        self.client.post(
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
@@ -140,3 +141,4 @@ class FinalFormTransports(TestCase):
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Totals, 100)
+
