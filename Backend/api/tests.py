@@ -1,18 +1,20 @@
 """
 This module contains unit tests for the Greeny application.
 
-It includes tests for the Statistics functionality, and for the FetchPublicTransportStations methods.
+It includes tests for the Statistics functionality, and for the 
+FetchPublicTransportStations methods.
 """
 
 # pylint: disable=no-member
-from rest_framework.authtoken.models import Token
+import json
+import os
+from unittest.mock import patch
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import Station, PublicTransportStation, TransportType, Stop, Statistics, User
-from unittest.mock import patch
-import json
-import os
+from rest_framework.authtoken.models import Token
+
+from .models import PublicTransportStation, Station, Statistics, Stop, TransportType, User
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
@@ -45,7 +47,7 @@ class FetchPublicTransportStationsTest(TestCase):
         json_file_path = os.path.join(script_dir, 'fixtures', 'mock_api.json')
 
         # Read the mock data from the json file
-        with open(json_file_path, 'r') as file:
+        with open(json_file_path, 'r', encoding='utf-8') as file:
             mock_data = json.load(file)
 
         mock_get.return_value.json.return_value = mock_data
@@ -61,10 +63,9 @@ class FetchPublicTransportStationsTest(TestCase):
         self.assertEqual(PublicTransportStation.objects.count(), 1)
 
         station = Station.objects.get(name__iexact='Catalunya')
-        T_type = TransportType.objects.get(type=TransportType.TTransport.METRO)
-        
+        t_type = TransportType.objects.get(type=TransportType.TTransport.METRO)
         self.assertEqual(Stop.objects.filter(station=station).count(), 3)
-        self.assertEqual(len(Stop.objects.get(station=station, transport_type=T_type).lines), 2)
+        self.assertEqual(len(Stop.objects.get(station=station, transport_type=t_type).lines), 2)
 
 class FinalFormTransports(TestCase):
 
@@ -85,22 +86,18 @@ class FinalFormTransports(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    
     def test_data_statistics(self):
         data = {
             'selectedTransports': ['Walking', 'Bus', 'Bike', 'Motorcycle'],
             'totalDistance': 100
         }
-        
         self.client.post(
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
             **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
-
         self.assertEqual(Statistics.objects.count(), 1)
-
         self.assertEqual(Statistics.objects.get().km_Walked, 25)
         self.assertEqual(Statistics.objects.get().km_Bus, 25)
         self.assertEqual(Statistics.objects.get().km_Biked, 25)
@@ -138,6 +135,5 @@ class FinalFormTransports(TestCase):
             content_type='application/json',
             **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
-
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Totals, 100)

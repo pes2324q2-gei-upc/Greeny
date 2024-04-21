@@ -10,12 +10,14 @@ the data that will be stored.
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
     rating = models.FloatField(default= 0.0)
+
     def __str__(self):
         return self.name
     def subclass_name(self):
