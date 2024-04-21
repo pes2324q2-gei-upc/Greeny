@@ -46,10 +46,11 @@ class ChargingStation(Station):
     connexion_type = models.CharField(max_length=100)
 
 class User(AbstractUser):
-    username = models.CharField(max_length = 100, primary_key = True)
+    username = models.CharField(max_length = 100, unique = True)
     name = models.CharField(max_length = 100)
     email = models.EmailField(max_length = 100, unique = True)
     password = models.CharField(max_length = 100)
+    friends = models.ManyToManyField("self", blank=True)
 
 
 class Statistics(models.Model):
@@ -74,4 +75,8 @@ class Statistics(models.Model):
             ),
         ]
 
-    
+class Friend_Request(models.Model):
+    from_user = models.ForeignKey(
+        User, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(
+        User, related_name='to_user', on_delete=models.CASCADE)

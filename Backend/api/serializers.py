@@ -62,3 +62,11 @@ class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         exclude = ['id']
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    from_user = serializers.PrimaryKeyRelatedField(source='from_user.id', queryset=User.objects.all())
+    to_user = serializers.PrimaryKeyRelatedField(source='to_user.id', queryset=User.objects.all())
+
+    class Meta:
+        model = Friend_Request
+        fields = ['from_user', 'to_user']

@@ -451,3 +451,42 @@ class UserView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+def send_friend_request(request, userID):
+    from_user = request.user
+    to_user = User.objects.get(id=userID)
+    friend_request, created = Friend_Request.objects.get_or_create(from_user=from_user, to_user=to_user)
+
+    if created:
+        return Response(
+            "frined req sent!", 
+            status=status.HTTP_200_OK)
+    else:
+        return Response(
+            {
+            "error": False,
+            "error_msg": "frined req already sent!",
+            }, 
+            status=status.HTTP_409_CONFLICT) #Conflicts error
+    
+def accept_friend_request(request, requestID):
+    friend_request = Friend_Request.objects.get(id=requestID)
+    if friend_request.to_user == request.user:
+        friend_request.to_user.friends.add(friend_request.from_user)
+        friend_request.from_user.friends.add(friend_request.to_user)
+        friend_request.delete()
+        return JsonResponse({'message': 'friend request accepted'}, status=200)
+    else:
+        return JsonResponse({'message': 'friend request not accepted'}, status=409)  # conflicts error
+    
+def retrieve_friend_requests(request):
+    user = request.user
+    friend_requests = Friend_Request.objects.filter(to_user=user.id)
+    serializer = FriendRequestSerializer(friend_requests, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+def get_friends(request):
+    friends = request.user.friends;
+    serializer = UserSerializer(friends, many=True)
+    return JsonResponse(serializer.data, safe=False)
