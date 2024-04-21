@@ -1,4 +1,14 @@
-from api.views import *
+"""
+This module defines the URL routes for the Greeny application.
+
+It includes routes for viewing and manipulating Stations, PublicTransportStations, 
+TransportTypes, Stops, BusStations, BicingStations, ChargingStations, Users, and Statistics.
+
+"""
+from api.views import (
+    CarregadorsElectricsView, FetchPublicTransportStations, GetStations, TestView,
+    ParadesBus, EstacionsBicing, FinalFormTransports, StatsView, UserView
+)
 from django.urls import path
 
 
