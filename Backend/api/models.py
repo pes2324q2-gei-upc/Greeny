@@ -1,10 +1,11 @@
 """
 This module defines the database models for the Greeny aplication. 
 
-It includes models for Station, PublicTransportStation, TransportType, Stop, BusStation, BicingStation, 
-ChargingStation, User and Statistics.
+It includes models for Station, PublicTransportStation, TransportType, Stop, BusStation, 
+BicingStation, ChargingStation, User and Statistics.
 
-Each model corresponds to a table in the database and defines the fields and behaviors of the data that will be stored.
+Each model corresponds to a table in the database and defines the fields and behaviors of 
+the data that will be stored.
 """
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
