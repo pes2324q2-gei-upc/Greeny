@@ -5,10 +5,9 @@ It includes routes for viewing and manipulating Stations, PublicTransportStation
 TransportTypes, Stops, BusStations, BicingStations, ChargingStations, Users, and Statistics.
 
 """
-from api.views import (
-    CarregadorsElectricsView, FetchPublicTransportStations, GetStations, TestView,
-    ParadesBus, EstacionsBicing, FinalFormTransports, StatsView, UserView
-)
+from api.userViews import UserView
+from api.statisticsViews import StatisticsView
+from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, GetStations, ParadesBus
 from django.urls import path
 
 
@@ -16,10 +15,9 @@ urlpatterns = [
     path('charging-points', CarregadorsElectricsView.as_view(), name='charging_points'),
     path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
     path('get-stations', GetStations.as_view(), name="get_all_stations"),
-    path('test', TestView.as_view(), name='test_view'),
     path('bus-stops', ParadesBus.as_view(), name='bus_stops'),
     path('bicing', EstacionsBicing.as_view(), name='bicing'),
-    path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
-    path('statistics/', StatsView.as_view(), name='stats'),
+    path('send-form-transports', StatisticsView.as_view(), name='final_form_transports'),
+    path('statistics/', StatisticsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
 ]
