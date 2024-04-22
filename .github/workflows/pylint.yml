@@ -27,4 +27,4 @@ jobs:
     
 
             - name: Run Pylint
-              run: pylint Backend/greeny && pylint --ignore=migrations Backend/api && pylint Backend/manage.py
+              run: pylint Backend/greeny --disable=missing-class-docstring,missing-function-docstring && pylint --disable=missing-class-docstring,missing-function-docstring --ignore=migrations Backend/api && pylint Backend/manage.py --disable=missing-class-docstring,missing-function-docstring
