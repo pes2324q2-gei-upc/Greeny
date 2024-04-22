@@ -77,7 +77,7 @@ def validate_km_totals(instance):
 
 
 class Statistics(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
     kg_CO2 = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
     km_Walked = models.FloatField(default=0.0)

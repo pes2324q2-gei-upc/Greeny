@@ -61,5 +61,5 @@ class ChargingStationSerializer(StationSerializer):
 class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id']
+        exclude = ['id', 'user']
         
