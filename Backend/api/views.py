@@ -487,6 +487,13 @@ def retrieve_friend_requests(request):
     return JsonResponse(serializer.data, safe=False)
 
 def get_friends(request):
-    friends = request.user.friends;
-    serializer = UserSerializer(friends, many=True)
+
+    token_auth = TokenAuthentication()
+    try:
+        user, token = token_auth.authenticate(request)
+    except AuthenticationFailed:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+    
+    friends = user.friends.all()
+    serializer = FriendSerializer(friends, many=True)
     return JsonResponse(serializer.data, safe=False)

@@ -15,8 +15,23 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'name', 'email','password']            
-        
+        fields = ['username', 'name', 'email','password']
+
+class FriendUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'name']
+
+class FriendSerializer(serializers.ModelSerializer):
+    friends = serializers.SerializerMethodField()
+
+    def get_friends(self, obj):
+        friends = obj.friends.all()
+        return FriendUserSerializer(friends, many=True).data
+
+    class Meta:
+        model = User
+        fields = ['friends']
     
 
 class PublicTransportStationSerializer(StationSerializer):
