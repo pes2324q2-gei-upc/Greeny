@@ -7,7 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/LocationService.dart';
 import 'package:greeny/City/history.dart';
 import 'package:greeny/API/user_auth.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
@@ -437,7 +437,7 @@ class BarraProgres extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width *
           0.8, // Establecer el ancho del contenedor
       child: Column(
@@ -458,7 +458,7 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
-              return Container(
+              return SizedBox(
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
