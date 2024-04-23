@@ -327,7 +327,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
     updateProgress(
         punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
   }
 
   void removePoints() {
@@ -336,7 +335,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
     updateProgress(
         punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
   }
 }
 
@@ -437,7 +435,7 @@ class BarraProgres extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width *
           0.8, // Establecer el ancho del contenedor
       child: Column(
@@ -458,7 +456,7 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
-              return Container(
+              return SizedBox(
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
