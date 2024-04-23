@@ -19,7 +19,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String userName = '';
-  String userEmail = 'ejemplo@gmail';
+  String userEmail = '';
+  String userUsername = '';
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         statsData = json.decode(response.body);
         userEmail = statsData['email'];
+        userUsername = statsData['username'];
       });
     } else {
       showMessage("Error loading user info");
@@ -122,7 +124,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 const SizedBox(
-                  height: 10, // Espacio entre la imagen y la tarjeta
+                  height: 10,
+                ),
+                Text(
+                  '@$userUsername',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: ProfilePage.titolColor,
+                  ),
                 ),
                 Text(
                   userName,
@@ -132,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20, // Espacio entre la imagen y la tarjeta
+                  height: 20,
                 ),
                 Expanded(
                   child: Container(
@@ -146,13 +156,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       color: Colors.white, // Color de fondo de la tarjeta
                     ),
-                    padding:
-                        const EdgeInsets.all(20), // Espaciado interno opcional
+                    padding: const EdgeInsets.all(20), // Espaciado interno
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         //aqui va la informació de l'usuari
                         const SizedBox(height: 10),
+                        //Email
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -162,13 +172,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Icon(Icons.email,
-                                  color: ProfilePage
-                                      .titolColor), // Icono de correo electrónico
-                              const SizedBox(
-                                  width:
-                                      5), // Espacio entre el icono y el correo electrónico
+                                  color: ProfilePage.titolColor),
+                              const SizedBox(width: 5),
                               const Text(
-                                'Email:', // Correo electrónico
+                                'Email:',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: ProfilePage.titolColor,
@@ -190,6 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        //Data registre
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -199,13 +207,10 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.calendar_month,
-                                  color: ProfilePage
-                                      .titolColor), // Icono de correo electrónico
-                              SizedBox(
-                                  width:
-                                      5), // Espacio entre el icono y el correo electrónico
+                                  color: ProfilePage.titolColor),
+                              SizedBox(width: 5),
                               Text(
-                                'Joined:', // Correo electrónico
+                                'Joined:',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: ProfilePage.titolColor,
@@ -213,7 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               Spacer(),
                               Text(
-                                '24/03/24', // Correo electrónico
+                                '24/03/24',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
@@ -223,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        //Nivell
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -231,14 +237,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.star,
-                                  color: ProfilePage
-                                      .titolColor), // Icono de correo electrónico
-                              SizedBox(
-                                  width:
-                                      5), // Espacio entre el icono y el correo electrónico
+                              Icon(Icons.star, color: ProfilePage.titolColor),
+                              SizedBox(width: 5),
                               Text(
-                                'Level:', // Correo electrónico
+                                'Level:',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: ProfilePage.titolColor,
@@ -246,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               Spacer(),
                               Text(
-                                '100', // Correo electrónico
+                                '100',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
@@ -256,6 +258,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                        //Amics
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -267,12 +270,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               Icon(
                                 Icons.people,
                                 color: ProfilePage.titolColor,
-                              ), // Icono de correo electrónico
-                              SizedBox(
-                                  width:
-                                      5), // Espacio entre el icono y el correo electrónico
+                              ),
+                              SizedBox(width: 5),
                               Text(
-                                'Friends:', // Correo electrónico
+                                'Friends:',
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: ProfilePage.titolColor,
@@ -280,7 +281,73 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               Spacer(),
                               Text(
-                                '200', // Correo electrónico
+                                '200',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        //Viatges
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: ProfilePage.smallCardColor),
+                          padding: const EdgeInsets.all(10),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.route,
+                                color: ProfilePage.titolColor,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Trips:',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: ProfilePage.titolColor,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                '5',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        //Reviews
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: ProfilePage.smallCardColor),
+                          padding: const EdgeInsets.all(10),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.reviews,
+                                color: ProfilePage.titolColor,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Reviews:',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: ProfilePage.titolColor,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                '10',
                                 style: TextStyle(
                                   fontSize: 16,
                                 ),
@@ -294,7 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20, // Espacio entre la imagen y la tarjeta
+                  height: 15,
                 ),
               ],
             ),
