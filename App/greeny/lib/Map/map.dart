@@ -5,7 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/Map/utils/locations.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/app_state.dart';
 import 'package:provider/provider.dart';
 import 'utils/locations.dart' as locations;
 // ignore: library_prefixes
