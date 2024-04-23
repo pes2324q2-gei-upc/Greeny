@@ -30,11 +30,7 @@ class UserView(APIView):
         return super(UserView, self).get_permissions()
 
     def get(self, request):
-        token_auth = TokenAuthentication()
-        try:
-            user, token = token_auth.authenticate(request)
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        user = self.request.user
         
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)

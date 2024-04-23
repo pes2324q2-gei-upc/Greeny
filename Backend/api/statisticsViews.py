@@ -22,20 +22,11 @@ from rest_framework.permissions import AllowAny
 @method_decorator(csrf_exempt, name='dispatch')
 class StatisticsView(View):
 
-    def getUser(self, request):
-        token_auth = TokenAuthentication()
-        try:
-            user, token = token_auth.authenticate(request)
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
-
-        return user, token
-
     #POST final form
     def post(self, request):
         if request.method == 'POST':
 
-            user, token = self.getUser(request)
+            user = self.request.user
 
             data = json.loads(request.body)
             transports = data['selectedTransports']
@@ -97,7 +88,7 @@ class StatisticsView(View):
 
     def get(self, request):
 
-        user, token = self.getUser(request)
+        user = self.request.user
 
         try:
             user_statistics = Statistics.objects.get(user=user)
