@@ -454,25 +454,31 @@ class UserView(APIView):
 
 
 def send_friend_request(request, userID):
-    from_user = request.user
+    token_auth = TokenAuthentication()
+    try:
+        user, token = token_auth.authenticate(request)
+    except AuthenticationFailed:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+    
+    from_user = user
     to_user = User.objects.get(id=userID)
     friend_request, created = Friend_Request.objects.get_or_create(from_user=from_user, to_user=to_user)
 
     if created:
-        return Response(
-            "frined req sent!", 
-            status=status.HTTP_200_OK)
+        return JsonResponse({'message': 'friend request sent'}, status=200)
     else:
-        return Response(
-            {
-            "error": False,
-            "error_msg": "frined req already sent!",
-            }, 
-            status=status.HTTP_409_CONFLICT) #Conflicts error
+        return JsonResponse({'message': 'friend request already sent'}, status=409)  # conflicts error
+    
     
 def accept_friend_request(request, requestID):
+    token_auth = TokenAuthentication()
+    try:
+        user, token = token_auth.authenticate(request)
+    except AuthenticationFailed:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+    
     friend_request = Friend_Request.objects.get(id=requestID)
-    if friend_request.to_user == request.user:
+    if friend_request.to_user == user:
         friend_request.to_user.friends.add(friend_request.from_user)
         friend_request.from_user.friends.add(friend_request.to_user)
         friend_request.delete()
@@ -481,7 +487,12 @@ def accept_friend_request(request, requestID):
         return JsonResponse({'message': 'friend request not accepted'}, status=409)  # conflicts error
     
 def retrieve_friend_requests(request):
-    user = request.user
+    token_auth = TokenAuthentication()
+    try:
+        user, token = token_auth.authenticate(request)
+    except AuthenticationFailed:
+        return JsonResponse({'error': 'Invalid token'}, status=401)
+    
     friend_requests = Friend_Request.objects.filter(to_user=user.id)
     serializer = FriendRequestSerializer(friend_requests, many=True)
     return JsonResponse(serializer.data, safe=False)

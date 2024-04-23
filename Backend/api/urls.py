@@ -12,7 +12,9 @@ urlpatterns = [
     path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
     path('statistics/', StatsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
-    path('send_friend_request/<int:userID>/', send_friend_request, name="send friend request"),
-    path('accept_friend_request/<int:requestID>/', accept_friend_request, name="accept friend request"),
-    path('retrive_friend_requests', retrieve_friend_requests, name='retrive_friend_requests')
+    path('send-friend-request/<int:userID>/', send_friend_request, name="send friend request"),
+    path('accept-friend-request/<int:requestID>/', accept_friend_request, name="accept friend request"),
+    path('retrive_friend_requests', retrieve_friend_requests, name='retrive_friend_requests'),
+    path('get-friends', get_friends, name='get friends')
+
 ]
