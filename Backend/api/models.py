@@ -9,7 +9,7 @@ the data that will be stored.
 """
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 class Station(models.Model):
@@ -51,12 +51,6 @@ class ChargingStation(Station):
     power = models.IntegerField(default=0)
     current_type = models.CharField(max_length=100)
     connexion_type = models.CharField(max_length=100)
-
-class User(AbstractUser):
-    username = models.CharField(max_length = 100, primary_key = True)
-    name = models.CharField(max_length = 100)
-    email = models.EmailField(max_length = 100, unique = True)
-    password = models.CharField(max_length = 100)
 
 
 def validate_km_totals(instance):
