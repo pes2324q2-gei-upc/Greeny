@@ -55,7 +55,7 @@ class UserAuth {
     await SecureStorage().deleteSecureData('name');
   }
 
-  bool refreshUser() async {
+  Future<bool> refreshUser() async {
     var response = await httpGet('api/user/');
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
