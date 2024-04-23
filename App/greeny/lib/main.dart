@@ -93,11 +93,10 @@ class Greeny extends StatelessWidget {
   }
 }
 
-Future<Widget> mainScreen() async {
+Future<Widget> mainScreenIfUser() async {
   String? token = await SecureStorage().readSecureData('token');
-  if (token == null) {
-    return const LogInPage();
-  } else {
-    return const MainPage();
+  if (token != null) {
+    if (userAuth.refreshUser()) return MainPage();
   }
+  return LogInPage();
 }
