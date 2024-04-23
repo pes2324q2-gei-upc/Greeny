@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
+import 'package:greeny/Profile/edit_profile.dart';
 import 'package:greeny/Profile/settings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,10 +19,12 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String userName = '';
+  String userEmail = 'ejemplo@gmail';
 
   @override
   void initState() {
     obtenirNomUsuari();
+    getInfoUser();
     super.initState();
   }
 
@@ -27,6 +33,21 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       userName = userName;
     });
+  }
+
+  Future<void> getInfoUser() async {
+    Map<String, dynamic> statsData = {};
+
+    final response = await httpGet('/api/user/');
+
+    if (response.statusCode == 200) {
+      setState(() {
+        statsData = json.decode(response.body);
+        userEmail = statsData['email'];
+      });
+    } else {
+      showMessage("Error loading user info");
+    }
   }
 
   @override
@@ -88,10 +109,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
                             color: const Color.fromARGB(255, 1, 167, 164)),
-                        child: const Icon(
-                          Icons.edit,
-                          color: Colors.black,
-                          size: 20,
+                        child: IconButton(
+                          onPressed: showEdit,
+                          icon: const Icon(
+                            Icons.edit,
+                            color: ProfilePage.smallCardColor,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),
@@ -134,30 +158,34 @@ class _ProfilePageState extends State<ProfilePage> {
                               borderRadius: BorderRadius.circular(15),
                               color: ProfilePage.smallCardColor),
                           padding: const EdgeInsets.all(10),
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.email,
+                              const Icon(Icons.email,
                                   color: ProfilePage
                                       .titolColor), // Icono de correo electrónico
-                              SizedBox(
+                              const SizedBox(
                                   width:
                                       5), // Espacio entre el icono y el correo electrónico
-                              Text(
+                              const Text(
                                 'Email:', // Correo electrónico
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: ProfilePage.titolColor,
                                 ),
                               ),
-                              Spacer(),
-                              Text(
-                                'correo@ejemplo.com', // Correo electrónico
-                                style: TextStyle(
-                                  fontSize: 16,
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: Text(
+                                  userEmail, // Correu
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.right,
                                 ),
                               ),
-                              SizedBox(width: 5),
+                              const SizedBox(width: 5),
                             ],
                           ),
                         ),
@@ -281,6 +309,26 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       MaterialPageRoute(builder: (context) => const SettingsPage()),
     );
+  }
+
+  void showEdit() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const EditProfilePage()),
+    );
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
   }
 
   void share() {}
