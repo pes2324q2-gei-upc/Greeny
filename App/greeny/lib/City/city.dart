@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/app_state.dart';
