@@ -9,7 +9,7 @@ the data that will be stored.
 """
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 class Station(models.Model):
@@ -24,6 +24,9 @@ class Station(models.Model):
         return self.__class__.__name__
 
 class PublicTransportStation(Station):
+    pass
+
+class User(AbstractUser):
     pass
 
 class TransportType(models.Model):
