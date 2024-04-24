@@ -25,7 +25,6 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class UserView(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -57,11 +56,7 @@ class UserView(APIView):
         )
     
     def patch(self, request):
-        token_auth = TokenAuthentication()
-        try:
-            user, token = token_auth.authenticate(request)
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        user = self.request.user
         
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=ValueError):
@@ -76,4 +71,15 @@ class UserView(APIView):
                 "error_msg": serializer.error_messages,
             },
             status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def delete(self, request):
+        user = self.request.user
+        user.delete()
+        return Response(
+            {
+                "error": False,
+                "error_msg": "User deleted",
+            },
+            status=status.HTTP_200_OK
         )
