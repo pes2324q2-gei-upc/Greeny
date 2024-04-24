@@ -20,7 +20,9 @@ jobs:
                 python-version: 3.x
 
             - name: Install dependencies
-              run: pip install -r ./Backend/requirements.txt
+              run: |
+                pip install pylint
+                pip install -r ./Backend/requirements.txt
     
 
             - name: Run Pylint
