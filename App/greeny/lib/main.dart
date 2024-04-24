@@ -8,6 +8,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:greeny/API/user_auth.dart';
 
 class TranslatePreferences implements ITranslatePreferences {
   static const String _selectedLocaleKey = 'selected_locale';
@@ -75,7 +76,7 @@ class Greeny extends StatelessWidget {
           useMaterial3: true,
         ),
         home: FutureBuilder<Widget>(
-          future: mainScreen(),
+          future: mainScreenIfUser(),
           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
@@ -93,11 +94,10 @@ class Greeny extends StatelessWidget {
   }
 }
 
-Future<Widget> mainScreen() async {
+Future<Widget> mainScreenIfUser() async {
   String? token = await SecureStorage().readSecureData('token');
-  if (token == null) {
-    return const LogInPage();
-  } else {
-    return const MainPage();
+  if (token != null) {
+    if (await UserAuth().refreshUser()) return const MainPage();
   }
+  return const LogInPage();
 }
