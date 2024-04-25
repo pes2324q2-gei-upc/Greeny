@@ -136,3 +136,4 @@ class Migration(migrations.Migration):
             constraint=models.CheckConstraint(check=models.Q(('km_Totals', django.db.models.expressions.CombinedExpression(django.db.models.expressions.CombinedExpression(django.db.models.expressions.CombinedExpression(django.db.models.expressions.CombinedExpression(django.db.models.expressions.CombinedExpression(django.db.models.expressions.CombinedExpression(models.F('km_Walked'), '+', models.F('km_Biked')), '+', models.F('km_ElectricCar')), '+', models.F('km_PublicTransport')), '+', models.F('km_Bus')), '+', models.F('km_Motorcycle')), '+', models.F('km_Car')))), name='km_totals_constraint'),
         ),
     ]
+

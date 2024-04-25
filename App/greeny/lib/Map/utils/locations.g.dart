@@ -41,6 +41,7 @@ Map<String, dynamic> _$StationsToJson(Stations instance) => <String, dynamic>{
 PublicTransportStation _$PublicTransportStationFromJson(
         Map<String, dynamic> json) =>
     PublicTransportStation(
+      id: json['id'] as int,
       stops: (json['stops'] as List<dynamic>)
           .map((e) => Stop.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -53,6 +54,7 @@ PublicTransportStation _$PublicTransportStationFromJson(
 Map<String, dynamic> _$PublicTransportStationToJson(
         PublicTransportStation instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'stops': instance.stops,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
@@ -61,6 +63,7 @@ Map<String, dynamic> _$PublicTransportStationToJson(
     };
 
 BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
+      id: json['id'] as int,
       lines: (json['lines'] as List<dynamic>).map((e) => e as String).toList(),
       name: json['name'] as String,
       rating: (json['rating'] as num).toDouble(),
@@ -70,6 +73,7 @@ BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
 
 Map<String, dynamic> _$BusStationToJson(BusStation instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'lines': instance.lines,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
@@ -79,6 +83,7 @@ Map<String, dynamic> _$BusStationToJson(BusStation instance) =>
 
 BicingStation _$BicingStationFromJson(Map<String, dynamic> json) =>
     BicingStation(
+      id: json['id'] as int,
       capacitat: json['capacitat'] as int,
       name: json['name'] as String,
       rating: (json['rating'] as num).toDouble(),
@@ -88,6 +93,7 @@ BicingStation _$BicingStationFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$BicingStationToJson(BicingStation instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'capacitat': instance.capacitat,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
@@ -97,6 +103,7 @@ Map<String, dynamic> _$BicingStationToJson(BicingStation instance) =>
 
 ChargingStation _$ChargingStationFromJson(Map<String, dynamic> json) =>
     ChargingStation(
+      id: json['id'] as int,
       name: json['name'] as String,
       rating: (json['rating'] as num).toDouble(),
       latitude: (json['latitude'] as num).toDouble(),
@@ -110,6 +117,7 @@ ChargingStation _$ChargingStationFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$ChargingStationToJson(ChargingStation instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
       'name': instance.name,

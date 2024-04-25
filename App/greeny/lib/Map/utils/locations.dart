@@ -39,6 +39,7 @@ class Stations {
 @JsonSerializable()
 class PublicTransportStation {
   PublicTransportStation({
+    required this.id,
     required this.stops,
     required this.name,
     required this.rating,
@@ -50,6 +51,7 @@ class PublicTransportStation {
       _$PublicTransportStationFromJson(json);
   Map<String, dynamic> toJson() => _$PublicTransportStationToJson(this);
 
+  final int id;
   final List<Stop> stops;
   final double latitude;
   final double longitude;
@@ -60,6 +62,7 @@ class PublicTransportStation {
 @JsonSerializable()
 class BusStation {
   BusStation({
+    required this.id,
     required this.lines,
     required this.name,
     required this.rating,
@@ -71,6 +74,7 @@ class BusStation {
       _$BusStationFromJson(json);
   Map<String, dynamic> toJson() => _$BusStationToJson(this);
 
+  final int id;
   final List<String> lines;
   final double latitude;
   final double longitude;
@@ -81,6 +85,7 @@ class BusStation {
 @JsonSerializable()
 class BicingStation {
   BicingStation({
+    required this.id,
     required this.capacitat,
     required this.name,
     required this.rating,
@@ -92,6 +97,7 @@ class BicingStation {
       _$BicingStationFromJson(json);
   Map<String, dynamic> toJson() => _$BicingStationToJson(this);
 
+  final int id;
   final int capacitat;
   final double latitude;
   final double longitude;
@@ -102,6 +108,7 @@ class BicingStation {
 @JsonSerializable()
 class ChargingStation {
   ChargingStation({
+    required this.id,
     required this.name,
     required this.rating,
     required this.latitude,
@@ -120,6 +127,7 @@ class ChargingStation {
       _$ChargingStationFromJson(json);
   Map<String, dynamic> toJson() => _$ChargingStationToJson(this);
 
+  final int id;
   final double latitude;
   final double longitude;
   final String name;

@@ -5,7 +5,7 @@ import 'package:greeny/City/city.dart';
 void main() {
   testWidgets('CityPage UI Test', (WidgetTester tester) async {
     // Build our CityPage widget.
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: CityPage(),
     ));
 

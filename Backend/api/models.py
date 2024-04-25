@@ -1,16 +1,23 @@
+"""
+This module defines the database models for the Greeny aplication. 
+
+It includes models for Station, PublicTransportStation, TransportType, Stop, BusStation, 
+BicingStation, ChargingStation, User and Statistics.
+
+Each model corresponds to a table in the database and defines the fields and behaviors of 
+the data that will be stored.
+"""
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.db.models import Case, When, Value, CharField
-from django.db.models import CheckConstraint  
-from django.db.models import Q, F
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
     rating = models.FloatField(default= 0.0)
+
     def __str__(self):
         return self.name
     def subclass_name(self):
@@ -18,6 +25,14 @@ class Station(models.Model):
 
 class PublicTransportStation(Station):
     pass
+
+class User(AbstractUser):
+    class User(AbstractUser):
+    username = models.CharField(max_length = 100, unique = True)
+    name = models.CharField(max_length = 100)
+    email = models.EmailField(max_length = 100, unique = True)
+    password = models.CharField(max_length = 100)
+    friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
@@ -45,16 +60,26 @@ class ChargingStation(Station):
     current_type = models.CharField(max_length=100)
     connexion_type = models.CharField(max_length=100)
 
-class User(AbstractUser):
-    username = models.CharField(max_length = 100, unique = True)
-    name = models.CharField(max_length = 100)
-    email = models.EmailField(max_length = 100, unique = True)
-    password = models.CharField(max_length = 100)
-    friends = models.ManyToManyField("self", blank=True)
+
+def validate_km_totals(instance):
+    # Calculate the sum of all km fields
+    total_kms = sum([
+        instance.km_Walked,
+        instance.km_Biked,
+        instance.km_ElectricCar,
+        instance.km_PublicTransport,
+        instance.km_Bus,
+        instance.km_Motorcycle,
+        instance.km_Car
+    ])
+
+    # Check if the sum matches km_Totals with a precision of 2
+    if abs(total_kms - instance.km_Totals) > 0.01:
+        raise ValidationError('Sum of kms does not match km_Totals')
 
 
 class Statistics(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
     kg_CO2 = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
     km_Walked = models.FloatField(default=0.0)
@@ -65,18 +90,15 @@ class Statistics(models.Model):
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
 
-    class Meta:
-        constraints = [
-            # Km totals = summation of all km
-            CheckConstraint(
-                check=Q(
-                    km_Totals=F('km_Walked') + F('km_Biked') + F('km_ElectricCar') + F('km_PublicTransport') + F('km_Bus') + F('km_Motorcycle') + F('km_Car')),
-                name='km_totals_constraint'
-            ),
-        ]
+    def clean(self):
+        validate_km_totals(self)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 class Friend_Request(models.Model):
     from_user = models.ForeignKey(
         User, related_name='from_user', on_delete=models.CASCADE)
     to_user = models.ForeignKey(
-        User, related_name='to_user', on_delete=models.CASCADE)
+    User, related_name='to_user', on_delete=models.CASCADE)

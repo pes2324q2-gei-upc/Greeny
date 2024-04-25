@@ -15,12 +15,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'name', 'email','password']
+        fields = ['username', 'first_name', 'email','password']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'name']
+        fields = ['username', 'first_name']
 
 class FriendSerializer(serializers.ModelSerializer):
     friends = serializers.SerializerMethodField()
@@ -76,7 +76,8 @@ class ChargingStationSerializer(StationSerializer):
 class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id']
+        exclude = ['id', 'user']
+        
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     # from_user = serializers.PrimaryKeyRelatedField(source='from_user.id', queryset=User.objects.all())
