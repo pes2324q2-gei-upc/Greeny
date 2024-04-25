@@ -27,7 +27,12 @@ class PublicTransportStation(Station):
     pass
 
 class User(AbstractUser):
-    pass
+    class User(AbstractUser):
+    username = models.CharField(max_length = 100, unique = True)
+    name = models.CharField(max_length = 100)
+    email = models.EmailField(max_length = 100, unique = True)
+    password = models.CharField(max_length = 100)
+    friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
@@ -91,3 +96,9 @@ class Statistics(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+class Friend_Request(models.Model):
+    from_user = models.ForeignKey(
+        User, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(
+    User, related_name='to_user', on_delete=models.CASCADE)
