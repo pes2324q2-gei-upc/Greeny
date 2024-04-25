@@ -27,7 +27,6 @@ class PublicTransportStation(Station):
     pass
 
 class User(AbstractUser):
-    class User(AbstractUser):
     username = models.CharField(max_length = 100, unique = True)
     name = models.CharField(max_length = 100)
     email = models.EmailField(max_length = 100, unique = True)
