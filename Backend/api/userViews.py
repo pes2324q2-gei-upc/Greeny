@@ -77,3 +77,15 @@ class UserView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    def delete(self, request):
+        user = self.request.user
+        user.delete()
+        return Response(
+            {
+                "success": True,
+                "message": "User deleted successfully"
+            },
+            status=status.HTTP_200_OK
+        )
+        

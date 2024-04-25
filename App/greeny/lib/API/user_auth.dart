@@ -74,4 +74,15 @@ class UserAuth {
     String value = await SecureStorage().readSecureData(key);
     return value;
   }
+
+  Future userDelete() async {
+    var response = await httpDelete('api/user/');
+    if (response.statusCode == 200) {
+      await SecureStorage().deleteSecureData('token');
+      await SecureStorage().deleteSecureData('name');
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

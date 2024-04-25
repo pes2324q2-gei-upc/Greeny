@@ -31,7 +31,7 @@ httpPost(String url, String params, String contentType) async {
     },
     body: params,
   );
-  
+
   return response;
 }
 
@@ -57,6 +57,18 @@ httpPatch(String url, String params) async {
       'Authorization': 'Bearer $token',
     },
     body: params,
+  );
+  return response;
+}
+
+httpDelete(String url) async {
+  var token = await getToken();
+  var uri = Uri.http(backendURL, url);
+  var response = await http.delete(
+    uri,
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
   );
   return response;
 }
