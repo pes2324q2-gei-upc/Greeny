@@ -2,8 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from ..models import Friend_Request, User
-from ..serializers import FriendRequestSerializer, FriendSerializer, FriendUserSerializer
+from .models import Friend_Request, User
+from .serializers import FriendRequestSerializer, FriendSerializer, FriendUserSerializer
 
 class FriendRequestViewSet(viewsets.ViewSet):
     authentication_classes = [TokenAuthentication]
