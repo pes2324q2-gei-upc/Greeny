@@ -1,8 +1,14 @@
 from api.views import *
-from django.urls import path
+from Backend.api.views.friend_view import *
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
+router = DefaultRouter()
+router.register(r'friend-requests', FriendRequestViewSet, basename='friend-requests')
+router.register(r'friends', FriendViewSet, basename='friend')
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('charging-points', CarregadorsElectricsView.as_view(), name='charging_points'),
     path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
     path('get-stations', GetStations.as_view(), name="get_all_stations"),
@@ -12,9 +18,5 @@ urlpatterns = [
     path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
     path('statistics/', StatsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
-    path('send-friend-request/<int:userID>/', send_friend_request, name="send friend request"),
-    path('accept-friend-request/<int:requestID>/', accept_friend_request, name="accept friend request"),
-    path('retrive_friend_requests', retrieve_friend_requests, name='retrive_friend_requests'),
-    path('get-friends', get_friends, name='get friends')
 
 ]
