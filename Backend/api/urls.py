@@ -1,6 +1,7 @@
 from api.user_views import UserView
 from api.statisticsViews import StatisticsView
-from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, GetStations, ParadesBus
+from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations
+from api.transportsViews import ParadesBus, StationsView
 from django.urls import path, include
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from rest_framework.routers import DefaultRouter
