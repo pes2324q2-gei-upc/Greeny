@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StationPage extends StatefulWidget {
-  const StationPage({super.key, required this.station_id, required this.type});
+  const StationPage({super.key, required this.stationId, required this.type});
 
-  final int station_id;
+  final int stationId;
   final String type;
 
   @override
@@ -13,41 +16,44 @@ class StationPage extends StatefulWidget {
 }
 
 class _StationPageState extends State<StationPage> {
-  int get station => widget.station_id;
+  int get stationId => widget.stationId;
   String get type => widget.type;
 
-  dynamic station = {
-    'id': 0,
-    'name': '',
-    'rating': 0,
-    'latitude': 0,
-    'longitude': 0,
-    'stops': [],
-    'lines': [],
-    'capacitat': 0,
-    'acces': '',
-    'power': 0,
-    'charging_velocity': '',
-    'current_type': '',
-    'connexion_type': ''
-  };
+  bool isLoading = true;
+
+  Map<String, dynamic> station = {};
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(station.name),
-        ),
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
         body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              rating(),
-              specificInfo(),
-              reviews(),
-            ],
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(station['name']),
           ),
-        ));
+          body: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                rating(),
+                specificInfo(),
+                reviews(),
+              ],
+            ),
+          ));
+    }
   }
 
   rating() {
@@ -61,7 +67,7 @@ class _StationPageState extends State<StationPage> {
               const Icon(Icons.star, color: Colors.yellow, size: 30),
               const SizedBox(width: 5),
               Text(
-                station.rating.toString(),
+                station['rating'].toString(),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
@@ -86,7 +92,7 @@ class _StationPageState extends State<StationPage> {
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       ElevatedButton(
                           onPressed: () =>
-                              mapsGo(station.latitude, station.longitude),
+                              mapsGo(station['latitude'], station['longitude']),
                           child: Text(translate('Go')))
                     ],
                   ),
@@ -109,7 +115,7 @@ class _StationPageState extends State<StationPage> {
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                         ElevatedButton(
                             onPressed: () =>
-                                mapsGo(station.latitude, station.longitude),
+                                mapsGo(station['latitude'], station['longitude']),
                             child: Text(translate('Go')))
                       ],
                     ),
@@ -131,7 +137,7 @@ class _StationPageState extends State<StationPage> {
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     ElevatedButton(
                         onPressed: () =>
-                            mapsGo(station.latitude, station.longitude),
+                            mapsGo(station['latitude'], station['longitude']),
                         child: Text(translate('Go')))
                   ],
                 ),
@@ -144,7 +150,7 @@ class _StationPageState extends State<StationPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Icon(Icons.directions_bike, color: Colors.white),
-                        Text(' ${station.capacitat}',
+                        Text(' ${station['capacitat']}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white)),
@@ -169,17 +175,17 @@ class _StationPageState extends State<StationPage> {
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     ElevatedButton(
                         onPressed: () =>
-                            mapsGo(station.latitude, station.longitude),
+                            mapsGo(station['latitude'], station['longitude']),
                         child: Text(translate('Go')))
                   ],
                 ),
-                Text('${translate('Access')}: ${station.acces}'),
-                Text('${translate('Power')}: ${station.power} kW'),
+                Text('${translate('Access')}: ${station['acces']}'),
+                Text('${translate('Power')}: ${station['power']} kW'),
                 Text(
-                    '${translate('Charging velocity')}: ${station.charging_velocity}'),
-                Text('${translate('Current type')}: ${station.current_type}'),
+                    '${translate('Charging velocity')}: ${station['charging_velocity']}'),
+                Text('${translate('Current type')}: ${station['current_type']}'),
                 Text(
-                    '${translate('Connector type')}: ${station.connexion_type}'),
+                    '${translate('Connector type')}: ${station['connexion_type']}'),
               ],
             ),
           );
@@ -248,7 +254,7 @@ class _StationPageState extends State<StationPage> {
       padding: const EdgeInsets.only(top: 10),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [for (var stop in station.stops) tmbLines(stop)]),
+          children: [for (var stop in station['stops']) tmbLines(stop)]),
     );
   }
 
@@ -256,7 +262,7 @@ class _StationPageState extends State<StationPage> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: stop.lines
+          children: stop['lines']
               .map<Widget>((line) => RawMaterialButton(
                   constraints: BoxConstraints.tight(const Size(40, 40)),
                   onPressed: () => onTapTmb(line),
@@ -285,7 +291,7 @@ class _StationPageState extends State<StationPage> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: station.lines
+          children: station['lines']
               .map<Widget>((line) => RawMaterialButton(
                   constraints: BoxConstraints.tight(const Size(40, 40)),
                   onPressed: () => onTapBus(line),
@@ -376,8 +382,12 @@ class _StationPageState extends State<StationPage> {
     }
   }
 
-  Future<void> getInfo() {
-    var response = await httpGet('api/stations/${station.id}');
-    station = Station.fromJson(response.body);
+  Future<void> getInfo() async {
+    var response = await httpGet('api/stations/$stationId');
+    String body = utf8.decode(response.bodyBytes);
+    station = jsonDecode(body);
+    setState(() {
+      isLoading = false;
+    });
   }
 }

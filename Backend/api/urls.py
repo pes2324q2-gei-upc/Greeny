@@ -5,7 +5,7 @@ It includes routes for viewing and manipulating Stations, PublicTransportStation
 TransportTypes, Stops, BusStations, BicingStations, ChargingStations, Users, and Statistics.
 
 """
-from api.userViews import UserView
+from api.user_views import UserView
 from api.statisticsViews import StatisticsView
 from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, ParadesBus, StationsView
 from django.urls import path

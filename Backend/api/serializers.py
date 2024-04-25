@@ -16,8 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'email','password']
-        
-    
+ 
+
 
 class PublicTransportStationSerializer(StationSerializer):
     stops = serializers.SerializerMethodField()

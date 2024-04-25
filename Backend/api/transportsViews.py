@@ -187,9 +187,31 @@ class FetchPublicTransportStations(View):
 class StationsView(APIView):
     def get(self, request, pk=None):
         if (pk):
-            station = Station.objects.get(id=pk)
-            serializer = PublicTransportStationSerializer(station)
-            return Response(serializer.data)
+            try:
+                station = PublicTransportStation.objects.get(pk=pk)
+                serializer = PublicTransportStationSerializer(station)
+                return Response(serializer.data)
+            except PublicTransportStation.DoesNotExist:
+                pass
+            try:
+                station = BusStation.objects.get(pk=pk)
+                serializer = BusStationSerializer(station)
+                return Response(serializer.data)
+            except BusStation.DoesNotExist:
+                pass
+            try:
+                station = BicingStation.objects.get(pk=pk)
+                serializer = BicingStationSerializer(station)
+                return Response(serializer.data)
+            except BicingStation.DoesNotExist:
+                pass
+            try:
+                station = ChargingStation.objects.get(pk=pk)
+                serializer = ChargingStationSerializer(station)
+                return Response(serializer.data)
+            except ChargingStation.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        
         else:
             data = {}
 
