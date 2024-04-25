@@ -1,9 +1,10 @@
 # pylint: disable=no-member
 import requests
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import generics
+from pathlib import Path
 import os
 from .models import *
 from .serializers import *
@@ -13,10 +14,13 @@ from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAdminUser
+from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny
 
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
@@ -24,7 +28,88 @@ headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
 
 BASE_URL_AJT = "https://opendata-ajuntament.barcelona.cat/data/api/action/datastore_search?resource_id="
 ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
-headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"}
+headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"} 
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class FinalFormTransports(View):
+
+    #POST final form
+    def post(self, request):
+        if request.method == 'POST':
+            
+            #This lines will be replaced by the user logged in
+            '''try: 
+                dummy_user = User.objects.get(username='dummy')
+            except User.DoesNotExist:
+                dummy_user = User.objects.create(username='dummy', email='dummy@example.com')
+                dummy_user.set_password('dummy_password')
+                dummy_user.save()'''
+
+            # Authenticate the user
+            token_auth = TokenAuthentication()
+            try:
+                user, token = token_auth.authenticate(request)
+            except AuthenticationFailed:
+                return JsonResponse({'error': 'Invalid token'}, status=401)
+
+            data = json.loads(request.body)
+            transports = data['selectedTransports']
+            total_distance = data['totalDistance']
+            
+            update_fields = { 
+                    'km_Walked': 0.0,
+                    'km_Bus': 0.0,
+                    'km_PublicTransport': 0.0,
+                    'km_Biked': 0.0,
+                    'km_Car': 0.0,
+                    'km_Motorcycle': 0.0,
+                    'km_ElectricCar': 0.0,
+                    'km_Totals': 0.0,
+                }
+            
+            if (len(transports) != 0):
+                total_transports = len(transports)
+                transport_modes = ['Walking', 'Bus', 'Train, Metro, Tram, FGC', 'Bike', 'Car', 'Motorcycle', 'Electric Car']
+                
+                percentage = 100 / total_transports / 100 
+                km_mode = percentage * total_distance
+
+                transport_percentages = {}
+                for mode in transport_modes:
+                    if mode in transports:
+                        transport_percentages[mode] = km_mode
+                    else:
+                        transport_percentages[mode] = 0.0
+
+
+                field_mapping = {
+                    'Walking': 'km_Walked',
+                    'Bus': 'km_Bus',
+                    'Train, Metro, Tram, FGC': 'km_PublicTransport',
+                    'Bike': 'km_Biked',
+                    'Car': 'km_Car',
+                    'Motorcycle': 'km_Motorcycle',
+                    'Electric Car': 'km_ElectricCar'
+                }
+                
+                
+                for key, value in transport_percentages.items():
+                    update_fields[field_mapping[key]] = value
+
+                update_fields['km_Totals'] = total_distance
+                
+            try: 
+                user_statics = Statistics.objects.get(username=user)
+                for key, value in update_fields.items():
+                    current_value = getattr(user_statics, key, 0)
+                    setattr(user_statics, key, current_value + value)
+                user_statics.save()
+            except Statistics.DoesNotExist:
+                user_statics = Statistics.objects.create(username=user, **update_fields)
+                user_statics.save()
+                
+            return JsonResponse({'status': 'success'})
 
 #GET carregadors electrics
 class CarregadorsElectricsView(View):
@@ -290,3 +375,105 @@ class EstacionsBicing(View):
             )
 
         return redirect('charging_points')
+
+class TestView(View):
+    def get(self, request):
+        response = requests.get(url=(BASE_URL_AJT + ID_ESTACIONS_TRANSPORT + "&limit=700"));
+        data = response.json()
+        return JsonResponse(data, safe=False)
+
+class StatsView(View):
+    def get(self, request):
+        
+        #This lines will be replaced by the user logged in
+        '''try: 
+            dummy_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            dummy_user = User.objects.create(username=username, email='dummy@example.com')
+            dummy_user.set_password('dummy_password')
+            dummy_user.save()'''
+        
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+        
+        try:
+            user_statistics = Statistics.objects.get(username=user)
+        except Statistics.DoesNotExist:
+            user_statistics = Statistics.objects.create(
+                username=user,
+                kg_CO2=0.0,
+                km_Totals=0.0,
+                km_Walked=0.0,
+                km_Biked=0.0,
+                km_ElectricCar=0.0,
+                km_PublicTransport=0.0,
+                km_Bus=0.0,
+                km_Motorcycle=0.0,
+                km_Car=0.0
+            )
+            user_statistics.save()
+        
+        serializer = statisticsSerializer(user_statistics)
+        return JsonResponse(serializer.data)
+    
+
+class UserView(APIView):
+    authentication_classes = [TokenAuthentication]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(UserView, self).get_permissions()
+
+    def get(self, request):
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+        
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.create(validated_data=request.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            {
+                "error": True,
+                "error_msg": serializer.error_messages,
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    def patch(self, request):
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+        
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=ValueError):
+            serializer.update(instance=user, validated_data=request.data)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            {
+                "error": True,
+                "error_msg": serializer.error_messages,
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
