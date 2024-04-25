@@ -1,8 +1,14 @@
 from api.views import *
-from django.urls import path
+from django.urls import path, include
+from api.reviewsViews import *
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'reviews', reviewsViews, basename="reviews")
 
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('charging-points', CarregadorsElectricsView.as_view(), name='charging_points'),
     path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
     path('get-stations', GetStations.as_view(), name="get_all_stations"),

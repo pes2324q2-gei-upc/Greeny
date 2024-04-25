@@ -4,7 +4,7 @@ from .models import *
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['name', 'latitude', 'longitude' , 'rating']
+        fields = ['id', 'name', 'latitude', 'longitude' , 'rating']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -61,4 +61,9 @@ class ChargingStationSerializer(StationSerializer):
 class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
+        exclude = ['id']
+
+class reviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
         exclude = ['id']

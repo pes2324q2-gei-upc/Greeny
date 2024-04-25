@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:greeny/Map/add_review.dart';
 
 class StationPage extends StatefulWidget {
   const StationPage({super.key, required this.station, required this.type});
@@ -226,6 +227,10 @@ class _StationPageState extends State<StationPage> {
   }
 
   addReview() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddReviewPage(station: station)),
+    );
   }
 
   tmbStops() {

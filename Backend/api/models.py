@@ -74,4 +74,9 @@ class Statistics(models.Model):
             ),
         ]
 
-    
+class Review(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+    body = models.CharField(max_length = 1000)
+    puntuation = models.FloatField(default=0.0, blank=False, null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
