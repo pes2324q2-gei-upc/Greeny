@@ -1,7 +1,9 @@
 from api.user_views import UserView
 from api.statisticsViews import StatisticsView
 from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, GetStations, ParadesBus
-from django.urls import path
+from django.urls import path, include
+from api.friend_view import FriendRequestViewSet, FriendViewSet
+from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'friend-requests', FriendRequestViewSet, basename='friend-requests')
@@ -16,7 +18,6 @@ urlpatterns = [
     path('send-form-transports', StatisticsView.as_view(), name='final_form_transports'),
     path('statistics/', StatisticsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
-
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list')
 ]
