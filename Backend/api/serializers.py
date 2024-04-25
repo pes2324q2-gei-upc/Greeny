@@ -76,11 +76,22 @@ class ChargingStationSerializer(StationSerializer):
 class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id']
+        exclude = ['id','user']
 
 class reviewsSerializer(serializers.ModelSerializer):
-    
+    author_username = serializers.SerializerMethodField()
+
     class Meta:
         model = Review
-        exclude = ['id']
-        read_only_fields = ['author']
+        exclude = ['id', 'station', 'author']
+
+    def get_author_username(self, obj):
+        return obj.author.username
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    # from_user = serializers.PrimaryKeyRelatedField(source='from_user.id', queryset=User.objects.all())
+    # to_user = serializers.PrimaryKeyRelatedField(source='to_user.id', queryset=User.objects.all())
+
+    class Meta:
+        model = Friend_Request
+        fields = ['from_user', 'to_user']

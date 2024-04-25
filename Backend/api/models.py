@@ -27,10 +27,6 @@ class PublicTransportStation(Station):
     pass
 
 class User(AbstractUser):
-    username = models.CharField(max_length = 100, unique = True)
-    name = models.CharField(max_length = 100)
-    email = models.EmailField(max_length = 100, unique = True)
-    password = models.CharField(max_length = 100)
     friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
@@ -78,7 +74,7 @@ def validate_km_totals(instance):
 
 
 class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100, related_name='statistics')
     kg_CO2 = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
     km_Walked = models.FloatField(default=0.0)
@@ -101,8 +97,9 @@ class Friend_Request(models.Model):
         User, related_name='from_user', on_delete=models.CASCADE)
     to_user = models.ForeignKey(
     User, related_name='to_user', on_delete=models.CASCADE)
+
 class Review(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100, related_name='reviews')
     station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='reviews')
     body = models.CharField(max_length = 1000, blank=True)
     puntuation = models.FloatField(default=0.0, blank=False, null=False)

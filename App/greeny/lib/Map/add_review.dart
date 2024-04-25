@@ -1,24 +1,29 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-//import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Map/station.dart';
 
 class AddReviewPage extends StatefulWidget {
-  final dynamic station;
+  final int stationId;
   final String type;
+  final String stationName;
 
-  const AddReviewPage({super .key, required this.station, required this.type});
-  
+  const AddReviewPage(
+      {super.key,
+      required this.stationId,
+      required this.type,
+      required this.stationName});
+
   @override
   _AddReviewPageState createState() => _AddReviewPageState();
 }
 
 class _AddReviewPageState extends State<AddReviewPage> {
-  dynamic get station => widget.station;
+  int get stationId => widget.stationId;
+  String get stationName => widget.stationName;
   String get type => widget.type;
 
   final TextEditingController reviewController = TextEditingController();
@@ -29,24 +34,23 @@ class _AddReviewPageState extends State<AddReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Review'),
-      ),
-      body: Center(
-        //child: reviewForm(),
+        appBar: AppBar(
+          title: Text('Add Review'),
+        ),
+        body: Center(
+          //child: reviewForm(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Station: ${widget.station.name}'),
+              Text('Station: $stationName'),
               Expanded(
                 child: reviewForm(),
               ),
             ],
           ),
-        )
-      );
-      
-      /*body: CustomScrollView(
+        ));
+
+    /*body: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: [
           SliverFillRemaining(
@@ -161,20 +165,21 @@ class _AddReviewPageState extends State<AddReviewPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text( //Hace falta este?
-                            'Rating: $rating',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ]
-                      ),
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              //Hace falta este?
+                              'Rating: $rating',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ]),
                       const SizedBox(height: 30),
                       RatingBar.builder(
                         minRating: 1,
                         itemSize: 40,
-                        itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                        itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
+                        itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                        itemBuilder: (context, _) =>
+                            const Icon(Icons.star, color: Colors.amber),
                         updateOnDrag: true,
                         onRatingUpdate: (rating) => setState(() {
                           this.rating = rating;
@@ -185,15 +190,15 @@ class _AddReviewPageState extends State<AddReviewPage> {
                         obscureText: false,
                         controller: reviewController,
                         //maxLines: 5,
-                        decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: 'Write your review here',
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: sendReview,
-                        child: Text('Save Review'),
+                        child: const Text('Save Review'),
                       ),
                     ],
                   ),
@@ -223,30 +228,29 @@ class _AddReviewPageState extends State<AddReviewPage> {
     }
 
     var response = await httpPost(
-        'api/reviews/',
+        'api/stations/$stationId/reviews/',
         jsonEncode({
           'body': reviewText,
           'puntuation': rating,
-          'station': station.id,
         }),
         'application/json');
-    if (response.statusCode == 201){
+    if (response.statusCode == 201) {
       //volver a la otra pantalla
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => StationPage(station: station, type: type)),
-            (Route<dynamic> route) => false,
+            builder: (context) =>
+                StationPage(stationId: stationId, type: type)),
+        (Route<dynamic> route) => false,
       );
-    }
-    else {
+    } else {
       showMessage("No se ha podido guardar la review");
     }
 
     print('Sending review: $reviewText');
     print('Sending score: $rating');
   }
-  
+
   void showMessage(String m) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
