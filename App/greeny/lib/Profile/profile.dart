@@ -92,15 +92,35 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(
                       height: 20, // Espacio entre la imagen y la tarjeta
                     ),
-                    SizedBox(
+                    Container(
                       width: 120,
                       height: 120,
+                      decoration: BoxDecoration(
+                        shape: BoxShape
+                            .circle, // Establece la forma como un círculo
+                        border: Border.all(
+                          color: const Color.fromARGB(
+                              255, 1, 167, 164), // Color del borde
+                          width: 5, // Ancho del borde
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey
+                                .withOpacity(0.5), // Color de la sombra
+                            spreadRadius: 3, // Extensión de la sombra
+                            blurRadius: 3, // Desenfoque de la sombra
+                            offset: Offset(0, 2), // Desplazamiento de la sombra
+                          ),
+                        ],
+                      ),
                       child: ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.asset(
-                            'assets/images/perfil.jpeg',
-                            fit: BoxFit.cover,
-                          )),
+                        borderRadius: BorderRadius.circular(
+                            60), // Radio de borde igual a la mitad del ancho/alto
+                        child: Image.asset(
+                          'assets/images/perfil.jpeg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                     Positioned(
                       bottom: 0,
@@ -145,223 +165,235 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 20,
                 ),
                 Expanded(
-                  child: Container(
-                    width: double.infinity, // Ocupa todo el ancho disponible
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Container(
+                      width: double.infinity, // Ocupa todo el ancho disponible
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                        color: Colors.white, // Color de fondo de la tarjeta
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey
+                                .withOpacity(0.2), // Color de la sombra
+                            spreadRadius: 5, // Extensión de la sombra
+                            blurRadius: 7, // Desenfoque de la sombra
+                            offset: Offset(0, 3), // Desplazamiento de la sombra
+                          ),
+                        ],
                       ),
-                      color: Colors.white, // Color de fondo de la tarjeta
-                    ),
-                    padding: const EdgeInsets.all(20), // Espaciado interno
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        //aqui va la informació de l'usuari
-                        const SizedBox(height: 10),
-                        //Email
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.email,
-                                  color: ProfilePage.titolColor),
-                              const SizedBox(width: 5),
-                              const Text(
-                                'Email:',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: ProfilePage.titolColor,
+                      padding: const EdgeInsets.all(20), // Espaciado interno
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          //aqui va la informació de l'usuari
+                          const SizedBox(height: 10),
+                          //Email
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.email,
+                                    color: ProfilePage.titolColor),
+                                const SizedBox(width: 5),
+                                const Text(
+                                  'Email:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  userEmail, // Correu
-                                  style: const TextStyle(
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    userEmail, // Correu
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          //Data registre
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.calendar_month,
+                                    color: ProfilePage.titolColor),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Joined:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  '24/03/24',
+                                  style: TextStyle(
                                     fontSize: 16,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.right,
                                 ),
-                              ),
-                              const SizedBox(width: 5),
-                            ],
+                                SizedBox(width: 5),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        //Data registre
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.calendar_month,
-                                  color: ProfilePage.titolColor),
-                              SizedBox(width: 5),
-                              Text(
-                                'Joined:',
-                                style: TextStyle(
-                                  fontSize: 16,
+                          const SizedBox(height: 10),
+                          //Nivell
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.star, color: ProfilePage.titolColor),
+                                SizedBox(width: 5),
+                                Text(
+                                  'Level:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  '100',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          //Amics
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.people,
                                   color: ProfilePage.titolColor,
                                 ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '24/03/24',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                SizedBox(width: 5),
+                                Text(
+                                  'Friends:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 5),
-                            ],
+                                Spacer(),
+                                Text(
+                                  '200',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        //Nivell
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.star, color: ProfilePage.titolColor),
-                              SizedBox(width: 5),
-                              Text(
-                                'Level:',
-                                style: TextStyle(
-                                  fontSize: 16,
+                          const SizedBox(height: 10),
+                          //Viatges
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.route,
                                   color: ProfilePage.titolColor,
                                 ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '100',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                SizedBox(width: 5),
+                                Text(
+                                  'Trips:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 5),
-                            ],
+                                Spacer(),
+                                Text(
+                                  '5',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        //Amics
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.people,
-                                color: ProfilePage.titolColor,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Friends:',
-                                style: TextStyle(
-                                  fontSize: 16,
+                          const SizedBox(height: 10),
+                          //Reviews
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: ProfilePage.smallCardColor),
+                            padding: const EdgeInsets.all(10),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.reviews,
                                   color: ProfilePage.titolColor,
                                 ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '200',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                SizedBox(width: 5),
+                                Text(
+                                  'Reviews:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: ProfilePage.titolColor,
+                                  ),
                                 ),
-                              ),
-                              SizedBox(width: 5),
-                            ],
+                                Spacer(),
+                                Text(
+                                  '10',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(width: 5),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        //Viatges
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.route,
-                                color: ProfilePage.titolColor,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Trips:',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: ProfilePage.titolColor,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '5',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(width: 5),
-                            ],
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        //Reviews
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: ProfilePage.smallCardColor),
-                          padding: const EdgeInsets.all(10),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.reviews,
-                                color: ProfilePage.titolColor,
-                              ),
-                              SizedBox(width: 5),
-                              Text(
-                                'Reviews:',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: ProfilePage.titolColor,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                '10',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(width: 5),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 10,
                 ),
               ],
             ),
