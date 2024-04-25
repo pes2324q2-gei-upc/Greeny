@@ -3,9 +3,9 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StationPage extends StatefulWidget {
-  const StationPage({super.key, required this.station, required this.type});
+  const StationPage({super.key, required this.station_id, required this.type});
 
-  final dynamic station;
+  final int station_id;
   final String type;
 
   @override
@@ -13,8 +13,24 @@ class StationPage extends StatefulWidget {
 }
 
 class _StationPageState extends State<StationPage> {
-  dynamic get station => widget.station;
+  int get station => widget.station_id;
   String get type => widget.type;
+
+  dynamic station = {
+    'id': 0,
+    'name': '',
+    'rating': 0,
+    'latitude': 0,
+    'longitude': 0,
+    'stops': [],
+    'lines': [],
+    'capacitat': 0,
+    'acces': '',
+    'power': 0,
+    'charging_velocity': '',
+    'current_type': '',
+    'connexion_type': ''
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -361,6 +377,7 @@ class _StationPageState extends State<StationPage> {
   }
 
   Future<void> getInfo() {
-    await httpGet();
+    var response = await httpGet('api/stations/${station.id}');
+    station = Station.fromJson(response.body);
   }
 }

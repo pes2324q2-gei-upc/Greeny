@@ -4,7 +4,7 @@ from .models import *
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['latitude', 'longitude']
+        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
 
 
 class UserSerializer(serializers.ModelSerializer):

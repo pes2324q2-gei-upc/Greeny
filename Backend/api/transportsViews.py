@@ -184,35 +184,39 @@ class FetchPublicTransportStations(View):
 
         return redirect('bus_stops')
 
+class StationsView(APIView):
+    def get(self, request, pk=None):
+        if (pk):
+            station = Station.objects.get(id=pk)
+            serializer = PublicTransportStationSerializer(station)
+            return Response(serializer.data)
+        else:
+            data = {}
+
+            queryset_pt = PublicTransportStation.objects.all()
+            serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
+            data['publicTransportStations'] = serializer_pt.data
+
+            queryset_bus = BusStation.objects.all()
+            serializer_bus = BusStationSerializer(queryset_bus, many=True)
+            data['busStations'] = serializer_bus.data
+
+            queryset_bicing = BicingStation.objects.all()
+            serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
+            data['bicingStations'] = serializer_bicing.data
+
+            queryset_charging = ChargingStation.objects.all()
+            serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
+            data['chargingStations'] = serializer_charging.data
+
+            return JsonResponse({'stations': data}, safe=False)
+
+
 
 # def getParadesMetro(request):
 #     elements = Metro.objects.all();
 #     serializer = MetroSerializer(elements, many=True)
 #     return JsonResponse(serializer.data, safe=False)
-
-class GetStations(generics.ListAPIView):
-    
-    def get(self, request):
-
-        data = {}
-
-        queryset_pt = PublicTransportStation.objects.all()
-        serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
-        data['publicTransportStations'] = serializer_pt.data
-
-        queryset_bus = BusStation.objects.all()
-        serializer_bus = BusStationSerializer(queryset_bus, many=True)
-        data['busStations'] = serializer_bus.data
-
-        queryset_bicing = BicingStation.objects.all()
-        serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
-        data['bicingStations'] = serializer_bicing.data
-
-        queryset_charging = ChargingStation.objects.all()
-        serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
-        data['chargingStations'] = serializer_charging.data
-
-        return JsonResponse({'stations':data}, safe=False)
 
 #GET parades de bus Barcelona
 class ParadesBus(View):

@@ -159,7 +159,7 @@ class TransportType {
 Future<Locations> getStations() async {
   // Retrieve the locations  offices
   try {
-    final response = await httpGet('api/get-stations');
+    final response = await httpGet('api/stations/');
     if (response.statusCode == 200) {
       return Locations.fromJson(
           json.decode(response.body) as Map<String, dynamic>);
