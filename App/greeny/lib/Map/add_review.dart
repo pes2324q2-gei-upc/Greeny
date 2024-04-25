@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 //import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
+import 'package:greeny/Map/station.dart';
 
 class AddReviewPage extends StatefulWidget {
   final dynamic station;
+  final String type;
 
-  const AddReviewPage({super .key, required this.station});
+  const AddReviewPage({super .key, required this.station, required this.type});
   
   @override
   _AddReviewPageState createState() => _AddReviewPageState();
@@ -13,6 +19,7 @@ class AddReviewPage extends StatefulWidget {
 
 class _AddReviewPageState extends State<AddReviewPage> {
   dynamic get station => widget.station;
+  String get type => widget.type;
 
   final TextEditingController reviewController = TextEditingController();
   //final TextEditingController scoreController = TextEditingController();
@@ -215,7 +222,41 @@ class _AddReviewPageState extends State<AddReviewPage> {
       return;
     }
 
+    var response = await httpPost(
+        'api/reviews/',
+        jsonEncode({
+          'body': reviewText,
+          'puntuation': rating,
+          'station': station.id,
+        }),
+        'application/json');
+    if (response.statusCode == 201){
+      //volver a la otra pantalla
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => StationPage(station: station, type: type)),
+            (Route<dynamic> route) => false,
+      );
+    }
+    else {
+      showMessage("No se ha podido guardar la review");
+    }
+
     print('Sending review: $reviewText');
     print('Sending score: $rating');
+  }
+  
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
   }
 }

@@ -229,7 +229,7 @@ class _StationPageState extends State<StationPage> {
   addReview() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddReviewPage(station: station)),
+      MaterialPageRoute(builder: (context) => AddReviewPage(station: station, type:type)),
     );
   }
 

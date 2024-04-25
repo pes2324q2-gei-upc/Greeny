@@ -91,3 +91,10 @@ class Statistics(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+class Review(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='reviews')
+    body = models.CharField(max_length = 1000, blank=True)
+    puntuation = models.FloatField(default=0.0, blank=False, null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)

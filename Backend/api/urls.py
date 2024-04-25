@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-from api.views import *
-from django.urls import path, include
-from api.reviewsViews import *
-from rest_framework import routers
 
-router = routers.DefaultRouter()
-router.register(r'reviews', reviewsViews, basename="reviews")
-=======
 """
 This module defines the URL routes for the Greeny application.
 
@@ -17,8 +9,12 @@ TransportTypes, Stops, BusStations, BicingStations, ChargingStations, Users, and
 from api.userViews import UserView
 from api.statisticsViews import StatisticsView
 from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, GetStations, ParadesBus
-from django.urls import path
->>>>>>> origin/develop
+from django.urls import path, include
+from api.reviews_views import *
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'reviews', reviews_views, basename="reviews")
 
 
 urlpatterns = [
