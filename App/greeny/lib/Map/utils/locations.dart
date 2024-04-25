@@ -41,8 +41,6 @@ class PublicTransportStation {
   PublicTransportStation({
     required this.id,
     required this.stops,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -55,8 +53,6 @@ class PublicTransportStation {
   final List<Stop> stops;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
@@ -64,8 +60,6 @@ class BusStation {
   BusStation({
     required this.id,
     required this.lines,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -78,8 +72,6 @@ class BusStation {
   final List<String> lines;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
@@ -87,8 +79,6 @@ class BicingStation {
   BicingStation({
     required this.id,
     required this.capacitat,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -101,16 +91,12 @@ class BicingStation {
   final int capacitat;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
 class ChargingStation {
   ChargingStation({
     required this.id,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
     required this.acces,
@@ -130,8 +116,6 @@ class ChargingStation {
   final int id;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
   final String acces;
   // ignore: non_constant_identifier_names
   final String charging_velocity;

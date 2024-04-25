@@ -102,7 +102,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
         if (transports[stop.transportType.type.toString().toLowerCase()]!) {
           markers.add(
             MapMarker(
-              id: pts.name,
+              id: pts.id,
               position: LatLng(pts.latitude, pts.longitude),
               icon: chooseIcon(pts, icons),
               onTap: () => _gotoStation(pts, context, 'TMB'),
@@ -119,7 +119,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
         markers.add(
           MapMarker(
-            id: bs.name,
+            id: bs.id,
             position: LatLng(bs.latitude, bs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['BUS']),
             onTap: () => _gotoStation(bs, context, 'BUS'),
@@ -134,7 +134,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
         markers.add(
           MapMarker(
-            id: bs.name,
+            id: bs.id,
             position: LatLng(bs.latitude, bs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['BICING']),
             onTap: () => _gotoStation(bs, context, 'BICING'),
@@ -149,7 +149,7 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(cs.latitude, cs.longitude))) {
         markers.add(
           MapMarker(
-            id: cs.name,
+            id: cs.id,
             position: LatLng(cs.latitude, cs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['CAR']),
             onTap: () => _gotoStation(cs, context, 'CAR'),

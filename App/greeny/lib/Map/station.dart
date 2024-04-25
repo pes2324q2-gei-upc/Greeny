@@ -225,8 +225,7 @@ class _StationPageState extends State<StationPage> {
     );
   }
 
-  addReview() {
-  }
+  addReview() {}
 
   tmbStops() {
     return Container(
@@ -359,5 +358,9 @@ class _StationPageState extends State<StationPage> {
           }
         }
     }
+  }
+
+  Future<void> getInfo() {
+    await httpGet();
   }
 }
