@@ -94,3 +94,33 @@ class Statistics(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+class Route(models.Model):
+
+    TRANSPORT_MODES = [
+        ('Walking', 'Walking'),
+        ('Bike', 'Bike'),
+        ('Bus', 'Bus'),
+        ('Train, Metro, Tram, FGC', 'Train, Metro, Tram, FGC'),
+        ('Motorcycle', 'Motorcycle'),
+        ('Electric Car', 'Electric Car'),
+        ('Car', 'Car')
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    distance = models.FloatField(default=0.0)
+    transports = ArrayField(
+        models.CharField(max_length=30, choices=TRANSPORT_MODES)
+    )
+    consumed_co2 = models.FloatField(default=0.0)
+    car_consumed_co2 = models.FloatField(default=0.0)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField()
+    #totalTime = models.FloatField(default=0.0)
+
+    '''def save(self, *args, **kwargs):
+        # Calculate the difference in seconds between ended_at and started_at
+        self.totalTime = (self.ended_at - self.started_at)
+        super().save(*args, **kwargs)'''
+
+
