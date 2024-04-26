@@ -1,5 +1,3 @@
-# pylint: disable=no-member
-# pylint: disable=too-many-ancestors
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
