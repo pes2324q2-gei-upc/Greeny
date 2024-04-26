@@ -78,7 +78,7 @@ class statisticsSerializer(serializers.ModelSerializer):
         model = Statistics
         exclude = ['id','user']
 
-class reviewsSerializer(serializers.ModelSerializer):
+class reviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
 
     class Meta:

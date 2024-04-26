@@ -4,7 +4,7 @@ from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, Fetch
 from api.transportsViews import ParadesBus, StationsView
 from django.urls import path, include
 from api.friend_view import FriendRequestViewSet, FriendViewSet
-from api.reviews_views import ReviewsViews
+from api.review_views import ReviewsViews
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()

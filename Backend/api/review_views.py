@@ -2,11 +2,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Review, Station
-from .serializers import reviewsSerializer
+from .serializers import reviewSerializer
 
 
 class ReviewsViews(ModelViewSet):
-    serializer_class = reviewsSerializer
+    serializer_class = reviewSerializer
 
     def create(self, request, *args, **kwargs):
         user = self.request.user
