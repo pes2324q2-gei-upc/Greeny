@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest)
+                    BicingStation, Statistics, FriendRequest, Review)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:

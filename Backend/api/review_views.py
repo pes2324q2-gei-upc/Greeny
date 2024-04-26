@@ -14,10 +14,11 @@ class ReviewsViews(ModelViewSet):
         station = Station.objects.get(id=station_id)
         serializer = self.get_serializer(data=request.data)
 
-        self.update_station_rating(station)
+        
 
         if serializer.is_valid():
             serializer.save(author=user, station=station)
+            self.update_station_rating(station)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

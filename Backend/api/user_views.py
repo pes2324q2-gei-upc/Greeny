@@ -6,7 +6,6 @@ from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
-    queryset = User.objects.all()
     permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication]
 

@@ -5,15 +5,15 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UserView
+from api.user_views import UsersView
 from api.statisticsViews import StatisticsView
 from api.review_views import ReviewsViews
 from api.transports_views import (
     EstacionsBicing,
     CarregadorsElectricsView,
     FetchPublicTransportStations,
-    GetStations,
-    ParadesBus
+    ParadesBus,
+    StationsView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 
@@ -33,6 +33,5 @@ urlpatterns = [
     path('send-form-transports', StatisticsView.as_view(), name='final_form_transports'),
     path('statistics/', StatisticsView.as_view(), name='stats'),
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
-    path('stations/', StationsView.as_view(), name='stations_list'),
-    path('user/', UserView.as_view(), name='users')
+    path('stations/', StationsView.as_view(), name='stations_list')
 ]

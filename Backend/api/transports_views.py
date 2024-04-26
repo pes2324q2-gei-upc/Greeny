@@ -7,7 +7,9 @@ import requests
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
-from rest_framework import generics
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 # Local application/library specific imports
 from .models import (PublicTransportStation, Stop, BusStation,
@@ -183,29 +185,54 @@ class FetchPublicTransportStations(View):
 
         return redirect('bus_stops')
 
-class GetStations(generics.ListAPIView):
+class StationsView(APIView):
+    def get(self, request, pk=None):
+        if (pk):
+            try:
+                station = PublicTransportStation.objects.get(pk=pk)
+                serializer = PublicTransportStationSerializer(station)
+                return Response(serializer.data)
+            except PublicTransportStation.DoesNotExist:
+                pass
+            try:
+                station = BusStation.objects.get(pk=pk)
+                serializer = BusStationSerializer(station)
+                return Response(serializer.data)
+            except BusStation.DoesNotExist:
+                pass
+            try:
+                station = BicingStation.objects.get(pk=pk)
+                serializer = BicingStationSerializer(station)
+                return Response(serializer.data)
+            except BicingStation.DoesNotExist:
+                pass
+            try:
+                station = ChargingStation.objects.get(pk=pk)
+                serializer = ChargingStationSerializer(station)
+                return Response(serializer.data)
+            except ChargingStation.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        else:
+            data = {}
 
-    def get(self, request):
+            queryset_pt = PublicTransportStation.objects.all()
+            serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
+            data['publicTransportStations'] = serializer_pt.data
 
-        data = {}
+            queryset_bus = BusStation.objects.all()
+            serializer_bus = BusStationSerializer(queryset_bus, many=True)
+            data['busStations'] = serializer_bus.data
 
-        queryset_pt = PublicTransportStation.objects.all()
-        serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
-        data['publicTransportStations'] = serializer_pt.data
+            queryset_bicing = BicingStation.objects.all()
+            serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
+            data['bicingStations'] = serializer_bicing.data
 
-        queryset_bus = BusStation.objects.all()
-        serializer_bus = BusStationSerializer(queryset_bus, many=True)
-        data['busStations'] = serializer_bus.data
+            queryset_charging = ChargingStation.objects.all()
+            serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
+            data['chargingStations'] = serializer_charging.data
 
-        queryset_bicing = BicingStation.objects.all()
-        serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
-        data['bicingStations'] = serializer_bicing.data
-
-        queryset_charging = ChargingStation.objects.all()
-        serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
-        data['chargingStations'] = serializer_charging.data
-
-        return JsonResponse({'stations':data}, safe=False)
+            return JsonResponse({'stations': data}, safe=False)
 
 #GET parades de bus Barcelona
 class ParadesBus(View):
