@@ -459,7 +459,22 @@ class CityView(View):
     def getNeighborhood(self, level):
         return Neighborhood.objects.get(id=level.Neighborhood_id)
 
+    def init_neighborhoods(self):
+        try:
+            Neighborhood.objects.get(path='path1')
+        except Neighborhood:
+            neighborhoods_data = [
+                {'points_total': 100.0, 'path': 'path1'},
+                {'points_total': 200.0, 'path': 'path2'},
+                # ... add all 8 neighborhoods
+            ]
+            for neighborhood_data in neighborhoods_data:
+                neighborhood = Neighborhood.objects.create(**neighborhood_data)
+                neighborhood.save()
+
     def get(self, request):
+        self.init_neighborhoods()
+
         token_auth = TokenAuthentication()
         try:
             user, token = token_auth.authenticate(request)
@@ -468,5 +483,5 @@ class CityView(View):
 
         level = self.getCurrentLevel(user)
         neighborhood = self.getNeighborhood(level)
-        # serializer = NeighborhoodSerializer(neighborhood)
+        serializer = NeighborhoodSerializer(neighborhood)
         return JsonResponse(serializer.data)
