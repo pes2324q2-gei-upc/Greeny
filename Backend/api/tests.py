@@ -13,8 +13,8 @@ from unittest.mock import patch
 from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework.authtoken.models import Token
-
 from .models import PublicTransportStation, Station, Statistics, Stop, TransportType, User, Route
+from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
@@ -166,6 +166,36 @@ class FinalFormTransports(TestCase):
         self.assertEqual(Statistics.objects.get().km_PublicTransport, 0)
         self.assertEqual(Statistics.objects.get().km_ElectricCar, 0)
         self.assertEqual(Statistics.objects.get().km_Totals, 0)
+
+    def test_co2_consumed(self):
+        data = {
+            'selectedTransports': ['Bus'],
+            'totalDistance': 100,
+            'startedAt': '2024-04-25T16:33:14.90961'
+        }
+        self.client.post(
+            reverse('final_form_transports'),
+            data=json.dumps(data),
+            content_type='application/json',
+            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
+        )
+        self.assertEqual(Statistics.objects.count(), 1)
+        self.assertEqual(Statistics.objects.get().kg_CO2, 0.08074 * 100)
+        self.assertEqual(Route.objects.get().consumed_co2, 0.08074 * 100)
+        self.assertEqual(Route.objects.get().car_consumed_co2, 0.143 * 100)
+
+    def test_calculate_co2_consumed(self):
+        self.assertAlmostEqual(calculate_co2_consumed(['Walking', 'Walking'], 10), 0.0)
+        self.assertAlmostEqual(calculate_co2_consumed(['Bike', 'Bike', 'Bike'], 20), 0.0)
+        self.assertAlmostEqual(calculate_co2_consumed(['Bus'], 15), 0.08074 * 15)
+        self.assertAlmostEqual(calculate_co2_consumed(['Car'], 25), 0.143 * 25)
+        self.assertAlmostEqual(calculate_co2_consumed(['Electric Car'], 30), 0.070 * 30)
+        self.assertAlmostEqual(calculate_co2_consumed(['Metro', 'Metro'], 40), 0.05013 * 20 + 0.05013 * 20)
+
+    def test_calculate_car_co2_consumed(self):
+        self.assertAlmostEqual(calculate_car_co2_consumed(20), 0.143 * 20)
+        self.assertAlmostEqual(calculate_car_co2_consumed(30), 0.143 * 30)
+        self.assertAlmostEqual(calculate_car_co2_consumed(40), 0.143 * 40)
 
 
 

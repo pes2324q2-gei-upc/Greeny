@@ -42,8 +42,12 @@ class RoutesView(APIView):
         started_at = spain_tz.localize(started_at)
         ended_at = datetime.now(spain_tz)
 
-        consumed_co2 = calculate_co2_consumed(transports, total_distance)
-        car_consumed_co2 = calculate_car_co2_consumed(total_distance)
+        consumed_co2 = 0.0
+        car_consumed_co2 = 0.0
+
+        if len(transports) != 0:
+            consumed_co2 = calculate_co2_consumed(transports, total_distance)
+            car_consumed_co2 = calculate_car_co2_consumed(total_distance)
 
         Route.objects.create(
             user=user,
@@ -62,9 +66,10 @@ class RoutesView(APIView):
             for key, value in update_fields.items():
                 current_value = getattr(user_statics, key, 0)
                 setattr(user_statics, key, current_value + value)
+            setattr(user_statics, 'kg_CO2', user_statics.kg_CO2 + consumed_co2)
             user_statics.save()
         except Statistics.DoesNotExist:
-            user_statics = Statistics.objects.create(user=user, **update_fields)
+            user_statics = Statistics.objects.create(user=user, **update_fields, kg_CO2=consumed_co2)
             user_statics.save()
 
         return JsonResponse({'status': 'success'})
