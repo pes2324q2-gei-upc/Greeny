@@ -13,7 +13,8 @@ from api.transports_views import (
     CarregadorsElectricsView,
     FetchPublicTransportStations,
     ParadesBus,
-    StationsView
+    StationsView,
+    ThirdPartyChargingStationInfoView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 
@@ -33,5 +34,6 @@ urlpatterns = [
     path('send-form-transports', StatisticsView.as_view(), name='final_form_transports'),
     path('statistics/', StatisticsView.as_view(), name='stats'),
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
-    path('stations/', StationsView.as_view(), name='stations_list')
+    path('stations/', StationsView.as_view(), name='stations_list'),
+    path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info')
 ]

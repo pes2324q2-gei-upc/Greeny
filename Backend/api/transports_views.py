@@ -13,7 +13,7 @@ from rest_framework.response import Response
 
 # Local application/library specific imports
 from .models import (PublicTransportStation, Stop, BusStation,
-                    Station, ChargingStation, TransportType, BicingStation)
+                    Station, ChargingStation, TransportType, BicingStation, FavouriteStation)
 from .serializers import (PublicTransportStationSerializer, BusStationSerializer,
                         BicingStationSerializer, ChargingStationSerializer)
 
@@ -233,6 +233,13 @@ class StationsView(APIView):
             data['chargingStations'] = serializer_charging.data
 
             return JsonResponse({'stations': data}, safe=False)
+        
+    def post(self, request, pk=None):
+        if(pk):
+            stat = Station.objects.get(pk=pk)
+            FavouriteStation.objects.get_or_create(user=request.user, station=stat)
+            return Response(status=status.HTTP_200_OK)
+
 
 #GET parades de bus Barcelona
 class ParadesBus(View):
@@ -287,3 +294,30 @@ class EstacionsBicing(View):
             )
 
         return redirect('charging_points')
+
+
+class ThirdPartyChargingStationInfoView(APIView):
+    def get(self, request, format=None):
+        # lat = round(float(request.data['lat']),5)
+        # longi = round(float(request.data['long']), 6)
+
+        lat = request.data['lat']
+        longi = request.data['long']
+
+        charging_station = Station.objects.get(latitude=lat, longitude=longi)
+
+        favs = FavouriteStation.objects.filter(station_id = charging_station.id).count()
+
+        return Response({"data" :{
+            "name" : charging_station.name,
+            "faved_by" : favs
+        }}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def put(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
