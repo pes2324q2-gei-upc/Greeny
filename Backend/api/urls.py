@@ -16,6 +16,7 @@ from api.transports_views import (
     StationsView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
+from api.routesViews import RoutesView
 
 router = DefaultRouter()
 
@@ -30,7 +31,7 @@ urlpatterns = [
     path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
     path('bus-stops', ParadesBus.as_view(), name='bus_stops'),
     path('bicing', EstacionsBicing.as_view(), name='bicing'),
-    path('send-form-transports', StatisticsView.as_view(), name='final_form_transports'),
+    path('send-form-transports', RoutesView.as_view(), name='final_form_transports'),
     path('statistics/', StatisticsView.as_view(), name='stats'),
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list')

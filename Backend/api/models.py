@@ -30,7 +30,7 @@ class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
-    class TTransport(models.TextChoices): # pylint: disable=too-many-ancestors
+    class TTransport(models.TextChoices):
         METRO = "METRO", "metro"
         TRAM = "TRAM", "tram"
         FGC = "FGC", "fgc"
@@ -74,8 +74,9 @@ def validate_km_totals(instance):
 
 
 class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100, related_name='statistics')
-    kg_CO2 = models.FloatField(default=0.0)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
+    kg_CO2_consumed = models.FloatField(default=0.0)
+    kg_CO2_car_consumed = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
     km_Walked = models.FloatField(default=0.0)
     km_Biked = models.FloatField(default=0.0)
@@ -104,3 +105,33 @@ class Review(models.Model):
     body = models.CharField(max_length = 1000, blank=True)
     puntuation = models.FloatField(default=0.0, blank=False, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
+
+class Route(models.Model):
+
+    TRANSPORT_MODES = [
+        ('Walking', 'Walking'),
+        ('Bike', 'Bike'),
+        ('Bus', 'Bus'),
+        ('Train, Metro, Tram, FGC', 'Train, Metro, Tram, FGC'),
+        ('Motorcycle', 'Motorcycle'),
+        ('Electric Car', 'Electric Car'),
+        ('Car', 'Car')
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    distance = models.FloatField(default=0.0)
+    transports = ArrayField(
+        models.CharField(max_length=30, choices=TRANSPORT_MODES)
+    )
+    consumed_co2 = models.FloatField(default=0.0)
+    car_consumed_co2 = models.FloatField(default=0.0)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField()
+    #totalTime = models.FloatField(default=0.0)
+
+    '''def save(self, *args, **kwargs):
+        # Calculate the difference in seconds between ended_at and started_at
+        self.totalTime = (self.ended_at - self.started_at)
+        super().save(*args, **kwargs)'''
+
+

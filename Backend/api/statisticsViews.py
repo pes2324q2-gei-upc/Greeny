@@ -19,83 +19,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 
-@method_decorator(csrf_exempt, name='dispatch')
-class StatisticsView(View):
+class StatisticsView(APIView):
 
-    #POST final form
-    def post(self, request):
-        if request.method == 'POST':
-
-            user = self.request.user
-
-            data = json.loads(request.body)
-            transports = data['selectedTransports']
-            total_distance = data['totalDistance']
-            
-            update_fields = { 
-                    'km_Walked': 0.0,
-                    'km_Bus': 0.0,
-                    'km_PublicTransport': 0.0,
-                    'km_Biked': 0.0,
-                    'km_Car': 0.0,
-                    'km_Motorcycle': 0.0,
-                    'km_ElectricCar': 0.0,
-                    'km_Totals': 0.0,
-                }
-            
-            if (len(transports) != 0):
-                total_transports = len(transports)
-                transport_modes = ['Walking', 'Bus', 'Train, Metro, Tram, FGC', 'Bike', 'Car', 'Motorcycle', 'Electric Car']
-                
-                percentage = 100 / total_transports / 100 
-                km_mode = percentage * total_distance
-
-                transport_percentages = {}
-                for mode in transport_modes:
-                    if mode in transports:
-                        transport_percentages[mode] = km_mode
-                    else:
-                        transport_percentages[mode] = 0.0
-
-
-                field_mapping = {
-                    'Walking': 'km_Walked',
-                    'Bus': 'km_Bus',
-                    'Train, Metro, Tram, FGC': 'km_PublicTransport',
-                    'Bike': 'km_Biked',
-                    'Car': 'km_Car',
-                    'Motorcycle': 'km_Motorcycle',
-                    'Electric Car': 'km_ElectricCar'
-                }
-                
-                
-                for key, value in transport_percentages.items():
-                    update_fields[field_mapping[key]] = value
-
-                update_fields['km_Totals'] = total_distance
-                
-            try: 
-                user_statics = Statistics.objects.get(user=user)
-                for key, value in update_fields.items():
-                    current_value = getattr(user_statics, key, 0)
-                    setattr(user_statics, key, current_value + value)
-                user_statics.save()
-            except Statistics.DoesNotExist:
-                user_statics = Statistics.objects.create(user=user, **update_fields)
-                user_statics.save()
-                
-            return JsonResponse({'status': 'success'})
-
-    def get(self, request):
-
-        user = self.request.user
+    def get(self):
+        try:
+            user, token = self.request.user, self.request.auth
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
 
         try:
             user_statistics = Statistics.objects.get(user=user)
         except Statistics.DoesNotExist:
             user_statistics = Statistics.objects.create(
                 user=user,
-                kg_CO2=0.0,
+                kg_CO2_consumed=0.0,
+                kg_CO2_car_consumed=0.0,
                 km_Totals=0.0,
                 km_Walked=0.0,
                 km_Biked=0.0,
@@ -107,5 +45,5 @@ class StatisticsView(View):
             )
             user_statistics.save()
 
-        serializer = StatisticsSerializer(user_statistics)
+        serializer = statisticsSerializer(user_statistics)
         return JsonResponse(serializer.data)

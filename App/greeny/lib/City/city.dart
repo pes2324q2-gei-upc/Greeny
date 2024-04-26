@@ -247,6 +247,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       appState.totalDistance = 0;
       appState.isPlaying = true;
+      appState.startedAt = DateTime.now();
     });
     _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
       // Actualizar el widget KmTravelled con la distancia actualizada
@@ -275,8 +276,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              FormFinalPage(totalDistance: appState.totalDistance)),
+          builder: (context) => FormFinalPage(
+              totalDistance: appState.totalDistance,
+              startedAt: appState.startedAt!)),
       (route) => false,
     );
   }

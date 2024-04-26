@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/main_page.dart';
@@ -6,7 +7,12 @@ import 'dart:convert';
 
 class FormFinalPage extends StatefulWidget {
   final double totalDistance;
-  const FormFinalPage({super.key, required this.totalDistance});
+  final DateTime startedAt;
+  const FormFinalPage({
+    super.key,
+    required this.totalDistance,
+    required this.startedAt,
+  });
 
   @override
   State<FormFinalPage> createState() => _FormFinalPageState();
@@ -180,6 +186,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
   }
 
   void _showExitDialog() {
+    print(widget.startedAt.toIso8601String());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -226,6 +233,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
         jsonEncode({
           'selectedTransports': _getSelectedTransports(),
           'totalDistance': widget.totalDistance,
+          'startedAt': widget.startedAt.toIso8601String(),
         }),
         'application/json');
 
