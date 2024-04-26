@@ -451,3 +451,22 @@ class UserView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+class NeighborhoodViewSet(View):
+    def getCurrentLevel(self, user):
+        return Level.objects.get(user=user, current=True)
+
+    def getNeighborhood(self, level):
+        return Neighborhood.objects.get(id=level.Neighborhood_id)
+
+    def get(self, request):
+        token_auth = TokenAuthentication()
+        try:
+            user, token = token_auth.authenticate(request)
+        except AuthenticationFailed:
+            return JsonResponse({'error': 'Invalid token'}, status=401)
+
+        level = self.getCurrentLevel(user)
+        neighborhood = self.getNeighborhood(level)
+        serializer = NeighborhoodSerializer(neighborhood)
+        return JsonResponse(serializer.data)
