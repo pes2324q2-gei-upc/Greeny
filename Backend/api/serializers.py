@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import *
+from .models import (Station, User, PublicTransportStation,
+                    Stop, TransportType, BusStation, ChargingStation,
+                    BicingStation, Statistics, FriendRequest)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +34,6 @@ class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['friends']
-    
 
 class PublicTransportStationSerializer(StationSerializer):
     stops = serializers.SerializerMethodField()
@@ -40,7 +41,7 @@ class PublicTransportStationSerializer(StationSerializer):
     class Meta(StationSerializer.Meta):
         model = PublicTransportStation
         fields = StationSerializer.Meta.fields + ['stops']
-    
+
     def get_stops(self, obj):
         stops = Stop.objects.filter(station=obj)
         return StopSerializer(stops, many=True).data
@@ -71,18 +72,19 @@ class BicingStationSerializer(StationSerializer):
 class ChargingStationSerializer(StationSerializer):
     class Meta(StationSerializer.Meta):
         model = ChargingStation
-        fields = StationSerializer.Meta.fields + ['acces', 'charging_velocity', 'power', 'current_type', 'connexion_type']
+        fields = StationSerializer.Meta.fields + ['acces',
+                                                  'charging_velocity',
+                                                  'power',
+                                                  'current_type',
+                                                  'connexion_type']
 
-class statisticsSerializer(serializers.ModelSerializer):
+class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         exclude = ['id', 'user']
         
 
 class FriendRequestSerializer(serializers.ModelSerializer):
-    # from_user = serializers.PrimaryKeyRelatedField(source='from_user.id', queryset=User.objects.all())
-    # to_user = serializers.PrimaryKeyRelatedField(source='to_user.id', queryset=User.objects.all())
-
     class Meta:
-        model = Friend_Request
+        model = FriendRequest
         fields = ['from_user', 'to_user']

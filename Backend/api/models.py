@@ -19,7 +19,7 @@ class Station(models.Model):
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     def subclass_name(self):
         return self.__class__.__name__
 
@@ -34,7 +34,7 @@ class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
-    class TTransport(models.TextChoices):
+    class TTransport(models.TextChoices): # pylint: disable=too-many-ancestors
         METRO = "METRO", "metro"
         TRAM = "TRAM", "tram"
         FGC = "FGC", "fgc"
@@ -96,7 +96,7 @@ class Statistics(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-class Friend_Request(models.Model):
+class FriendRequest(models.Model):
     from_user = models.ForeignKey(
         User, related_name='from_user', on_delete=models.CASCADE)
     to_user = models.ForeignKey(

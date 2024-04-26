@@ -477,3 +477,4 @@ class UserView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
+
