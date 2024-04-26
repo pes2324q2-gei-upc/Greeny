@@ -41,10 +41,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void logOut() async {
     await UserAuth().userLogout();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const LogInPage()),
-      (Route<dynamic> route) => false,
-    );
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LogInPage()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 }

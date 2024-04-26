@@ -4,17 +4,23 @@ This module contains unit tests for the Greeny application.
 It includes tests for the Statistics functionality, and for the 
 FetchPublicTransportStations methods.
 """
-
-# pylint: disable=no-member
+# Standard library imports
 import json
 import os
 from unittest.mock import patch
 
+# Third-party imports
 from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework.authtoken.models import Token
 from .models import PublicTransportStation, Station, Statistics, Stop, TransportType, User, Route
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
+from rest_framework.test import APIRequestFactory, force_authenticate
+
+# Local application/library specific imports
+from api.friend_view import FriendViewSet, FriendRequestViewSet
+from .models import (User, FriendRequest, Station, PublicTransportStation,
+                     Stop, TransportType, Statistics)
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
@@ -23,27 +29,24 @@ class FetchPublicTransportStationsTest(TestCase):
 
     def test_get(self):
         response = self.client.get(self.url, follow=True)
-        self.assertEqual(response.status_code, 200)  # The final response should be 200
+        self.assertEqual(response.status_code, 200)
 
-        # Check that the redirection happened
         self.assertEqual(response.redirect_chain[0][0], '/api/bus-stops')
-        self.assertEqual(response.redirect_chain[0][1], 302)  # The status code for redirection
+        self.assertEqual(response.redirect_chain[0][1], 302)
 
-        self.assertEqual(response.redirect_chain[1][0], '/api/bicing')  # The number of redirections
-        self.assertEqual(response.redirect_chain[1][1], 302)  # The status code for redirection
+        self.assertEqual(response.redirect_chain[1][0], '/api/bicing')
+        self.assertEqual(response.redirect_chain[1][1], 302)
 
         self.assertEqual(response.redirect_chain[2][0], '/api/charging-points')
         self.assertEqual(response.redirect_chain[2][1], 302)
 
     @patch('requests.get')
     def test_parse_api_data(self, mock_get):
-        # Mock the response returned by 'requests.get'
 
         mock_get.return_value.status_code = 200
 
         script_dir = os.path.dirname(__file__)
 
-        # Use the script directory to build the path to the json file
         json_file_path = os.path.join(script_dir, 'fixtures', 'mock_api.json')
 
         # Read the mock data from the json file
@@ -54,7 +57,6 @@ class FetchPublicTransportStationsTest(TestCase):
 
         response = self.client.get(self.url, follow=False)
 
-        # Check that the status code is 200
         self.assertEqual(response.status_code, 302)
 
         # Check that the data has been parsed correctly
@@ -71,7 +73,8 @@ class FinalFormTransports(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='12345')
-        self.token = Token.objects.create(user=self.user)
+        self.client = Client()
+        self.client.force_login(self.user)
 
     def test_post_success(self):
         data = {
@@ -83,7 +86,6 @@ class FinalFormTransports(TestCase):
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
-            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Route.objects.count(), 1)
@@ -99,7 +101,6 @@ class FinalFormTransports(TestCase):
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
-            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 25)
@@ -155,7 +156,6 @@ class FinalFormTransports(TestCase):
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
-            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 0)
@@ -166,6 +166,7 @@ class FinalFormTransports(TestCase):
         self.assertEqual(Statistics.objects.get().km_PublicTransport, 0)
         self.assertEqual(Statistics.objects.get().km_ElectricCar, 0)
         self.assertEqual(Statistics.objects.get().km_Totals, 0)
+        self.assertEqual(Route.objects.count(), 1)
 
     def test_co2_consumed(self):
         data = {
@@ -177,7 +178,6 @@ class FinalFormTransports(TestCase):
             reverse('final_form_transports'),
             data=json.dumps(data),
             content_type='application/json',
-            **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().kg_CO2_consumed, 0.08074 * 100)
@@ -201,3 +201,47 @@ class FinalFormTransports(TestCase):
 
 
 
+
+
+
+class FriendRequestViewSetTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = User.objects.create(username='testuser', email='testuser@mail.com')
+        self.friend = User.objects.create(username='friend', email='uwu@mail.com')
+        self.FriendRequest = FriendRequest.objects.create(from_user=self.friend, to_user=self.user)
+
+    def test_create_friend_request(self):
+        request = self.factory.post('/friend-requests/', {'to_user': self.friend.id})
+        force_authenticate(request, user=self.user)
+        view = FriendRequestViewSet.as_view({'post': 'create'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_friend_requests(self):
+        request = self.factory.get('/friend-requests/')
+        force_authenticate(request, user=self.user)
+        view = FriendRequestViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_accept_friend_request(self):
+        request = self.factory.delete(f'/friend-requests/{self.FriendRequest.id}/')
+        force_authenticate(request, user=self.user)
+        view = FriendRequestViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.FriendRequest.id)
+        self.assertEqual(response.status_code, 200)
+
+class FriendViewSetTest(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.user = User.objects.create(username='testuser', email='testuser@mail.com')
+        self.friend = User.objects.create(username='friend', email='uwu@mail.com')
+        self.user.friends.add(self.friend)
+
+    def test_list_friends(self):
+        request = self.factory.get('/friends/')
+        force_authenticate(request, user=self.user)
+        view = FriendViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(response.status_code, 200)

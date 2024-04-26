@@ -4,6 +4,7 @@ FROM python:3.12-bookworm
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=greeny.settings
 
 # set work directory
 WORKDIR /code

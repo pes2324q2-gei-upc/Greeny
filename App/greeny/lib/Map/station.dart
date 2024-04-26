@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:greeny/Map/add_review.dart';
 
 class StationPage extends StatefulWidget {
-  const StationPage({super.key, required this.station, required this.type});
+  const StationPage({super.key, required this.stationId, required this.type});
 
-  final dynamic station;
+  final int stationId;
   final String type;
 
   @override
@@ -13,25 +17,44 @@ class StationPage extends StatefulWidget {
 }
 
 class _StationPageState extends State<StationPage> {
-  dynamic get station => widget.station;
+  int get stationId => widget.stationId;
   String get type => widget.type;
+
+  bool isLoading = true;
+
+  Map<String, dynamic> station = {};
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(station.name),
-        ),
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
         body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              rating(),
-              specificInfo(),
-              reviews(),
-            ],
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(station['name']),
           ),
-        ));
+          body: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                rating(),
+                specificInfo(),
+                reviews(),
+              ],
+            ),
+          ));
+    }
   }
 
   rating() {
@@ -45,7 +68,7 @@ class _StationPageState extends State<StationPage> {
               const Icon(Icons.star, color: Colors.yellow, size: 30),
               const SizedBox(width: 5),
               Text(
-                station.rating.toString(),
+                station['rating'].toString(),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
@@ -70,7 +93,7 @@ class _StationPageState extends State<StationPage> {
                               fontSize: 20, fontWeight: FontWeight.bold)),
                       ElevatedButton(
                           onPressed: () =>
-                              mapsGo(station.latitude, station.longitude),
+                              mapsGo(station['latitude'], station['longitude']),
                           child: Text(translate('Go')))
                     ],
                   ),
@@ -92,8 +115,8 @@ class _StationPageState extends State<StationPage> {
                             style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                         ElevatedButton(
-                            onPressed: () =>
-                                mapsGo(station.latitude, station.longitude),
+                            onPressed: () => mapsGo(
+                                station['latitude'], station['longitude']),
                             child: Text(translate('Go')))
                       ],
                     ),
@@ -115,7 +138,7 @@ class _StationPageState extends State<StationPage> {
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     ElevatedButton(
                         onPressed: () =>
-                            mapsGo(station.latitude, station.longitude),
+                            mapsGo(station['latitude'], station['longitude']),
                         child: Text(translate('Go')))
                   ],
                 ),
@@ -128,7 +151,7 @@ class _StationPageState extends State<StationPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Icon(Icons.directions_bike, color: Colors.white),
-                        Text(' ${station.capacitat}',
+                        Text(' ${station['capacitat']}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white)),
@@ -153,17 +176,18 @@ class _StationPageState extends State<StationPage> {
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     ElevatedButton(
                         onPressed: () =>
-                            mapsGo(station.latitude, station.longitude),
+                            mapsGo(station['latitude'], station['longitude']),
                         child: Text(translate('Go')))
                   ],
                 ),
-                Text('${translate('Access')}: ${station.acces}'),
-                Text('${translate('Power')}: ${station.power} kW'),
+                Text('${translate('Access')}: ${station['acces']}'),
+                Text('${translate('Power')}: ${station['power']} kW'),
                 Text(
-                    '${translate('Charging velocity')}: ${station.charging_velocity}'),
-                Text('${translate('Current type')}: ${station.current_type}'),
+                    '${translate('Charging velocity')}: ${station['charging_velocity']}'),
                 Text(
-                    '${translate('Connector type')}: ${station.connexion_type}'),
+                    '${translate('Current type')}: ${station['current_type']}'),
+                Text(
+                    '${translate('Connector type')}: ${station['connexion_type']}'),
               ],
             ),
           );
@@ -226,6 +250,12 @@ class _StationPageState extends State<StationPage> {
   }
 
   addReview() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AddReviewPage(
+              stationId: stationId, type: type, stationName: station['name'])),
+    );
   }
 
   tmbStops() {
@@ -233,7 +263,7 @@ class _StationPageState extends State<StationPage> {
       padding: const EdgeInsets.only(top: 10),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [for (var stop in station.stops) tmbLines(stop)]),
+          children: [for (var stop in station['stops']) tmbLines(stop)]),
     );
   }
 
@@ -241,7 +271,7 @@ class _StationPageState extends State<StationPage> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: stop.lines
+          children: stop['lines']
               .map<Widget>((line) => RawMaterialButton(
                   constraints: BoxConstraints.tight(const Size(40, 40)),
                   onPressed: () => onTapTmb(line),
@@ -270,7 +300,7 @@ class _StationPageState extends State<StationPage> {
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: station.lines
+          children: station['lines']
               .map<Widget>((line) => RawMaterialButton(
                   constraints: BoxConstraints.tight(const Size(40, 40)),
                   onPressed: () => onTapBus(line),
@@ -358,6 +388,37 @@ class _StationPageState extends State<StationPage> {
             throw 'Could not launch $tmbUri';
           }
         }
+    }
+  }
+
+  Future<void> getInfo() async {
+    var responseStation = await httpGet('api/stations/$stationId');
+    if (responseStation.statusCode == 200) {
+      String body = utf8.decode(responseStation.bodyBytes);
+      station = jsonDecode(body);
+      var responseReviews = await httpGet('api/stations/$stationId/reviews/');
+      if (responseStation.statusCode == 200) {
+        String body = utf8.decode(responseReviews.bodyBytes);
+        //igualar la variable de reviews a lo que devuelve el body
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+    }
+    showMessage('Error loading station');
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
     }
   }
 }

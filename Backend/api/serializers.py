@@ -1,10 +1,12 @@
 from rest_framework import serializers
-from .models import *
+from .models import (Station, User, PublicTransportStation,
+                    Stop, TransportType, BusStation, ChargingStation,
+                    BicingStation, Statistics, FriendRequest, Review)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['name', 'latitude', 'longitude' , 'rating']
+        fields = ['id', 'id', 'name', 'latitude', 'longitude', 'rating']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,9 +17,23 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'name', 'email','password']            
-        
-    
+        fields = ['username', 'first_name', 'email','password']
+
+class FriendUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name']
+
+class FriendSerializer(serializers.ModelSerializer):
+    friends = serializers.SerializerMethodField()
+
+    def get_friends(self, obj):
+        friends = obj.friends.all()
+        return FriendUserSerializer(friends, many=True).data
+
+    class Meta:
+        model = User
+        fields = ['friends']
 
 class PublicTransportStationSerializer(StationSerializer):
     stops = serializers.SerializerMethodField()
@@ -25,7 +41,7 @@ class PublicTransportStationSerializer(StationSerializer):
     class Meta(StationSerializer.Meta):
         model = PublicTransportStation
         fields = StationSerializer.Meta.fields + ['stops']
-    
+
     def get_stops(self, obj):
         stops = Stop.objects.filter(station=obj)
         return StopSerializer(stops, many=True).data
@@ -56,10 +72,28 @@ class BicingStationSerializer(StationSerializer):
 class ChargingStationSerializer(StationSerializer):
     class Meta(StationSerializer.Meta):
         model = ChargingStation
-        fields = StationSerializer.Meta.fields + ['acces', 'charging_velocity', 'power', 'current_type', 'connexion_type']
+        fields = StationSerializer.Meta.fields + ['acces',
+                                                  'charging_velocity',
+                                                  'power',
+                                                  'current_type',
+                                                  'connexion_type']
 
-class statisticsSerializer(serializers.ModelSerializer):
+class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id', 'user']
-        
+        exclude = ['id','user']
+
+class reviewSerializer(serializers.ModelSerializer):
+    author_username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Review
+        exclude = ['id', 'station', 'author']
+
+    def get_author_username(self, obj):
+        return obj.author.username
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FriendRequest
+        fields = ['from_user', 'to_user']

@@ -191,11 +191,13 @@ class _SignInPageState extends State<SignInPage> {
       String res =
           await UserAuth().userRegister(name, username, email, password);
       if (res == 'ok') {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MainPage()),
-          (Route<dynamic> route) => false,
-        );
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
       } else {
         showMessage(translate(res));
       }
@@ -215,9 +217,7 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  Future<void> googleSignIn() async {
-    print('Signing in with Google');
-  }
+  Future<void> googleSignIn() async {}
 
   Future<void> logInHere() async {
     Navigator.push(

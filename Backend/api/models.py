@@ -19,12 +19,15 @@ class Station(models.Model):
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     def subclass_name(self):
         return self.__class__.__name__
 
 class PublicTransportStation(Station):
     pass
+
+class User(AbstractUser):
+    friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
@@ -51,12 +54,6 @@ class ChargingStation(Station):
     power = models.IntegerField(default=0)
     current_type = models.CharField(max_length=100)
     connexion_type = models.CharField(max_length=100)
-
-class User(AbstractUser):
-    username = models.CharField(max_length = 100, primary_key = True)
-    name = models.CharField(max_length = 100)
-    email = models.EmailField(max_length = 100, unique = True)
-    password = models.CharField(max_length = 100)
 
 
 def validate_km_totals(instance):
@@ -95,6 +92,19 @@ class Statistics(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(
+        User, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(
+    User, related_name='to_user', on_delete=models.CASCADE)
+
+class Review(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100, related_name='reviews')
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='reviews')
+    body = models.CharField(max_length = 1000, blank=True)
+    puntuation = models.FloatField(default=0.0, blank=False, null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
 
 class Route(models.Model):
 
