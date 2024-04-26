@@ -107,5 +107,5 @@ class StatisticsView(View):
             )
             user_statistics.save()
 
-        serializer = statisticsSerializer(user_statistics)
+        serializer = StatisticsSerializer(user_statistics)
         return JsonResponse(serializer.data)
