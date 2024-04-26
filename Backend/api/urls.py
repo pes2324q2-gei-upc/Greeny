@@ -12,4 +12,5 @@ urlpatterns = [
     path('send-form-transports', FinalFormTransports.as_view(), name='final_form_transports'),
     path('statistics/', StatsView.as_view(), name='stats'),
     path('user/', UserView.as_view(), name='users'),
+    path('city/', CityView.as_view(), name='city'),
 ]
