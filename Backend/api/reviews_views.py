@@ -1,8 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import *
-from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Review, Station
+from .serializers import reviewsSerializer
 
 
 class ReviewsViews(ModelViewSet):
@@ -20,7 +20,7 @@ class ReviewsViews(ModelViewSet):
             serializer.save(author=user, station=station)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def update_station_rating(self, station):
         reviews = Review.objects.filter(station=station)
         total = 0
