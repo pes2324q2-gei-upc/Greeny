@@ -19,28 +19,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 
-@method_decorator(csrf_exempt, name='dispatch')
-class StatisticsView(View):
+class StatisticsView(APIView):
 
-    def getUser(self, request):
-        token_auth = TokenAuthentication()
+    def get(self):
         try:
-            user, token = token_auth.authenticate(request)
+            user, token = self.request.user, self.request.auth
         except AuthenticationFailed:
             return JsonResponse({'error': 'Invalid token'}, status=401)
-
-        return user, token
-
-    def get(self, request):
-
-        user, token = self.getUser(request)
 
         try:
             user_statistics = Statistics.objects.get(user=user)
         except Statistics.DoesNotExist:
             user_statistics = Statistics.objects.create(
                 user=user,
-                kg_CO2=0.0,
+                kg_CO2_consumed=0.0,
+                kg_CO2_car_consumed=0.0,
                 km_Totals=0.0,
                 km_Walked=0.0,
                 km_Biked=0.0,

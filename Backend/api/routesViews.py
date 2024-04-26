@@ -66,10 +66,12 @@ class RoutesView(APIView):
             for key, value in update_fields.items():
                 current_value = getattr(user_statics, key, 0)
                 setattr(user_statics, key, current_value + value)
-            setattr(user_statics, 'kg_CO2', user_statics.kg_CO2 + consumed_co2)
+            setattr(user_statics, 'kg_CO2_consumed', user_statics.kg_CO2_consumed + consumed_co2)
+            setattr(user_statics, 'kg_CO2_car_consumed', user_statics.kg_CO2_car_consumed + car_consumed_co2)
             user_statics.save()
         except Statistics.DoesNotExist:
-            user_statics = Statistics.objects.create(user=user, **update_fields, kg_CO2=consumed_co2)
+            user_statics = Statistics.objects.create(user=user, **update_fields, kg_CO2_consumed=consumed_co2,
+                                                     kg_CO2_car_consumed=car_consumed_co2)
             user_statics.save()
 
         return JsonResponse({'status': 'success'})

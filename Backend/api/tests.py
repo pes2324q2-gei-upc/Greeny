@@ -180,7 +180,9 @@ class FinalFormTransports(TestCase):
             **{'HTTP_AUTHORIZATION': 'Token ' + self.token.key}
         )
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().kg_CO2, 0.08074 * 100)
+        self.assertEqual(Statistics.objects.get().kg_CO2_consumed, 0.08074 * 100)
+        self.assertEqual(Statistics.objects.get().kg_CO2_car_consumed, 0.143 * 100)
+        self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Route.objects.get().consumed_co2, 0.08074 * 100)
         self.assertEqual(Route.objects.get().car_consumed_co2, 0.143 * 100)
 
