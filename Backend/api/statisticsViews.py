@@ -22,10 +22,7 @@ from rest_framework.permissions import AllowAny
 class StatisticsView(APIView):
 
     def get(self):
-        try:
-            user, token = self.request.user, self.request.auth
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        user = self.request.user
 
         try:
             user_statistics = Statistics.objects.get(user=user)

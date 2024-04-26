@@ -23,7 +23,7 @@ router = DefaultRouter()
 router.register(r'friend-requests', FriendRequestViewSet, basename='friend-requests')
 router.register(r'friends', FriendViewSet, basename='friend')
 router.register(r'stations/(?P<station_id>\d+)/reviews', ReviewsViews, basename='station-reviews')
-router.register(r'user', UsersView, basename="reviews")
+router.register(r'user', UsersView, basename="user")
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -22,14 +22,10 @@ import pytz
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed, calculate_statistics
 
 class RoutesView(APIView):
-    authentication_classes = [TokenAuthentication]
 
     # POST final form --> save new route
     def post(self, request):
-        try:
-            user, token = self.request.user, self.request.auth
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        user = self.request.user
 
         data = request.data
 
