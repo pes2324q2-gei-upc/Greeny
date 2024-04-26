@@ -454,7 +454,22 @@ class UserView(APIView):
     
 class CityView(View):
     def getCurrentLevel(self, user):
-        return Level.objects.get(user=user, current=True)
+        if not Level.objects.filter(user=user).exists():
+            # Inicializar la tabla Level si está vacía para el usuario
+            for i in range(1, 9):  # Crear 8 niveles, con números del 1 al 8
+                Level.objects.create(
+                    number=i,
+                    completed=False,
+                    current=(i == 1),  # El primer nivel (number=1) tendrá current=True
+                    points_user=0.0,
+                    user=user,
+                    Neighborhood=Neighborhood.objects.get(path='path1')  # Replace with the actual neighborhood object
+                )
+        try:
+            return Level.objects.get(user=user, current=True)
+        except Level.DoesNotExist:
+            print("no funciona")
+            # Manejar la excepción aquí si aún no existe un Level para el usuario
 
     def getNeighborhood(self, level):
         return Neighborhood.objects.get(id=level.Neighborhood_id)
@@ -462,7 +477,7 @@ class CityView(View):
     def init_neighborhoods(self):
         try:
             Neighborhood.objects.get(path='path1')
-        except Neighborhood:
+        except Neighborhood.DoesNotExist:
             neighborhoods_data = [
                 {'points_total': 100.0, 'path': 'path1'},
                 {'points_total': 200.0, 'path': 'path2'},
@@ -475,12 +490,13 @@ class CityView(View):
     def get(self, request):
         self.init_neighborhoods()
 
-        token_auth = TokenAuthentication()
-        try:
-            user, token = token_auth.authenticate(request)
-        except AuthenticationFailed:
-            return JsonResponse({'error': 'Invalid token'}, status=401)
+        # token_auth = TokenAuthentication()
+        # try:
+        #     user, token = token_auth.authenticate(request)
+        # except AuthenticationFailed:
+        #     return JsonResponse({'error': 'Invalid token'}, status=401)
 
+        user = request.user
         level = self.getCurrentLevel(user)
         neighborhood = self.getNeighborhood(level)
         serializer = NeighborhoodSerializer(neighborhood)
