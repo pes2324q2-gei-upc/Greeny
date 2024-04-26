@@ -14,14 +14,13 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
-from .models import PublicTransportStation, Station, Statistics, Stop, TransportType, User, Route
-from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                     Stop, TransportType, Statistics)
+                     Stop, TransportType, Statistics, Route)
+from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 
 class FetchPublicTransportStationsTest(TestCase):
@@ -84,8 +83,9 @@ class FinalFormTransports(TestCase):
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-        
+        response = self.client.post(reverse('final_form_transports'),
+                                    data=json.dumps(data), content_type='application/json')
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Statistics.objects.count(), 1)
@@ -97,8 +97,8 @@ class FinalFormTransports(TestCase):
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 25)
@@ -113,8 +113,8 @@ class FinalFormTransports(TestCase):
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Totals, 100)
@@ -126,15 +126,14 @@ class FinalFormTransports(TestCase):
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Statistics.objects.count(), 1)
 
-        request = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
-        force_authenticate(request, user=self.user)
-        response = self.client.post(request)
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Route.objects.count(), 2)
         self.assertEqual(Statistics.objects.count(), 1)
@@ -146,7 +145,8 @@ class FinalFormTransports(TestCase):
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 0)
@@ -166,7 +166,8 @@ class FinalFormTransports(TestCase):
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        response = self.client.post(reverse('final_form_transports'), data=json.dumps(data), content_type='application/json')
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+                                    content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().kg_CO2_consumed, 0.08074 * 100)
@@ -181,7 +182,8 @@ class FinalFormTransports(TestCase):
         self.assertAlmostEqual(calculate_co2_consumed(['Bus'], 15), 0.08074 * 15)
         self.assertAlmostEqual(calculate_co2_consumed(['Car'], 25), 0.143 * 25)
         self.assertAlmostEqual(calculate_co2_consumed(['Electric Car'], 30), 0.070 * 30)
-        self.assertAlmostEqual(calculate_co2_consumed(['Metro', 'Metro'], 40), 0.05013 * 20 + 0.05013 * 20)
+        self.assertAlmostEqual(calculate_co2_consumed(['Metro', 'Metro']
+                                                      , 40), 0.05013 * 20 + 0.05013 * 20)
 
     def test_calculate_car_co2_consumed(self):
         self.assertAlmostEqual(calculate_car_co2_consumed(20), 0.143 * 20)
@@ -196,7 +198,7 @@ class FriendRequestViewSetTest(TestCase):
         self.factory = APIRequestFactory()
         self.user = User.objects.create(username='testuser', email='testuser@mail.com')
         self.friend = User.objects.create(username='friend', email='uwu@mail.com')
-        self.FriendRequest = FriendRequest.objects.create(from_user=self.friend, to_user=self.user)
+        self.friend_request = FriendRequest.objects.create(from_user=self.friend, to_user=self.user)
 
     def test_create_friend_request(self):
         request = self.factory.post('/friend-requests/', {'to_user': self.friend.id})
@@ -213,10 +215,10 @@ class FriendRequestViewSetTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_accept_friend_request(self):
-        request = self.factory.delete(f'/friend-requests/{self.FriendRequest.id}/')
+        request = self.factory.delete(f'/friend-requests/{self.friend_request.id}/')
         force_authenticate(request, user=self.user)
         view = FriendRequestViewSet.as_view({'delete': 'destroy'})
-        response = view(request, pk=self.FriendRequest.id)
+        response = view(request, pk=self.friend_request.id)
         self.assertEqual(response.status_code, 200)
 
 class FriendViewSetTest(TestCase):

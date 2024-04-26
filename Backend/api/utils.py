@@ -13,7 +13,7 @@ def calculate_co2_consumed(transports, total_distance):
     transport_dist = total_distance / len(transports)
     co2_consumed = 0.0
     for transport in transports:
-        if transport == 'Walking' or transport == 'Bike':
+        if transport in ('Walking', 'Bike'):
             co2_consumed += 0.0
         elif transport == 'Metro':
             co2_consumed += 0.05013 * transport_dist
