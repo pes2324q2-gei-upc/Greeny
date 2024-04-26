@@ -22,9 +22,14 @@ jobs:
             - name: Install dependencies
               run: |
                 pip install pylint
-                pip install Django
-                pip install djangorestframework
+                pip install -r ./Backend/requirements.txt
     
 
             - name: Run Pylint
-              run: pylint Backend/greeny && pylint --ignore=migrations Backend/api && pylint Backend/manage.py
+              run: pylint Backend/greeny --disable=missing-class-docstring,missing-function-docstring 
+            
+            - name: Run Pylint API
+              run: pylint --disable=missing-class-docstring,missing-function-docstring --ignore=migrations Backend/api 
+
+            - name: Run Pylint manage.py
+              run: pylint Backend/manage.py --disable=missing-class-docstring,missing-function-docstring

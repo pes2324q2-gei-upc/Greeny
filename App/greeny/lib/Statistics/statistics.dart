@@ -95,7 +95,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                         style: const TextStyle(
                                             fontSize: 24.0,
                                             fontWeight: FontWeight.bold)),
-                                    Text(translate('of CO2 saved'),
+                                    Text(translate('of CO2 consumed'),
                                         style: const TextStyle(
                                             fontSize: 12.0,
                                             fontWeight: FontWeight.w500)),

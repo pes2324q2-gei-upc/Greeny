@@ -7,16 +7,16 @@ import 'package:greeny/API/requests.dart';
 
 class UserAuth {
   Future userAuth(String username, String password) async {
-    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api-token-auth/');
+    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/token/');
     var response = await http.post(
       backendURL,
       body: {'username': username, 'password': password},
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      var valor = json['token'];
+      var valor = json['access'];
       await SecureStorage().writeSecureData('token', valor);
-      await getUserInfo();
+      await refreshUser();
       return true;
     } else {
       return false;
@@ -30,7 +30,7 @@ class UserAuth {
       backendURL,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        'name': name,
+        'first_name': name,
         'username': username,
         'email': email,
         'password': password
@@ -55,18 +55,21 @@ class UserAuth {
     await SecureStorage().deleteSecureData('name');
   }
 
-  getUserInfo() async {
-    var response = await httpGet('api/user/');
-    if (response.statusCode == 200) {
-      Map json = jsonDecode(response.body);
-      await writeUserData(json);
-    } else {
-      return 'No data found!';
+  Future<bool> refreshUser() async {
+  var response = await httpGet('api/user/');
+  if (response.statusCode == 200) {
+    List json = jsonDecode(response.body);
+    if (json.isNotEmpty) {
+      Map<String, dynamic> user = json[0];
+      await writeUserData(user);
+      return true;
     }
   }
+  return false;
+}
 
   writeUserData(Map info) async {
-    await SecureStorage().writeSecureData('name', info['name']);
+    await SecureStorage().writeSecureData('name', info['first_name']);
   }
 
   Future<String> readUserInfo(String key) async {

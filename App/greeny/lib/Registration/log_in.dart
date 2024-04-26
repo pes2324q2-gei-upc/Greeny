@@ -167,11 +167,13 @@ class _LogInPageState extends State<LogInPage> {
       final password = passwordController.text;
       bool ok = await UserAuth().userAuth(username, password);
       if (ok) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MainPage()),
-          (Route<dynamic> route) => false,
-        );
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
       } else {
         showMessage('Could not log in. Please check your credentials');
       }
@@ -191,13 +193,9 @@ class _LogInPageState extends State<LogInPage> {
     }
   }
 
-  Future<void> googleSignIn() async {
-    print('Signing in with Google');
-  }
+  Future<void> googleSignIn() async {}
 
-  Future<void> forgotPassword() async {
-    print('Forgot password');
-  }
+  Future<void> forgotPassword() async {}
 
   Future<void> signUpHere() async {
     Navigator.push(
