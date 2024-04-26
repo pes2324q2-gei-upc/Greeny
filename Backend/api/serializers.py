@@ -6,7 +6,7 @@ from .models import (Station, User, PublicTransportStation,
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
+        fields = ['id', 'id', 'name', 'latitude', 'longitude', 'rating']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -81,8 +81,17 @@ class ChargingStationSerializer(StationSerializer):
 class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id', 'user']
-        
+        exclude = ['id','user']
+
+class reviewSerializer(serializers.ModelSerializer):
+    author_username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Review
+        exclude = ['id', 'station', 'author']
+
+    def get_author_username(self, obj):
+        return obj.author.username
 
 class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
