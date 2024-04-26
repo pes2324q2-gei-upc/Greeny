@@ -11,6 +11,12 @@ class StationSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
+    favourite_stations = serializers.SerializerMethodField()
+
+    def get_favourite_stations(self, obj):
+        favourite_stations = FavouriteStation.objects.filter(user=obj)
+        return FavouriteStationSerializer(favourite_stations, many=True).data
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
