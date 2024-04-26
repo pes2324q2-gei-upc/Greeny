@@ -452,7 +452,7 @@ class UserView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
     
-class NeighborhoodViewSet(View):
+class CityView(View):
     def getCurrentLevel(self, user):
         return Level.objects.get(user=user, current=True)
 
@@ -468,5 +468,5 @@ class NeighborhoodViewSet(View):
 
         level = self.getCurrentLevel(user)
         neighborhood = self.getNeighborhood(level)
-        serializer = NeighborhoodSerializer(neighborhood)
+        # serializer = NeighborhoodSerializer(neighborhood)
         return JsonResponse(serializer.data)
