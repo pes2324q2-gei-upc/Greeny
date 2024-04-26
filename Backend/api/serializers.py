@@ -1,13 +1,24 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review)
+                    BicingStation, Statistics, FriendRequest, Review, FavouriteStation)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['id', 'id', 'name', 'latitude', 'longitude', 'rating']
+        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
 
+class SimpleStationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Station
+        fields = ['id', 'name']
+
+class FavouriteStationSerializer(serializers.ModelSerializer):
+    station = SimpleStationSerializer(read_only=True)
+
+    class Meta:
+        model = FavouriteStation
+        fields = ['station']
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -23,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'email','password']
+        fields = ['username', 'first_name', 'email','password', 'favourite_stations']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -237,7 +237,10 @@ class StationsView(APIView):
     def post(self, request, pk=None):
         if(pk):
             stat = Station.objects.get(pk=pk)
-            FavouriteStation.objects.get_or_create(user=request.user, station=stat)
+            favourite_station, created = FavouriteStation.objects.get_or_create(user=request.user, station=stat)
+            if not created:
+                favourite_station.delete()
+
             return Response(status=status.HTTP_200_OK)
 
 
