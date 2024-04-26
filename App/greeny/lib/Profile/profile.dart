@@ -6,6 +6,7 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Profile/edit_profile.dart';
 import 'package:greeny/Profile/settings.dart';
+import 'package:intl/intl.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -21,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String userName = '';
   String userEmail = '';
   String userUsername = '';
+  String dateJoined = '';
 
   @override
   void initState() {
@@ -46,6 +48,8 @@ class _ProfilePageState extends State<ProfilePage> {
         statsData = json.decode(response.body);
         userEmail = statsData['email'];
         userUsername = statsData['username'];
+        dateJoined = DateFormat('dd-MM-yyyy')
+            .format(DateTime.parse(statsData['date_joined']));
       });
     } else {
       showMessage("Error loading user info");
@@ -109,7 +113,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 .withOpacity(0.5), // Color de la sombra
                             spreadRadius: 3, // Extensión de la sombra
                             blurRadius: 3, // Desenfoque de la sombra
-                            offset: Offset(0, 2), // Desplazamiento de la sombra
+                            offset: const Offset(
+                                0, 2), // Desplazamiento de la sombra
                           ),
                         ],
                       ),
@@ -183,7 +188,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 .withOpacity(0.2), // Color de la sombra
                             spreadRadius: 5, // Extensión de la sombra
                             blurRadius: 7, // Desenfoque de la sombra
-                            offset: Offset(0, 3), // Desplazamiento de la sombra
+                            offset: const Offset(
+                                0, 3), // Desplazamiento de la sombra
                           ),
                         ],
                       ),
@@ -209,6 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'Email:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
@@ -234,27 +241,29 @@ class _ProfilePageState extends State<ProfilePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: ProfilePage.smallCardColor),
                             padding: const EdgeInsets.all(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.calendar_month,
+                                const Icon(Icons.calendar_month,
                                     color: ProfilePage.titolColor),
-                                SizedBox(width: 5),
-                                Text(
+                                const SizedBox(width: 5),
+                                const Text(
                                   'Joined:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
-                                Spacer(),
+                                const Spacer(),
                                 Text(
-                                  '24/03/24',
-                                  style: TextStyle(
+                                  dateJoined,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                               ],
                             ),
                           ),
@@ -274,6 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'Level:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
@@ -281,6 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Text(
                                   '100',
                                   style: TextStyle(
+                                    fontWeight: FontWeight.normal,
                                     fontSize: 16,
                                   ),
                                 ),
@@ -307,6 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'Friends:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
@@ -340,6 +352,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'Trips:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
@@ -373,6 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   'Reviews:',
                                   style: TextStyle(
                                     fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
