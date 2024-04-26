@@ -247,9 +247,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 const Icon(Icons.calendar_month,
                                     color: ProfilePage.titolColor),
                                 const SizedBox(width: 5),
-                                const Text(
-                                  'Joined:',
-                                  style: TextStyle(
+                                Text(
+                                  translate('Joined:'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
@@ -274,28 +274,29 @@ class _ProfilePageState extends State<ProfilePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: ProfilePage.smallCardColor),
                             padding: const EdgeInsets.all(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.star, color: ProfilePage.titolColor),
-                                SizedBox(width: 5),
+                                const Icon(Icons.star,
+                                    color: ProfilePage.titolColor),
+                                const SizedBox(width: 5),
                                 Text(
-                                  'Level:',
-                                  style: TextStyle(
+                                  translate('Level:'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
-                                Spacer(),
-                                Text(
+                                const Spacer(),
+                                const Text(
                                   '100',
                                   style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                               ],
                             ),
                           ),
@@ -306,30 +307,30 @@ class _ProfilePageState extends State<ProfilePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: ProfilePage.smallCardColor),
                             padding: const EdgeInsets.all(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.people,
                                   color: ProfilePage.titolColor,
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                                 Text(
-                                  'Friends:',
-                                  style: TextStyle(
+                                  translate('Friends:'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
-                                Spacer(),
-                                Text(
+                                const Spacer(),
+                                const Text(
                                   '200',
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                               ],
                             ),
                           ),
@@ -340,30 +341,30 @@ class _ProfilePageState extends State<ProfilePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: ProfilePage.smallCardColor),
                             padding: const EdgeInsets.all(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.route,
                                   color: ProfilePage.titolColor,
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                                 Text(
-                                  'Trips:',
-                                  style: TextStyle(
+                                  translate('Trips:'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
-                                Spacer(),
-                                Text(
+                                const Spacer(),
+                                const Text(
                                   '5',
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                               ],
                             ),
                           ),
@@ -374,30 +375,30 @@ class _ProfilePageState extends State<ProfilePage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: ProfilePage.smallCardColor),
                             padding: const EdgeInsets.all(10),
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.reviews,
                                   color: ProfilePage.titolColor,
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                                 Text(
-                                  'Reviews:',
-                                  style: TextStyle(
+                                  translate('Reviews:'),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: ProfilePage.titolColor,
                                   ),
                                 ),
-                                Spacer(),
-                                Text(
+                                const Spacer(),
+                                const Text(
                                   '10',
                                   style: TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                               ],
                             ),
                           ),

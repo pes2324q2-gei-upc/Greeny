@@ -76,5 +76,10 @@
     "Please enter your password": "Introduce tu contraseña",
     "Please enter your email": "Introduce tu correo electrónico",
     "Enter a valid email address": "Introduce una dirección de correo electrónico válida",
-    "Passwords do not match": "Las contraseñas no coinciden"
+    "Passwords do not match": "Las contraseñas no coinciden",
+    "Joined:" : "Registrado:",
+    "Level:": "Nivel:",
+    "Friends:": "Amigos:",
+    "Trips:": "Viajes:",
+    "Reviews:": "Reseñas:"
 }
