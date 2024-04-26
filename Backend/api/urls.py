@@ -1,9 +1,20 @@
+# Django imports
+from django.urls import path, include
+
+# Third-party imports
+from rest_framework.routers import DefaultRouter
+
+# Local application/library specific imports
 from api.userViews import UserView
 from api.statisticsViews import StatisticsView
-from api.transportsViews import EstacionsBicing, CarregadorsElectricsView, FetchPublicTransportStations, GetStations, ParadesBus
-from api.friend_view import *
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from api.transports_views import (
+    EstacionsBicing,
+    CarregadorsElectricsView,
+    FetchPublicTransportStations,
+    GetStations,
+    ParadesBus
+)
+from api.friend_view import FriendRequestViewSet, FriendViewSet
 
 router = DefaultRouter()
 router.register(r'friend-requests', FriendRequestViewSet, basename='friend-requests')
