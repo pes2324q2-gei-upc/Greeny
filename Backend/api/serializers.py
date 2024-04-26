@@ -62,3 +62,8 @@ class statisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
         exclude = ['id']
+
+class NeighborhoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Neighborhood
+        exclude = ['id']
