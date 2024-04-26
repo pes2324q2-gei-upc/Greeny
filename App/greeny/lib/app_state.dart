@@ -8,8 +8,8 @@ class AppState with ChangeNotifier {
   bool _isPlaying = false;
   double _totalDistance = 0.0;
   DateTime? _startedAt;
-  late Position? _previousPosition =
-      null; // posicio anterior per calcular els km desplaçats
+  late Position?
+      _previousPosition; // posicio anterior per calcular els km desplaçats
   Set<Marker> markers = {};
   Map<String, bool> transports = {
     'tram': false,
