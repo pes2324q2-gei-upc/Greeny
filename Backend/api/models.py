@@ -106,7 +106,6 @@ class Review(models.Model):
     body = models.CharField(max_length = 1000, blank=True)
     puntuation = models.FloatField(default=0.0, blank=False, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
-
 class Route(models.Model):
 
     TRANSPORT_MODES = [
@@ -140,3 +139,10 @@ class Route(models.Model):
         self.total_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
         super().save(*args, **kwargs)
+
+class FavoriteStation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'station', )
