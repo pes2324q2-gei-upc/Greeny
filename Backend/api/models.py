@@ -136,15 +136,15 @@ class Route(models.Model):
         super().save(*args, **kwargs)'''
 
 class Neighborhood(models.Model):
-    name = models.CharField(max_length=250, null=False) 
-    points_total = models.FloatField(null=False)
-    path = models.CharField(max_length=255, null=False)  
+    name = models.CharField(max_length=50) 
+    path = models.CharField(max_length=100)  
 
 class Level(models.Model):
-    number = models.IntegerField(null=False)
+    number = models.IntegerField()
     completed = models.BooleanField(default=False)
     current = models.BooleanField(default=False)
-    points_user = models.FloatField(default=0.0)
+    points_user = models.IntegerField(default=0)
+    points_total = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)  
     neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
     
