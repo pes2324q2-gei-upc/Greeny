@@ -86,7 +86,7 @@ flutter:
   - assets/transports/
   - assets/locations/
   - .env
-  - assets/cities/
+  - assets/neighborhoods/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
