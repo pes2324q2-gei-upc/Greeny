@@ -86,20 +86,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       height: 60, // sets the height of the button
                       margin: const EdgeInsets.only(
                           top: 20), // moves the button a little bit up
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const RoutesPage()),
-                          );
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              const Color.fromARGB(255, 1, 167, 164)),
-                        ),
-                        child: Text(translate('My Routes')),
-                      ),
                     ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
