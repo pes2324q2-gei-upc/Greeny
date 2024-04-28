@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
+import 'dart:convert';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -29,23 +31,68 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   int userPoints = 0;
   int levelPoints = 100;
-  String nhoodName = 'Nou Barris';
   int levelNumber = 1;
-  String nhoodPath = 'nhood_1.glb';
+  String nhoodName = '';
+  String nhoodPath = '';
+  bool first = true;
 
   String userName = '';
 
+  ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
   void initState() {
+    super.initState();
     obtenirNomUsuari();
     _controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
       _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
         setState(() {});
       });
+    }
+    getCityData().then((data) {
+      setState(() {
+        cityDataNotifier.value = data;
+        userPoints = data['points_user'];
+        levelPoints = data['points_total'];
+        levelNumber = data['number'];
+        nhoodName = data['neighborhood']['name'];
+        nhoodPath = data['neighborhood']['path'];
+      });
+    });
+  }
+
+  Future<Map<String, dynamic>> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load city data');
+    }
+  }
+
+  Future<void> updateCityData(int points) async {
+    final response = await httpPut(
+      '/api/city/',
+      jsonEncode({'points_user': points}),
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> newCityData = jsonDecode(response.body);
+
+      setState(() {
+        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
+        cityDataNotifier.value = newCityData;
+        userPoints = newCityData['points_user'];
+        levelPoints = newCityData['points_total'];
+        levelNumber = newCityData['number'];
+        nhoodName = newCityData['neighborhood']['name'];
+        nhoodPath = newCityData['neighborhood']['path'];
+      });
+    } else {
+      throw Exception('Failed to update city data');
     }
   }
 
@@ -63,29 +110,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
   }
 
-  void updateProgress(int newProgress) {
+  void updateProgress(int points) {
+    updateCityData(points);
     setState(() {
-      userPoints = newProgress;
+      userPoints = points;
     });
-
-    if (userPoints <= 0) {
-      setState(() {
-        nhoodName = 'Nou Barris';
-        userPoints = 0;
-      });
-    } else if (userPoints > 100 && nhoodName == 'Nou Barris') {
-      setState(() {
-        levelPoints = 200;
-        nhoodName = 'Horta-Guinardó';
-        userPoints = 0;
-      });
-    } else if (userPoints > 200 && nhoodName == 'Horta-Guinardó') {
-      setState(() {
-        nhoodName = 'Sants-Montjuïc';
-        levelPoints = 400;
-        userPoints = 0;
-      });
-    }
   }
 
   @override
@@ -98,8 +127,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       );
     } else {
-      double opct =
-          max(min(75, 100 - (userPoints / levelPoints) * 100), 0) / 100;
+      double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         body: CustomScrollView(
@@ -130,18 +158,47 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                       ? 'assets/neighborhoods/fog2.png'
                                       : 'assets/neighborhoods/fog3.png'),
                             ),
-                            ModelViewer(
-                              debugLogging: false,
-                              key: Key(nhoodName),
-                              src: 'assets/neighborhoods/$nhoodPath',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
+                            ValueListenableBuilder<Map<String, dynamic>?>(
+                              valueListenable: cityDataNotifier,
+                              builder: (BuildContext context,
+                                  Map<String, dynamic>? cityData,
+                                  Widget? child) {
+                                if (cityData == null) {
+                                  // Los datos aún no están disponibles, muestra un indicador de carga.
+                                  return const Center(
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  if (first) {
+                                    // Los datos están disponibles, construye el ModelViewer.
+                                    userPoints = cityData['points_user'];
+                                    levelPoints = cityData['points_total'];
+                                    levelNumber = cityData['number'];
+                                    nhoodName =
+                                        cityData['neighborhood']['name'];
+                                    nhoodPath =
+                                        cityData['neighborhood']['path'];
+                                    first = false;
+                                  }
+
+                                  return ModelViewer(
+                                    debugLogging: false,
+                                    key: Key(nhoodName),
+                                    src: 'assets/neighborhoods/$nhoodPath',
+                                    autoRotate: true,
+                                    disableZoom: true,
+                                    rotationPerSecond: "25deg",
+                                    autoRotateDelay: 1000,
+                                    cameraControls: false,
+                                  );
+                                }
+                              },
                             ),
                             Opacity(
                               opacity:
