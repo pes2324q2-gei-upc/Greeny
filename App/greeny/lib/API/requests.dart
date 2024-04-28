@@ -14,7 +14,7 @@ httpGet(String url) async {
   var response = await http.get(
     uri,
     headers: {
-      'Authorization': 'Token $token',
+      'Authorization': 'Bearer $token',
     },
   );
   return response;
@@ -26,7 +26,7 @@ httpPost(String url, String params, String contentType) async {
   var response = await http.post(
     uri,
     headers: {
-      'Authorization': 'Token $token',
+      'Authorization': 'Bearer $token',
       'Content-Type': contentType,
     },
     body: params,
@@ -41,7 +41,7 @@ httpPut(String url, String params) async {
   var response = await http.put(
     uri,
     headers: {
-      'Authorization': 'Token $token',
+      'Authorization': 'Bearer $token',
     },
     body: params,
   );
@@ -54,7 +54,7 @@ httpPatch(String url, String params) async {
   var response = await http.patch(
     uri,
     headers: {
-      'Authorization': 'Token $token',
+      'Authorization': 'Bearer $token',
     },
     body: params,
   );

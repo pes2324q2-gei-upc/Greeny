@@ -4,10 +4,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
 import 'package:greeny/API/user_auth.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
@@ -96,6 +96,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       );
     } else {
+      double opct = max(min(75, 100 - (punts / levelPoints) * 100), 0) / 100;
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         body: CustomScrollView(
@@ -118,15 +119,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         child: Stack(
                           children: [
                             Opacity(
-                              opacity: max(
-                                      min(75,
-                                          100 - (punts / levelPoints) * 100),
-                                      0) /
-                                  100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset('assets/cities/fog.png'),
+                              opacity:
+                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
+                                  ? 'assets/cities/fog1.png'
+                                  : opct > 0.33
+                                      ? 'assets/cities/fog2.png'
+                                      : 'assets/cities/fog3.png'),
                             ),
                             if (level == 'Nou Barris')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('cityModelViewer'),
                                 src: 'assets/cities/city_1.glb',
                                 autoRotate: true,
@@ -140,6 +143,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               ),
                             if (level == 'Horta-Guinardó')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('city2ModelViewer'),
                                 src: 'assets/cities/Horta-Guinardo.glb',
                                 autoRotate: true,
@@ -153,6 +157,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               ),
                             if (level == 'Sants-Montjuïc')
                               const ModelViewer(
+                                debugLogging: false,
                                 key: Key('city3ModelViewer'),
                                 src: 'assets/cities/Sants-Montjuic.glb',
                                 autoRotate: true,
@@ -165,12 +170,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                     false, // Evita que el usuario controle la cámara (true por defecto)
                               ),
                             Opacity(
-                              opacity: max(
-                                      min(75,
-                                          100 - (punts / levelPoints) * 100),
-                                      0) /
-                                  100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset('assets/cities/fog.png'),
+                              opacity:
+                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
+                                  ? 'assets/cities/fog1.png'
+                                  : opct > 0.33
+                                      ? 'assets/cities/fog2.png'
+                                      : 'assets/cities/fog3.png'),
                             ),
                           ],
                         )),
@@ -241,6 +247,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       appState.totalDistance = 0;
       appState.isPlaying = true;
+      appState.startedAt = DateTime.now();
     });
     _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
       // Actualizar el widget KmTravelled con la distancia actualizada
@@ -269,8 +276,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              FormFinalPage(totalDistance: appState.totalDistance)),
+          builder: (context) => FormFinalPage(
+              totalDistance: appState.totalDistance,
+              startedAt: appState.startedAt!)),
       (route) => false,
     );
   }
@@ -321,7 +329,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
     updateProgress(
         punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
   }
 
   void removePoints() {
@@ -330,7 +337,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
     updateProgress(
         punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
   }
 }
 
@@ -431,7 +437,7 @@ class BarraProgres extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width *
           0.8, // Establecer el ancho del contenedor
       child: Column(
@@ -452,7 +458,7 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
-              return Container(
+              return SizedBox(
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
