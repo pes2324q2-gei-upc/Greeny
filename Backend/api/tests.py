@@ -21,7 +21,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                     Stop, TransportType, Statistics)
+                     Stop, TransportType, Statistics, Review)
 
 
 class FetchPublicTransportStationsTest(TestCase):
@@ -253,3 +253,28 @@ class UsersViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.get(username='testuser2').username, 'testuser2')
+
+class TestReviewsViews(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.station = Station.objects.create(name='Test Station', latitude=40.7128, longitude=74.0060, rating=5.0)
+        self.review = Review.objects.create(author=self.user, station=self.station, body='Great station!', puntuation=5.0)
+        self.station.refresh_from_db()
+
+    def test_create_review(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f'/api/stations/{self.station.id}/reviews/', {'author': self.user.id, 'station': self.station.id, 'body': 'Good station!', 'puntuation': 4}, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Review.objects.count(), 2)
+        self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.rating, 4.5)
+
+    def test_get_reviews(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/api/stations/{self.station.id}/reviews/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.rating, 5)
