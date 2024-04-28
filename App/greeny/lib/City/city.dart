@@ -27,10 +27,10 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _controller; // controlador per l'animació del botó play/pause
   Timer? _updateTimer;
 
-  double progressPercentage = 0.3;
-  double punts = 50.0;
-  double levelPoints = 100.0;
-  String level = 'Nou Barris';
+  int punts = 0;
+  int levelPoints = 100;
+  String nhoodName = 'Nou Barris';
+
   String userName = '';
 
   @override
@@ -61,26 +61,26 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
   }
 
-  void updateProgress(double newProgress) {
+  void updateProgress(int newProgress) {
     setState(() {
       punts = newProgress;
     });
 
     if (punts <= 0) {
       setState(() {
-        level = 'Nou Barris';
+        nhoodName = 'Nou Barris';
         punts = 0;
       });
-    } else if (punts > 100 && level == 'Nou Barris') {
+    } else if (punts > 100 && nhoodName == 'Nou Barris') {
       setState(() {
-        levelPoints = 200.0;
-        level = 'Horta-Guinardó';
+        levelPoints = 200;
+        nhoodName = 'Horta-Guinardó';
         punts = 0;
       });
-    } else if (punts > 200 && level == 'Horta-Guinardó') {
+    } else if (punts > 200 && nhoodName == 'Horta-Guinardó') {
       setState(() {
-        level = 'Sants-Montjuïc';
-        levelPoints = 400.0;
+        nhoodName = 'Sants-Montjuïc';
+        levelPoints = 400;
         punts = 0;
       });
     }
@@ -122,61 +122,32 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               opacity:
                                   opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
-                                  ? 'assets/cities/fog1.png'
+                                  ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
-                                      ? 'assets/cities/fog2.png'
-                                      : 'assets/cities/fog3.png'),
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
                             ),
-                            if (level == 'Nou Barris')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('cityModelViewer'),
-                                src: 'assets/cities/city_1.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
-                            if (level == 'Horta-Guinardó')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('city2ModelViewer'),
-                                src: 'assets/cities/Horta-Guinardo.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
-                            if (level == 'Sants-Montjuïc')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('city3ModelViewer'),
-                                src: 'assets/cities/Sants-Montjuic.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
+                            const ModelViewer(
+                              debugLogging: false,
+                              key: Key('cityModelViewer'),
+                              src: 'assets/neighborhoods/nhood_1.glb',
+                              autoRotate: true,
+                              disableZoom: true,
+                              rotationPerSecond:
+                                  "25deg", // Rota 30 grados por segundo
+                              autoRotateDelay:
+                                  1000, // Espera 1 segundos antes de rotar
+                              cameraControls:
+                                  false, // Evita que el usuario controle la cámara (true por defecto)
+                            ),
                             Opacity(
                               opacity:
                                   opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
-                                  ? 'assets/cities/fog1.png'
+                                  ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
-                                      ? 'assets/cities/fog2.png'
-                                      : 'assets/cities/fog3.png'),
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
                             ),
                           ],
                         )),
@@ -191,7 +162,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               punts: punts,
                               onProgressChanged: updateProgress,
                               levelPoints: levelPoints,
-                              level: level,
+                              nhoodName: nhoodName,
                             ),
                             buildplaypause(),
                             if (appState.totalDistance != 0)
@@ -422,17 +393,17 @@ Future<bool> comprovarUbicacio() async {
 }
 
 class BarraProgres extends StatelessWidget {
-  final double punts;
-  final Function(double) onProgressChanged;
-  final double levelPoints;
-  final String level;
+  final int punts;
+  final Function(int) onProgressChanged;
+  final int levelPoints;
+  final String nhoodName;
 
   const BarraProgres({
     super.key,
     required this.punts,
     required this.onProgressChanged,
     required this.levelPoints,
-    required this.level,
+    required this.nhoodName,
   });
 
   @override
@@ -449,7 +420,7 @@ class BarraProgres extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  level,
+                  nhoodName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -480,7 +451,7 @@ class BarraProgres extends StatelessWidget {
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
+                  'Punts: $punts/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
