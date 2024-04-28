@@ -58,7 +58,6 @@ class UserAuth {
   Future<bool> refreshUser() async {
   var response = await httpGet('api/user/');
   if (response.statusCode == 200) {
-    print(response.body);
     List json = jsonDecode(response.body);
     if (json.isNotEmpty) {
       Map<String, dynamic> user = json[0];

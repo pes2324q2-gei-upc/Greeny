@@ -56,4 +56,6 @@ jobs:
         API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
         
       run: |
+        python manage.py makemigrations
+        python manage.py migrate
         python manage.py test

@@ -8,6 +8,7 @@ class AppState with ChangeNotifier {
   bool _isPlaying = false;
   double _totalDistance = 0.0;
   DateTime? _startedAt;
+  // ignore: avoid_init_to_null
   late Position? _previousPosition =
       null; // posicio anterior per calcular els km desplaçats
   Set<Marker> markers = {};

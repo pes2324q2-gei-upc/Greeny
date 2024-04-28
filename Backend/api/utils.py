@@ -13,7 +13,7 @@ def calculate_co2_consumed(transports, total_distance):
     transport_dist = total_distance / len(transports)
     co2_consumed = 0.0
     for transport in transports:
-        if transport == 'Walking' or transport == 'Bike':
+        if transport in ('Walking', 'Bike'):
             co2_consumed += 0.0
         elif transport == 'Metro':
             co2_consumed += 0.05013 * transport_dist
@@ -82,3 +82,13 @@ def calculate_statistics(transports, total_distance):
         update_fields['km_Totals'] = total_distance
 
     return update_fields
+
+def calculate_points(co2_consumed, car_co2_consumed):
+    # Calculate the points earned by the user
+    alpha = 1 if co2_consumed == 0 else car_co2_consumed / co2_consumed
+    co2_saved = max(0, car_co2_consumed - co2_consumed)
+    total_points = co2_saved * alpha
+
+    multiplier = 2
+
+    return int(round(total_points * multiplier))

@@ -100,7 +100,8 @@ class FriendRequest(models.Model):
     User, related_name='to_user', on_delete=models.CASCADE)
 
 class Review(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100, related_name='reviews')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100,
+                                related_name='reviews')
     station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='reviews')
     body = models.CharField(max_length = 1000, blank=True)
     puntuation = models.FloatField(default=0.0, blank=False, null=False)
@@ -127,11 +128,15 @@ class Route(models.Model):
     car_consumed_co2 = models.FloatField(default=0.0)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
-    #totalTime = models.FloatField(default=0.0)
+    total_time = models.CharField(max_length=8, default='00:00:00')
 
-    '''def save(self, *args, **kwargs):
-        # Calculate the difference in seconds between ended_at and started_at
-        self.totalTime = (self.ended_at - self.started_at)
-        super().save(*args, **kwargs)'''
+    def save(self, *args, **kwargs):
+        # Calculate the difference between ended_at and started_at
+        total_time = self.ended_at - self.started_at
 
+        # Convert totalTime to hours, minutes, and seconds
+        hours, remainder = divmod(total_time.total_seconds(), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        self.total_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
+        super().save(*args, **kwargs)
