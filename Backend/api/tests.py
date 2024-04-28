@@ -107,17 +107,26 @@ class FinalFormTransports(TestCase):
         self.assertEqual(Statistics.objects.get().km_Motorcycle, 25)
 
     def test_statics_km_totals(self):
-        data = {
+        data1 = {
             'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+        data2 = {
+            'selectedTransports': ['Train, Metro, Tram, FGC', 'Bike'],
+            'totalDistance': 43.5,
+            'startedAt': '2024-04-25T16:33:14.90961'
+        }
+
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data1),
                                     content_type='application/json')
 
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data2),
+                         content_type='application/json')
+
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Totals, 100)
+        self.assertEqual(Statistics.objects.get().km_Totals, 143.5)
 
     def test_two_routes(self):
         data = {
@@ -189,9 +198,6 @@ class FinalFormTransports(TestCase):
         self.assertAlmostEqual(calculate_car_co2_consumed(20), 0.143 * 20)
         self.assertAlmostEqual(calculate_car_co2_consumed(30), 0.143 * 30)
         self.assertAlmostEqual(calculate_car_co2_consumed(40), 0.143 * 40)
-
-
-
 
 class FriendRequestViewSetTest(TestCase):
     def setUp(self):
