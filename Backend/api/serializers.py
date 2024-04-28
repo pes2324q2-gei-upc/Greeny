@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review)
+                    BicingStation, Statistics, FriendRequest, Review, Route)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,3 +97,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = ['from_user', 'to_user']
+
+class RouteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Route
+        fields = '__all__'

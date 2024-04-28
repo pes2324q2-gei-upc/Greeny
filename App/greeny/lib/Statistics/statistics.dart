@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
-import 'package:greeny/Statistics/trips.dart';
+import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
 
 class StatisticsPage extends StatefulWidget {
@@ -12,7 +12,7 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  double co2Saved = 0;
+  double co2Consumed = 0;
   double kmTotal = 0;
   double kmWalked = 0;
   double kmBiked = 0;
@@ -29,23 +29,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Future<void> getStats() async {
-    Map<String, dynamic> statsData = {};
-
     final response = await httpGet('/api/statistics/');
 
     if (response.statusCode == 200) {
-      setState(() {
-        statsData = json.decode(response.body);
-        co2Saved = statsData['kg_CO2'].toDouble();
-        kmTotal = statsData['km_Totals'].toDouble();
-        kmWalked = statsData['km_Walked'].toDouble();
-        kmBiked = statsData['km_Biked'].toDouble();
-        kmElectricCar = statsData['km_ElectricCar'].toDouble();
-        kmPublicTransport = statsData['km_PublicTransport'].toDouble();
-        kmBus = statsData['km_Bus'].toDouble();
-        kmMotorcycle = statsData['km_Motorcycle'].toDouble();
-        kmCar = statsData['km_Car'].toDouble();
-      });
+      List<dynamic> statsDataList = json.decode(response.body);
+
+      if (statsDataList.isNotEmpty) {
+        Map<String, dynamic> statsData = statsDataList[0];
+
+        setState(() {
+          //co2Consumed = statsData['kg_CO2_consumed'].toDouble();
+          kmTotal = statsData['km_Totals'].toDouble();
+          kmWalked = statsData['km_Walked'].toDouble();
+          kmBiked = statsData['km_Biked'].toDouble();
+          kmElectricCar = statsData['km_ElectricCar'].toDouble();
+          kmPublicTransport = statsData['km_PublicTransport'].toDouble();
+          kmBus = statsData['km_Bus'].toDouble();
+          kmMotorcycle = statsData['km_Motorcycle'].toDouble();
+          kmCar = statsData['km_Car'].toDouble();
+        });
+      }
     } else {
       showMessage("Error loading statistics");
     }
@@ -60,7 +63,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           title: Text(translate('Statistics'),
               style: const TextStyle(fontWeight: FontWeight.bold)),
           leading: IconButton(
-            onPressed: trips,
+            onPressed: routes,
             icon: const Icon(Icons.history),
             color: const Color.fromARGB(255, 1, 167, 164),
           ),
@@ -77,6 +80,27 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     const SizedBox(height: 20),
+                    Container(
+                      width: double
+                          .infinity, // makes the button take up the full width of its parent
+                      height: 60, // sets the height of the button
+                      margin: const EdgeInsets.only(
+                          top: 20), // moves the button a little bit up
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const RoutesPage()),
+                          );
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromARGB(255, 1, 167, 164)),
+                        ),
+                        child: Text(translate('My Routes')),
+                      ),
+                    ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -91,7 +115,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('$co2Saved kg',
+                                    Text('$co2Consumed kg',
                                         style: const TextStyle(
                                             fontSize: 24.0,
                                             fontWeight: FontWeight.bold)),
@@ -180,10 +204,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ));
   }
 
-  void trips() {
+  void routes() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const TripsPage()),
+      MaterialPageRoute(builder: (context) => const RoutesPage()),
     );
   }
 

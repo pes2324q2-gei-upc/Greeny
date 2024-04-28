@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/main_page.dart';
@@ -30,75 +29,91 @@ class _FormFinalPageState extends State<FormFinalPage> {
     'Car'
   ];
 
+  final List<double> sliderValues = List.generate(10, (_) => 0.0);
+  List<int> selectedIndices = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Container(
           padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: _showInformationDialog,
-                        child: const Icon(Icons.info_outline_rounded, size: 35),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    translate("Which transports have \nyou used?"),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 21, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20.0),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(isSelected.length, (index) {
-                          return GestureDetector(
-                            onTap: () => _toggleTransport(index),
-                            child: Container(
-                              padding: const EdgeInsets.all(1),
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                color: isSelected[index]
-                                    ? const Color.fromARGB(131, 1, 164, 167)
-                                    : null,
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: Colors.transparent),
-                              ),
-                              child: Icon(
-                                _getTransportIcon(index),
-                                size: 40,
-                              ),
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: _showInformationDialog,
+                              child: const Icon(Icons.info_outline_rounded,
+                                  size: 35),
                             ),
-                          );
-                        }),
-                      )),
-                ],
-              ),
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _sendData,
-                    child: Text(translate("Submit")),
-                  ),
-                  TextButton(
-                    onPressed: _showExitDialog,
-                    child: Text(translate("Don't answer")),
-                  ),
-                ],
+                          ],
+                        ),
+                        Text(
+                          translate("Which transports have \nyou used?"),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 21, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 20.0),
+                        SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:
+                                  List.generate(isSelected.length, (index) {
+                                return GestureDetector(
+                                  onTap: () => _toggleTransport(index),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(1),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    decoration: BoxDecoration(
+                                      color: isSelected[index]
+                                          ? const Color.fromARGB(
+                                              131, 1, 164, 167)
+                                          : null,
+                                      borderRadius: BorderRadius.circular(30),
+                                      border:
+                                          Border.all(color: Colors.transparent),
+                                    ),
+                                    child: Icon(
+                                      _getTransportIcon(index),
+                                      size: 40,
+                                    ),
+                                  ),
+                                );
+                              }),
+                            )),
+                        const SizedBox(height: 40),
+                        ..._buildTransportSliders(),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: _sendData,
+                          child: Text(translate("Submit")),
+                        ),
+                        TextButton(
+                          onPressed: _showExitDialog,
+                          child: Text(translate("Don't answer")),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -129,6 +144,10 @@ class _FormFinalPageState extends State<FormFinalPage> {
   void _toggleTransport(int index) {
     setState(() {
       isSelected[index] = !isSelected[index];
+      if (!isSelected[index]) {
+        sliderValues.removeAt(index);
+        sliderValues.add(0.0);
+      }
     });
   }
 
@@ -185,8 +204,64 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
+  Widget _buildSlider(String mode, int valueIndex) {
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 24.0),
+          child: Slider(
+            value: sliderValues[valueIndex],
+            min: 0,
+            max: 100,
+            onChanged: (double value) {
+              setState(() {
+                sliderValues[valueIndex] = (value / 5).round() * 5.0;
+              });
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                mode,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${sliderValues[valueIndex].toInt()}%',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildTransportSliders() {
+    List<Widget> sliders = [];
+    int valueIndex = 0;
+    for (int i = 0; i < isSelected.length; i++) {
+      if (isSelected[i]) {
+        if (transportModes[i] == 'Train, Metro, Tram, FGC') {
+          // Special case: add four sliders
+          for (var mode in ['Train', 'Metro', 'Tram', 'FGC']) {
+            sliders.add(_buildSlider(mode, valueIndex));
+            valueIndex++;
+          }
+        } else {
+          // Normal case: add one slider
+          sliders.add(_buildSlider(transportModes[i], valueIndex));
+          valueIndex++;
+        }
+      }
+    }
+    return sliders;
+  }
+
   void _showExitDialog() {
-    print(widget.startedAt.toIso8601String());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

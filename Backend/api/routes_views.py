@@ -76,3 +76,13 @@ class RoutesView(APIView):
             user_statics.save()
 
         return JsonResponse({'status': 'success'})
+
+    def get_queryset(self):
+        user = self.request.user
+        routes = Route.objects.filter(user=user)
+        return routes
+
+    def get(self, request):
+        routes = self.get_queryset()
+        serializer = RouteSerializer(routes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
