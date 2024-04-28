@@ -14,8 +14,6 @@ class ReviewsViews(ModelViewSet):
         station = Station.objects.get(id=station_id)
         serializer = self.get_serializer(data=request.data)
 
-        
-
         if serializer.is_valid():
             serializer.save(author=user, station=station)
             self.update_station_rating(station)
@@ -27,11 +25,11 @@ class ReviewsViews(ModelViewSet):
         total = 0
         for review in reviews:
             total += review.puntuation
-        station.rating = total / len(reviews)
+        station.rating = round((total / len(reviews)), 2)
         station.save()
 
     def get_queryset(self):
         station_id = self.kwargs['station_id']
         station = Station.objects.get(id=station_id)
-        reviews = Review.objects.filter(station=station)
+        reviews = Review.objects.filter(station=station).order_by('-creation_date')
         return reviews
