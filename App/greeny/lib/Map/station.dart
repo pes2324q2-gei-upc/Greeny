@@ -21,6 +21,7 @@ class _StationPageState extends State<StationPage> {
   String get type => widget.type;
 
   bool isLoading = true;
+  bool isFavorite = false;
 
   Map<String, dynamic> station = {};
 
@@ -72,6 +73,18 @@ class _StationPageState extends State<StationPage> {
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
+            IconButton(
+              onPressed: () async {
+                var responseFav = await httpPost('api/stations/$stationId',
+                    jsonEncode({}), 'application/json');
+                if (responseFav.statusCode == 200) {
+                  setState(() {
+                    isFavorite = !isFavorite;
+                  });
+                }
+              },
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            )
           ],
         ));
   }
@@ -403,6 +416,24 @@ class _StationPageState extends State<StationPage> {
         setState(() {
           isLoading = false;
         });
+      }
+      var responseFavs = await httpGet('api/user/');
+      if (responseFavs.statusCode == 200) {
+        List jsonList = jsonDecode(responseFavs.body);
+        if (jsonList.isNotEmpty) {
+          for (var json in jsonList) {
+            var favorites = json['favorite_stations'];
+            for (var favorite in favorites) {
+              var station = favorite['station'];
+              if (station['id'] == stationId) {
+                setState(() {
+                  isFavorite = true;
+                });
+                return;
+              }
+            }
+          }
+        }
         return;
       }
     }

@@ -10,10 +10,11 @@ from django.views import View
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 # Local application/library specific imports
 from .models import (PublicTransportStation, Stop, BusStation,
-                    Station, ChargingStation, TransportType, BicingStation, FavouriteStation)
+                    Station, ChargingStation, TransportType, BicingStation, FavoriteStation)
 from .serializers import (PublicTransportStationSerializer, BusStationSerializer,
                         BicingStationSerializer, ChargingStationSerializer)
 
@@ -237,9 +238,9 @@ class StationsView(APIView):
     def post(self, request, pk=None):
         if(pk):
             stat = Station.objects.get(pk=pk)
-            favourite_station, created = FavouriteStation.objects.get_or_create(user=request.user, station=stat)
+            favorite_station, created = FavoriteStation.objects.get_or_create(user=request.user, station=stat)
             if not created:
-                favourite_station.delete()
+                favorite_station.delete()
 
             return Response(status=status.HTTP_200_OK)
 
@@ -300,6 +301,9 @@ class EstacionsBicing(View):
 
 
 class ThirdPartyChargingStationInfoView(APIView):
+
+    permission_classes = [AllowAny]
+
     def get(self, request, format=None):
         # lat = round(float(request.data['lat']),5)
         # longi = round(float(request.data['long']), 6)
@@ -309,7 +313,7 @@ class ThirdPartyChargingStationInfoView(APIView):
 
         charging_station = Station.objects.get(latitude=lat, longitude=longi)
 
-        favs = FavouriteStation.objects.filter(station_id = charging_station.id).count()
+        favs = FavoriteStation.objects.filter(station_id = charging_station.id).count()
 
         return Response({"data" :{
             "name" : charging_station.name,

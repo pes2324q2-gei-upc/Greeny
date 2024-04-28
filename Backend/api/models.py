@@ -105,7 +105,7 @@ class Review(models.Model):
     puntuation = models.FloatField(default=0.0, blank=False, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
-class FavouriteStation(models.Model):
+class FavoriteStation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
 

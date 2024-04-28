@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review, FavouriteStation)
+                    BicingStation, Statistics, FriendRequest, Review, FavoriteStation)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,20 +13,20 @@ class SimpleStationSerializer(serializers.ModelSerializer):
         model = Station
         fields = ['id', 'name']
 
-class FavouriteStationSerializer(serializers.ModelSerializer):
+class FavoriteStationSerializer(serializers.ModelSerializer):
     station = SimpleStationSerializer(read_only=True)
 
     class Meta:
-        model = FavouriteStation
+        model = FavoriteStation
         fields = ['station']
 
 class UserSerializer(serializers.ModelSerializer):
 
-    favourite_stations = serializers.SerializerMethodField()
+    favorite_stations = serializers.SerializerMethodField()
 
-    def get_favourite_stations(self, obj):
-        favourite_stations = FavouriteStation.objects.filter(user=obj)
-        return FavouriteStationSerializer(favourite_stations, many=True).data
+    def get_favorite_stations(self, obj):
+        favorite_stations = FavoriteStation.objects.filter(user=obj)
+        return FavoriteStationSerializer(favorite_stations, many=True).data
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'email','password', 'favourite_stations']
+        fields = ['username', 'first_name', 'email','password', 'favorite_stations']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
