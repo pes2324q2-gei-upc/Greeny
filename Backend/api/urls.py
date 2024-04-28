@@ -13,11 +13,13 @@ from api.transports_views import (
     CarregadorsElectricsView,
     FetchPublicTransportStations,
     ParadesBus,
-    StationsView
+    StationsView,
+    ThirdPartyChargingStationInfoView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from api.routesViews import RoutesView
 from api.city_views import CityView
+
 
 router = DefaultRouter()
 
@@ -37,4 +39,5 @@ urlpatterns = [
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list'),
     path('city/', CityView.as_view(), name='city'),
+    path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info')
 ]

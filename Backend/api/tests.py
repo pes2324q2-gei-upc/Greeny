@@ -19,7 +19,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                     Stop, TransportType, Statistics, Route)
+                     Stop, TransportType, Statistics, Route, Review)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 
@@ -107,17 +107,26 @@ class FinalFormTransports(TestCase):
         self.assertEqual(Statistics.objects.get().km_Motorcycle, 25)
 
     def test_statics_km_totals(self):
-        data = {
+        data1 = {
             'selectedTransports': ['Walking', 'Bus', 'Bike'],
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
-        self.client.post(reverse('final_form_transports'), data=json.dumps(data),
+        data2 = {
+            'selectedTransports': ['Train, Metro, Tram, FGC', 'Bike'],
+            'totalDistance': 43.5,
+            'startedAt': '2024-04-25T16:33:14.90961'
+        }
+
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data1),
                                     content_type='application/json')
 
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data2),
+                         content_type='application/json')
+
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Totals, 100)
+        self.assertEqual(Statistics.objects.get().km_Totals, 143.5)
 
     def test_two_routes(self):
         data = {
@@ -190,9 +199,6 @@ class FinalFormTransports(TestCase):
         self.assertAlmostEqual(calculate_car_co2_consumed(30), 0.143 * 30)
         self.assertAlmostEqual(calculate_car_co2_consumed(40), 0.143 * 40)
 
-
-
-
 class FriendRequestViewSetTest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
@@ -255,3 +261,28 @@ class UsersViewTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 2)
         self.assertEqual(User.objects.get(username='testuser2').username, 'testuser2')
+
+class TestReviewsViews(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.station = Station.objects.create(name='Test Station', latitude=40.7128, longitude=74.0060, rating=5.0)
+        self.review = Review.objects.create(author=self.user, station=self.station, body='Great station!', puntuation=5.0)
+        self.station.refresh_from_db()
+
+    def test_create_review(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f'/api/stations/{self.station.id}/reviews/', {'author': self.user.id, 'station': self.station.id, 'body': 'Good station!', 'puntuation': 4}, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Review.objects.count(), 2)
+        self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.rating, 4.5)
+
+    def test_get_reviews(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get(f'/api/stations/{self.station.id}/reviews/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.station.refresh_from_db()
+        self.assertEqual(self.station.rating, 5)
