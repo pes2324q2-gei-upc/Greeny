@@ -16,7 +16,7 @@ from api.transports_views import (
     StationsView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
-from api.routesViews import RoutesView
+from api.routes_views import RoutesView
 
 router = DefaultRouter()
 

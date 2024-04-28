@@ -19,7 +19,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from datetime import datetime
 import pytz
-from .utils import calculate_co2_consumed, calculate_car_co2_consumed, calculate_statistics
+from .utils import calculate_co2_consumed, calculate_car_co2_consumed, calculate_statistics, calculate_points
+# from . import city_views
 
 class RoutesView(APIView):
 
@@ -44,6 +45,10 @@ class RoutesView(APIView):
         if len(transports) != 0:
             consumed_co2 = calculate_co2_consumed(transports, total_distance)
             car_consumed_co2 = calculate_car_co2_consumed(total_distance)
+
+            # si no responen el form, tenen 0 punts --> No se si ho farem aixi al final
+            points = calculate_points(consumed_co2, car_consumed_co2)
+            #points = city_views.update_points(points, user)
 
         Route.objects.create(
             user=user,
@@ -71,4 +76,3 @@ class RoutesView(APIView):
             user_statics.save()
 
         return JsonResponse({'status': 'success'})
-
