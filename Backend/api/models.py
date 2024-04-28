@@ -134,17 +134,18 @@ class Route(models.Model):
         # Calculate the difference in seconds between ended_at and started_at
         self.totalTime = (self.ended_at - self.started_at)
         super().save(*args, **kwargs)'''
+
 class Neighborhood(models.Model):
+    name = models.CharField(max_length=250, null=False) 
     points_total = models.FloatField(null=False)
-    path = models.CharField(null=False)
+    path = models.CharField(max_length=255, null=False)  
 
 class Level(models.Model):
     number = models.IntegerField(null=False)
     completed = models.BooleanField(default=False)
     current = models.BooleanField(default=False)
     points_user = models.FloatField(default=0.0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    Neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
     
 

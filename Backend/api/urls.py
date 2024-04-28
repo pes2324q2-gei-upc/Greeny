@@ -17,7 +17,7 @@ from api.transports_views import (
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from api.routesViews import RoutesView
-from api.views import CityView
+from api.city_views import CityView
 
 router = DefaultRouter()
 
