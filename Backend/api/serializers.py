@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review, FavoriteStation)
+                    BicingStation, Statistics, FriendRequest, Review, Neighborhood, Level, FavoriteStation)
+
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -98,7 +99,19 @@ class ChargingStationSerializer(StationSerializer):
 class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id','user']
+        exclude = ['id']
+
+class NeighborhoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Neighborhood
+        exclude = ['id']
+
+class LevelSerializer(serializers.ModelSerializer):
+    neighborhood = NeighborhoodSerializer()
+
+    class Meta:
+        model = Level
+        fields = ['number', 'completed', 'current', 'points_user', 'points_total', 'user', 'neighborhood']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()

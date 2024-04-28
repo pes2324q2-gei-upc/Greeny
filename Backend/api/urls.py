@@ -17,7 +17,9 @@ from api.transports_views import (
     ThirdPartyChargingStationInfoView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
-from api.routes_views import RoutesView
+from api.routesViews import RoutesView
+from api.city_views import CityView
+
 
 router = DefaultRouter()
 
@@ -36,5 +38,6 @@ urlpatterns = [
     path('send-form-transports', RoutesView.as_view(), name='final_form_transports'),
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list'),
+    path('city/', CityView.as_view(), name='city'),
     path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info')
 ]

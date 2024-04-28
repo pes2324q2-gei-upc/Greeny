@@ -31,7 +31,7 @@ httpPost(String url, String params, String contentType) async {
     },
     body: params,
   );
-  
+
   return response;
 }
 
@@ -41,6 +41,7 @@ httpPut(String url, String params) async {
   var response = await http.put(
     uri,
     headers: {
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     },
     body: params,
