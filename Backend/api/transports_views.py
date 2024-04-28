@@ -188,7 +188,7 @@ class FetchPublicTransportStations(View):
 
 class StationsView(APIView):
     def get(self, request, pk=None):
-        if (pk):
+        if pk:
             try:
                 station = PublicTransportStation.objects.get(pk=pk)
                 serializer = PublicTransportStationSerializer(station)
@@ -213,7 +213,7 @@ class StationsView(APIView):
                 return Response(serializer.data)
             except ChargingStation.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         else:
             data = {}
 
@@ -234,15 +234,18 @@ class StationsView(APIView):
             data['chargingStations'] = serializer_charging.data
 
             return JsonResponse({'stations': data}, safe=False)
-        
+
     def post(self, request, pk=None):
-        if(pk):
+        if pk:
             stat = Station.objects.get(pk=pk)
-            favorite_station, created = FavoriteStation.objects.get_or_create(user=request.user, station=stat)
+            favorite_station, created = FavoriteStation.objects.get_or_create(
+                                            user=request.user,
+                                            station=stat)
             if not created:
                 favorite_station.delete()
 
             return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 #GET parades de bus Barcelona
@@ -304,7 +307,7 @@ class ThirdPartyChargingStationInfoView(APIView):
 
     permission_classes = [AllowAny]
 
-    def get(self, request, format=None):
+    def get(self, request, fmt=None):
         # lat = round(float(request.data['lat']),5)
         # longi = round(float(request.data['long']), 6)
 
