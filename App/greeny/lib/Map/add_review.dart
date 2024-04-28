@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -27,7 +29,6 @@ class _AddReviewPageState extends State<AddReviewPage> {
   String get type => widget.type;
 
   final TextEditingController reviewController = TextEditingController();
-  //final TextEditingController scoreController = TextEditingController();
 
   double rating = 0;
 
@@ -35,117 +36,36 @@ class _AddReviewPageState extends State<AddReviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Add Review'),
+          title: Text(translate('Add review')),
         ),
         body: Center(
-          //child: reviewForm(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Station: $stationName'),
+              const SizedBox(height: 35),
+              Center(
+                child: Text(
+                  stationName,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 20, 
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
+              ),
               Expanded(
                 child: reviewForm(),
               ),
+              Center(
+                child: ElevatedButton(
+                  onPressed: sendReview,
+                  child: Text(translate('Save Review')),
+                ),
+              ),
+              const SizedBox(height: 40),
             ],
           ),
         ));
-
-    /*body: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(40, 50, 40, 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Form(
-                    //Key: reviewForm,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text( //Hace falta este?
-                              'Rating: $rating',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ]
-                        ),
-                        const SizedBox(height: 30),
-                        RatingBar.builder(
-                          minRating: 1,
-                          itemSize: 40,
-                          itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                          itemBuilder: (context, _) => Icon(Icons.star, color: Colors.amber),
-                          updateOnDrag: true,
-                          onRatingUpdate: (rating) => setState(() {
-                            this.rating = rating;
-                          }),
-                        ),
-                        /*TextFormField(
-                          obscureText: false,
-                          controller: scoreController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: 'Enter your score (1-5)',
-                          ),
-                        ),*/
-                        const SizedBox(height: 20),
-                        TextField(
-                          obscureText: false,
-                          controller: reviewController,
-                          //maxLines: 5,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: 'Write your review here',
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: sendReview,
-                          child: Text('Save Review'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-        /*padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: reviewController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                labelText: 'Write your review here',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextFormField(
-              controller: scoreController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Enter your score (1-5)',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: sendReview,
-              child: Text('Save Review'),
-            ),
-          ],
-        ),*/
-      ),
-    );*/
   }
 
   reviewForm() {
@@ -157,48 +77,44 @@ class _AddReviewPageState extends State<AddReviewPage> {
           child: Container(
             padding: const EdgeInsets.fromLTRB(40, 50, 40, 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Form(
-                  //Key: reviewForm,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              //Hace falta este?
-                              'Rating: $rating',
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ]),
-                      const SizedBox(height: 30),
                       RatingBar.builder(
                         minRating: 1,
                         itemSize: 40,
                         itemPadding: const EdgeInsets.symmetric(horizontal: 4),
                         itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: Colors.amber),
+                            const Icon(Icons.star, color: const Color.fromARGB(255, 1, 167, 164)),
                         updateOnDrag: true,
                         onRatingUpdate: (rating) => setState(() {
                           this.rating = rating;
                         }),
                       ),
                       const SizedBox(height: 20),
-                      TextField(
+                      TextFormField(
                         obscureText: false,
                         controller: reviewController,
-                        //maxLines: 5,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Write your review here',
+                        maxLines: 14,
+                        maxLength: 1000,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 1, 167, 164),  // Change this to your desired color
+                              width: 4.0,         // Change this to your desired width
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 1, 167, 164),  // Change this to your desired color
+                              width: 4.0,         // Change this to your desired width
+                            ),
+                          ),
+                          labelText: translate('Write your review here'),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: sendReview,
-                        child: const Text('Save Review'),
                       ),
                     ],
                   ),
@@ -213,17 +129,8 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
   Future<void> sendReview() async {
     String reviewText = reviewController.text;
-    //String scoreText = scoreController.text;
-
-    // Validar los datos antes de enviarlos
-    /*if (reviewText.isEmpty) {
-      print('Review is empty');
-      return;
-    }*/
-
-    /*int? score = int.tryParse(scoreText);*/
     if (rating == 0.0 || rating < 1.0 || rating > 5.0) {
-      print('Score is not a valid number between 1 and 5');
+      showMessage(translate("Score is not a valid number between 1 and 5"));
       return;
     }
 
@@ -235,20 +142,10 @@ class _AddReviewPageState extends State<AddReviewPage> {
         }),
         'application/json');
     if (response.statusCode == 201) {
-      //volver a la otra pantalla
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                StationPage(stationId: stationId, type: type)),
-        (Route<dynamic> route) => false,
-      );
+      Navigator.pop(context);
     } else {
-      showMessage("No se ha podido guardar la review");
+      showMessage(translate("The review could not be saved"));
     }
-
-    print('Sending review: $reviewText');
-    print('Sending score: $rating');
   }
 
   void showMessage(String m) {

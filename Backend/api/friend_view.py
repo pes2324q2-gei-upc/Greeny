@@ -11,7 +11,7 @@ class FriendRequestViewSet(viewsets.ViewSet):
 
         from_user = self.request.user
         to_user = User.objects.get(id=request.data['to_user'])
-        fr, created = FriendRequest.objects.get_or_create(
+        created = FriendRequest.objects.get_or_create(
                                                 from_user=from_user,
                                                 to_user=to_user)
 

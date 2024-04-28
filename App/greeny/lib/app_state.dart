@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 class AppState with ChangeNotifier {
   bool _isPlaying = false;
   double _totalDistance = 0.0;
+  DateTime? _startedAt;
+  // ignore: avoid_init_to_null
   late Position? _previousPosition =
       null; // posicio anterior per calcular els km desplaçats
   Set<Marker> markers = {};
@@ -24,6 +26,7 @@ class AppState with ChangeNotifier {
 
   bool get isPlaying => _isPlaying;
   double get totalDistance => _totalDistance;
+  DateTime? get startedAt => _startedAt;
   Position? get previousPosition => _previousPosition;
 
   Locations stations = Locations(
@@ -88,6 +91,11 @@ class AppState with ChangeNotifier {
 
   set previousPosition(Position? newPosition) {
     _previousPosition = newPosition;
+    notifyListeners();
+  }
+
+  set startedAt(DateTime? value) {
+    _startedAt = value;
     notifyListeners();
   }
 }
