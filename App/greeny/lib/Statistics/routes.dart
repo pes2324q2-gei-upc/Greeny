@@ -15,6 +15,16 @@ class RoutesPage extends StatefulWidget {
 class _RoutesPageState extends State<RoutesPage> {
   List<Map<String, dynamic>> routes = [];
 
+  final Map<String, IconData> transportIcons = {
+    'Walking': Icons.directions_walk,
+    'Bike': Icons.directions_bike,
+    'Bus': Icons.directions_bus,
+    'Train, Metro, Tram, FGC': Icons.train,
+    'Motorcycle': Icons.motorcycle,
+    'Electric Car': Icons.electric_car,
+    'Car': Icons.directions_car,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -71,7 +81,7 @@ class _RoutesPageState extends State<RoutesPage> {
     String formattedDateTime =
         DateFormat('dd-MM-yyyy, kk:mm').format(startedAt);
 
-    String formattedTotalTime = route['total_time'];
+    String totalTime = route['total_time'];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -82,108 +92,66 @@ class _RoutesPageState extends State<RoutesPage> {
           color: Theme.of(context).colorScheme.inversePrimary,
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(formattedDateTime,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
-                    Text(formattedTotalTime)
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Total distance: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                          '${(route['distance'] as double).toStringAsFixed(3)} km'),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Consumed CO2: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                          '${(route['consumed_co2'] as double).toStringAsFixed(3)} kg'),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Car consumed CO2: ',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                          '${(route['car_consumed_co2'] as double).toStringAsFixed(3)} kg'),
-                    ],
-                  ),
-                ),
-              ),
+              buildHeader(formattedDateTime, totalTime),
+              buildInfoRow('Total distance: ', route['distance']),
+              buildInfoRow('Consumed CO2: ', route['consumed_co2']),
+              buildInfoRow('Car consumed CO2: ', route['car_consumed_co2']),
               const SizedBox(height: 17),
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: route['transports'].map<Widget>((transport) {
-                    Widget icon;
-                    switch (transport) {
-                      case 'Walking':
-                        icon = const Icon(Icons.directions_walk, size: 24);
-                        break;
-                      case 'Bike':
-                        icon = const Icon(Icons.directions_bike, size: 24);
-                        break;
-                      case 'Bus':
-                        icon = const Icon(Icons.directions_bus, size: 24);
-                        break;
-                      case 'Train, Metro, Tram, FGC':
-                        icon = const Icon(Icons.train, size: 24);
-                        break;
-                      case 'Motorcycle':
-                        icon = const Icon(Icons.motorcycle, size: 24);
-                        break;
-                      case 'Electric Car':
-                        icon = const Icon(Icons.electric_car, size: 24);
-                        break;
-                      case 'Car':
-                        icon = const Icon(Icons.directions_car, size: 24);
-                        break;
-                      default:
-                        icon = const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: icon,
-                    );
-                  }).toList(),
-                ),
-              ),
+              buildTransportIcons(route['transports']),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildHeader(String dateTime, String totalTime) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(dateTime,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(totalTime)
+        ],
+      ),
+    );
+  }
+
+  Widget buildInfoRow(String label, double value) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Row(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text('${value.toStringAsFixed(3)} kg'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  buildTransportIcons(List<dynamic> transports) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: transports.map<Widget>((transport) {
+          IconData iconData =
+              transportIcons[transport.toString()] ?? Icons.error;
+          Widget icon = Icon(iconData, size: 24);
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: icon,
+          );
+        }).toList(),
       ),
     );
   }
