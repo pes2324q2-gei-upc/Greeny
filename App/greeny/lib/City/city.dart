@@ -27,9 +27,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _controller; // controlador per l'animació del botó play/pause
   Timer? _updateTimer;
 
-  int punts = 0;
+  int userPoints = 0;
   int levelPoints = 100;
   String nhoodName = 'Nou Barris';
+  int levelNumber = 1;
+  String nhoodPath = 'nhood_1.glb';
 
   String userName = '';
 
@@ -63,25 +65,25 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void updateProgress(int newProgress) {
     setState(() {
-      punts = newProgress;
+      userPoints = newProgress;
     });
 
-    if (punts <= 0) {
+    if (userPoints <= 0) {
       setState(() {
         nhoodName = 'Nou Barris';
-        punts = 0;
+        userPoints = 0;
       });
-    } else if (punts > 100 && nhoodName == 'Nou Barris') {
+    } else if (userPoints > 100 && nhoodName == 'Nou Barris') {
       setState(() {
         levelPoints = 200;
         nhoodName = 'Horta-Guinardó';
-        punts = 0;
+        userPoints = 0;
       });
-    } else if (punts > 200 && nhoodName == 'Horta-Guinardó') {
+    } else if (userPoints > 200 && nhoodName == 'Horta-Guinardó') {
       setState(() {
         nhoodName = 'Sants-Montjuïc';
         levelPoints = 400;
-        punts = 0;
+        userPoints = 0;
       });
     }
   }
@@ -96,7 +98,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       );
     } else {
-      double opct = max(min(75, 100 - (punts / levelPoints) * 100), 0) / 100;
+      double opct =
+          max(min(75, 100 - (userPoints / levelPoints) * 100), 0) / 100;
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         body: CustomScrollView(
@@ -120,17 +123,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           children: [
                             Opacity(
                               opacity:
-                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
                                   ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
                                       ? 'assets/neighborhoods/fog2.png'
                                       : 'assets/neighborhoods/fog3.png'),
                             ),
-                            const ModelViewer(
+                            ModelViewer(
                               debugLogging: false,
-                              key: Key('cityModelViewer'),
-                              src: 'assets/neighborhoods/nhood_1.glb',
+                              key: Key(nhoodName),
+                              src: 'assets/neighborhoods/$nhoodPath',
                               autoRotate: true,
                               disableZoom: true,
                               rotationPerSecond:
@@ -142,7 +145,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                             ),
                             Opacity(
                               opacity:
-                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
                                   ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
@@ -159,10 +162,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         child: Column(
                           children: [
                             BarraProgres(
-                              punts: punts,
+                              userPoints: userPoints,
                               onProgressChanged: updateProgress,
                               levelPoints: levelPoints,
                               nhoodName: nhoodName,
+                              levelNumber: levelNumber,
                             ),
                             buildplaypause(),
                             if (appState.totalDistance != 0)
@@ -296,18 +300,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void addPoints() {
     setState(() {
-      punts += 10;
+      userPoints += 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
     setState(() {
-      punts -= 10;
+      userPoints -= 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 }
 
@@ -393,17 +397,19 @@ Future<bool> comprovarUbicacio() async {
 }
 
 class BarraProgres extends StatelessWidget {
-  final int punts;
+  final int userPoints;
   final Function(int) onProgressChanged;
   final int levelPoints;
   final String nhoodName;
+  final int levelNumber;
 
   const BarraProgres({
     super.key,
-    required this.punts,
+    required this.userPoints,
     required this.onProgressChanged,
     required this.levelPoints,
     required this.nhoodName,
+    required this.levelNumber,
   });
 
   @override
@@ -420,7 +426,7 @@ class BarraProgres extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  nhoodName,
+                  "Nivell $levelNumber - $nhoodName",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -433,7 +439,7 @@ class BarraProgres extends StatelessWidget {
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
-                  value: punts / levelPoints,
+                  value: userPoints / levelPoints,
                   backgroundColor: const Color.fromARGB(255, 205, 197, 197),
                   borderRadius: BorderRadius.circular(10.0),
                   valueColor: const AlwaysStoppedAnimation<Color>(
@@ -451,7 +457,7 @@ class BarraProgres extends StatelessWidget {
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: $punts/$levelPoints',
+                  'Punts: $userPoints/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
