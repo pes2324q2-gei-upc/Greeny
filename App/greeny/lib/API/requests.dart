@@ -1,11 +1,34 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:greeny/API/secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'dart:convert';
 
 String backendURL = dotenv.env['BACKEND_URL']!;
 
 Future<String> getToken() async {
-  return await SecureStorage().readSecureData('token');
+  String? access = await SecureStorage().readSecureData('access_token');
+  if (access == null) return '';
+  bool hasExpired = JwtDecoder.isExpired(access);
+  /* Si el token ha expirado, se obtiene un nuevo token con el refresh token */
+  /* Si el refresh token ha expirado, se devuelve un string vacío */
+  if (hasExpired) {
+    String refresh = await SecureStorage().readSecureData('refresh_token');
+    var uri = Uri.http(backendURL, 'api/token/refresh/');
+    var response = await http.post(
+      uri,
+      body: {'refresh': refresh},
+    );
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      await SecureStorage().writeSecureData('access_token', json['access']);
+      return json['access'];
+    } else {
+      return '';
+    }
+  } else {
+    return access;
+  }
 }
 
 httpGet(String url) async {
@@ -31,7 +54,7 @@ httpPost(String url, String params, String contentType) async {
     },
     body: params,
   );
-  
+
   return response;
 }
 
@@ -41,6 +64,7 @@ httpPut(String url, String params) async {
   var response = await http.put(
     uri,
     headers: {
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     },
     body: params,
