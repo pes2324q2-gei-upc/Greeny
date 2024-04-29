@@ -14,8 +14,8 @@ class UserAuth {
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      var valor = json['access'];
-      await SecureStorage().writeSecureData('token', valor);
+      await SecureStorage().writeSecureData('access_token', json['access']);
+      await SecureStorage().writeSecureData('refresh_token', json['refresh']);
       await refreshUser();
       return true;
     } else {
@@ -51,7 +51,8 @@ class UserAuth {
   }
 
   Future userLogout() async {
-    await SecureStorage().deleteSecureData('token');
+    await SecureStorage().deleteSecureData('access_token');
+    await SecureStorage().deleteSecureData('refresh_token');
     await SecureStorage().deleteSecureData('name');
   }
 
