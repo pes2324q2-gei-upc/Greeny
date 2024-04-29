@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Profile/settings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -20,7 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   obtenirNomUsuari() async {
-    userName = await UserAuth().readUserInfo('name');
+    //userName = await UserAuth().readUserInfo('name');
     setState(() {
       userName = userName;
     });

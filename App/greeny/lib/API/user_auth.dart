@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
-import 'package:greeny/API/requests.dart';
 
 class UserAuth {
   Future userAuth(String username, String password) async {
@@ -16,7 +14,6 @@ class UserAuth {
       Map json = jsonDecode(response.body);
       await SecureStorage().writeSecureData('access_token', json['access']);
       await SecureStorage().writeSecureData('refresh_token', json['refresh']);
-      await refreshUser();
       return true;
     } else {
       return false;
@@ -53,28 +50,5 @@ class UserAuth {
   Future userLogout() async {
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
-    await SecureStorage().deleteSecureData('name');
-  }
-
-  Future<bool> refreshUser() async {
-  var response = await httpGet('api/user/');
-  if (response.statusCode == 200) {
-    List json = jsonDecode(response.body);
-    if (json.isNotEmpty) {
-      Map<String, dynamic> user = json[0];
-      await writeUserData(user);
-      return true;
-    }
-  }
-  return false;
-}
-
-  writeUserData(Map info) async {
-    await SecureStorage().writeSecureData('name', info['first_name']);
-  }
-
-  Future<String> readUserInfo(String key) async {
-    String value = await SecureStorage().readSecureData(key);
-    return value;
   }
 }

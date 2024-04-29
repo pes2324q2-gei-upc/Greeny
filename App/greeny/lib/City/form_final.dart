@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/main_page.dart';
@@ -186,7 +185,6 @@ class _FormFinalPageState extends State<FormFinalPage> {
   }
 
   void _showExitDialog() {
-    print(widget.startedAt.toIso8601String());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

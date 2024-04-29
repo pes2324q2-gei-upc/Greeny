@@ -8,9 +8,7 @@ String backendURL = dotenv.env['BACKEND_URL']!;
 
 Future<String> getToken() async {
   String? access = await SecureStorage().readSecureData('access_token');
-  if (access == null) {
-    return '';
-  }
+  if (access == null) return '';
   bool hasExpired = JwtDecoder.isExpired(access);
   /* Si el token ha expirado, se obtiene un nuevo token con el refresh token */
   /* Si el refresh token ha expirado, se devuelve un string vacío */

@@ -7,7 +7,6 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/API/requests.dart';
 
 class TranslatePreferences implements ITranslatePreferences {
@@ -96,8 +95,8 @@ class Greeny extends StatelessWidget {
 
 Future<Widget> mainScreenIfUser() async {
   String token = await getToken();
+  
   if (token != '') {
-    await UserAuth().refreshUser();
     return const MainPage();
   } else {
     return const LogInPage();
