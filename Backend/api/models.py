@@ -127,7 +127,7 @@ class Route(models.Model):
     car_consumed_co2 = models.FloatField(default=0.0)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
-    total_time = models.CharField(max_length=8, default='00:00:00')
+    total_time = models.CharField(default='00:00:00')
 
     def save(self, *args, **kwargs):
         # Calculate the difference between ended_at and started_at
@@ -143,11 +143,6 @@ class Route(models.Model):
 class FavoriteStation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
-
-    '''def save(self, *args, **kwargs):
-        # Calculate the difference in seconds between ended_at and started_at
-        self.totalTime = (self.ended_at - self.started_at)
-        super().save(*args, **kwargs)'''
 
     class Meta:
         unique_together = ('user', 'station', )
