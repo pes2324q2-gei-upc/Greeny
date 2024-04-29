@@ -75,13 +75,12 @@ class _RoutesPageState extends State<RoutesPage> {
 
   Widget buildListItem(List<Map<String, dynamic>> reversedRoutes, int index) {
     Map<String, dynamic> route = reversedRoutes[index];
-
     String startedAtString = route['started_at'];
-    DateTime startedAt = DateTime.parse(startedAtString);
+    DateTime startedAt = DateTime.parse(startedAtString).toLocal();
     String formattedDateTime =
         DateFormat('dd-MM-yyyy, kk:mm').format(startedAt);
-
     String totalTime = route['total_time'];
+    //print(formattedDateTime);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -93,9 +92,10 @@ class _RoutesPageState extends State<RoutesPage> {
           child: Column(
             children: [
               buildHeader(formattedDateTime, totalTime),
-              buildInfoRow('Total distance: ', route['distance']),
-              buildInfoRow('Consumed CO2: ', route['consumed_co2']),
-              buildInfoRow('Car consumed CO2: ', route['car_consumed_co2']),
+              buildInfoRow('Total distance: ', route['distance'], 'km'),
+              buildInfoRow('Consumed CO2: ', route['consumed_co2'], 'kg'),
+              buildInfoRow(
+                  'Car consumed CO2: ', route['car_consumed_co2'], 'kg'),
               const SizedBox(height: 17),
               buildTransportIcons(route['transports']),
             ],
@@ -120,7 +120,7 @@ class _RoutesPageState extends State<RoutesPage> {
     );
   }
 
-  Widget buildInfoRow(String label, double value) {
+  Widget buildInfoRow(String label, double value, String unit) {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
       child: Align(
@@ -131,7 +131,7 @@ class _RoutesPageState extends State<RoutesPage> {
               label,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text('${value.toStringAsFixed(3)} kg'),
+            Text('${value.toStringAsFixed(3)} $unit'),
           ],
         ),
       ),
@@ -153,26 +153,6 @@ class _RoutesPageState extends State<RoutesPage> {
           );
         }).toList(),
       ),
-    );
-  }
-
-  void showRouteDialog(BuildContext context, int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Route ${index + 1}'),
-          content: Text('You clicked on Route ${index + 1}'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 

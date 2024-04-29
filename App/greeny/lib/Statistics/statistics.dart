@@ -13,6 +13,7 @@ class StatisticsPage extends StatefulWidget {
 
 class _StatisticsPageState extends State<StatisticsPage> {
   double co2Consumed = 0;
+  double carCO2Consumed = 0;
   double kmTotal = 0;
   double kmWalked = 0;
   double kmBiked = 0;
@@ -28,6 +29,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     getStats();
   }
 
+  // Method to fetch statistics data from the API
   Future<void> getStats() async {
     final response = await httpGet('/api/statistics/');
 
@@ -37,8 +39,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
       if (statsDataList.isNotEmpty) {
         Map<String, dynamic> statsData = statsDataList[0];
 
+        // Update state with fetched statistics data
         setState(() {
-          //co2Consumed = statsData['kg_CO2_consumed'].toDouble();
+          co2Consumed = statsData['kg_CO2_consumed'].toDouble();
+          carCO2Consumed = statsData['kg_CO2_car_consumed'].toDouble();
           kmTotal = statsData['km_Totals'].toDouble();
           kmWalked = statsData['km_Walked'].toDouble();
           kmBiked = statsData['km_Biked'].toDouble();
@@ -57,139 +61,96 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+      appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        appBar: (AppBar(
-          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-          title: Text(translate('Statistics'),
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          leading: IconButton(
-            onPressed: routes,
-            icon: const Icon(Icons.history),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-        )),
-        body: CustomScrollView(
-          shrinkWrap: false,
-          scrollDirection: Axis.vertical,
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const SizedBox(height: 20),
-                    Container(
-                      width: double
-                          .infinity, // makes the button take up the full width of its parent
-                      height: 60, // sets the height of the button
-                      margin: const EdgeInsets.only(
-                          top: 20), // moves the button a little bit up
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.eco,
-                                    size: 40.0,
-                                    color: Color.fromARGB(255, 1, 167, 164)),
-                                const SizedBox(width: 5),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('$co2Consumed kg',
-                                        style: const TextStyle(
-                                            fontSize: 24.0,
-                                            fontWeight: FontWeight.bold)),
-                                    Text(translate('of CO2 consumed'),
-                                        style: const TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w500)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 20),
-                            Row(
-                              children: [
-                                const Icon(Icons.route,
-                                    size: 40.0,
-                                    color: Color.fromARGB(255, 1, 167, 164)),
-                                const SizedBox(width: 5),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${kmTotal.toStringAsFixed(2)} kms',
-                                        style: const TextStyle(
-                                            fontSize: 24.0,
-                                            fontWeight: FontWeight.bold)),
-                                    Text(translate('traveled'),
-                                        style: const TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w500)),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ]),
-                    ),
-                    const SizedBox(height: 60),
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(translate('PERCENTAGE OF USE'),
-                                style: const TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ProgressBar(
-                            icon: Icons.directions_walk,
-                            percentage: kmTotal != 0 ? kmWalked / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.directions_bike,
-                            percentage: kmTotal != 0 ? kmBiked / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.electric_car,
-                            percentage:
-                                kmTotal != 0 ? kmElectricCar / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.train,
-                            percentage:
-                                kmTotal != 0 ? kmPublicTransport / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.directions_bus,
-                            percentage: kmTotal != 0 ? kmBus / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.motorcycle,
-                            percentage:
-                                kmTotal != 0 ? kmMotorcycle / kmTotal : 0),
-                        const SizedBox(height: 5),
-                        ProgressBar(
-                            icon: Icons.directions_car,
-                            percentage: kmTotal != 0 ? kmCar / kmTotal : 0),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
+        title: Text(
+          translate('Statistics'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: ListView(
+          children: [
+            _buildInfoCard('travelled', kmTotal, 'km', Icons.route),
+            _buildInfoCard('of CO2 consumed', co2Consumed, 'kg', Icons.cloud),
+            _buildInfoCard('of CO2 consumed by car', carCO2Consumed, 'kg',
+                Icons.directions_car),
+            const SizedBox(height: 20),
+            _buildRoutesButton(),
+            const SizedBox(height: 40),
+            _buildProgressBar(Icons.directions_walk, kmWalked),
+            _buildProgressBar(Icons.directions_bike, kmBiked),
+            _buildProgressBar(Icons.electric_car, kmElectricCar),
+            _buildProgressBar(Icons.train, kmPublicTransport),
+            _buildProgressBar(Icons.directions_bus, kmBus),
+            _buildProgressBar(Icons.motorcycle, kmMotorcycle),
+            _buildProgressBar(Icons.directions_car, kmCar),
           ],
-        ));
+        ),
+      ),
+    );
   }
 
+  // Widget to display statistical information
+  Widget _buildInfoCard(
+      String label, double value, String unit, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon),
+            const SizedBox(width: 10),
+            Text(
+              '${value.toStringAsFixed(2)} $unit',
+              style:
+                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Text(
+          translate(label),
+          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  // Widget for the "My Routes" button
+  Widget _buildRoutesButton() {
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 150.0,
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RoutesPage()),
+            );
+          },
+          child: Text(translate('My Routes')),
+        ),
+      ),
+    );
+  }
+
+  // Widget to display a progress bar
+  Widget _buildProgressBar(IconData icon, double value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5.0),
+      child: ProgressBar(
+        icon: icon,
+        percentage: kmTotal != 0 ? value / kmTotal : 0,
+      ),
+    );
+  }
+
+  // Method to navigate to routes page
   void routes() {
     Navigator.push(
       context,
@@ -197,11 +158,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  void showMessage(String m) {
+  // Method to show a message using a SnackBar
+  void showMessage(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(translate(m)),
+          content: Text(translate(message)),
           duration: const Duration(seconds: 10),
           behavior: SnackBarBehavior.floating,
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -211,6 +173,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 }
 
+// Custom progress bar widget
 class ProgressBar extends StatelessWidget {
   final IconData icon;
   final double percentage;
@@ -237,18 +200,9 @@ class ProgressBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          SizedBox(
-            width: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  '${(percentage * 100).toStringAsFixed(2)}%',
-                  style: const TextStyle(
-                      fontSize: 12.0, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
+          Text(
+            '${(percentage * 100).toStringAsFixed(2)}%',
+            style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
           ),
         ],
       ),
