@@ -17,7 +17,7 @@ from api.transports_views import (
     ThirdPartyChargingStationInfoView
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
-from api.routesViews import RoutesView
+from api.routes_views import RoutesView
 from api.city_views import CityView
 
 

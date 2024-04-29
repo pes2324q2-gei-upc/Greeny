@@ -149,6 +149,9 @@ class FavoriteStation(models.Model):
         self.totalTime = (self.ended_at - self.started_at)
         super().save(*args, **kwargs)'''
 
+    class Meta:
+        unique_together = ('user', 'station', )
+
 class Neighborhood(models.Model):
     name = models.CharField(max_length=50) 
     path = models.CharField(max_length=100)  
@@ -163,5 +166,4 @@ class Level(models.Model):
     neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
     
 
-    class Meta:
-        unique_together = ('user', 'station', )
+
