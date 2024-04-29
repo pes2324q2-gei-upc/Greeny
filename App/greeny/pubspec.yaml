@@ -53,6 +53,7 @@ dependencies:
   url_launcher: ^6.2.5
   flutter_secure_storage: ^9.0.0
   flutter_rating_bar: ^4.0.1
+  jwt_decoder: ^2.0.1
 
 
 dev_dependencies:
@@ -87,7 +88,7 @@ flutter:
   - assets/transports/
   - assets/locations/
   - .env
-  - assets/cities/
+  - assets/neighborhoods/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

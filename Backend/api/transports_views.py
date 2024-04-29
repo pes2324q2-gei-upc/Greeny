@@ -10,10 +10,11 @@ from django.views import View
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 # Local application/library specific imports
 from .models import (PublicTransportStation, Stop, BusStation,
-                    Station, ChargingStation, TransportType, BicingStation)
+                    Station, ChargingStation, TransportType, BicingStation, FavoriteStation)
 from .serializers import (PublicTransportStationSerializer, BusStationSerializer,
                         BicingStationSerializer, ChargingStationSerializer)
 
@@ -187,7 +188,7 @@ class FetchPublicTransportStations(View):
 
 class StationsView(APIView):
     def get(self, request, pk=None):
-        if (pk):
+        if pk:
             try:
                 station = PublicTransportStation.objects.get(pk=pk)
                 serializer = PublicTransportStationSerializer(station)
@@ -212,7 +213,7 @@ class StationsView(APIView):
                 return Response(serializer.data)
             except ChargingStation.DoesNotExist:
                 return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         else:
             data = {}
 
@@ -233,6 +234,19 @@ class StationsView(APIView):
             data['chargingStations'] = serializer_charging.data
 
             return JsonResponse({'stations': data}, safe=False)
+
+    def post(self, request, pk=None):
+        if pk:
+            stat = Station.objects.get(pk=pk)
+            favorite_station, created = FavoriteStation.objects.get_or_create(
+                                            user=request.user,
+                                            station=stat)
+            if not created:
+                favorite_station.delete()
+
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 #GET parades de bus Barcelona
 class ParadesBus(View):
@@ -287,3 +301,33 @@ class EstacionsBicing(View):
             )
 
         return redirect('charging_points')
+
+
+class ThirdPartyChargingStationInfoView(APIView):
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, fmt=None):
+        # lat = round(float(request.data['lat']),5)
+        # longi = round(float(request.data['long']), 6)
+
+        lat = request.data['lat']
+        longi = request.data['long']
+
+        charging_station = Station.objects.get(latitude=lat, longitude=longi)
+
+        favs = FavoriteStation.objects.filter(station_id = charging_station.id).count()
+
+        return Response({"data" :{
+            "name" : charging_station.name,
+            "faved_by" : favs
+        }}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def put(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)

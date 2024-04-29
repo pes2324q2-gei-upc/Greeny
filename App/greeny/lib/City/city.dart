@@ -6,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
-import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
+import 'dart:convert';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -27,23 +28,70 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _controller; // controlador per l'animació del botó play/pause
   Timer? _updateTimer;
 
-  double progressPercentage = 0.3;
-  double punts = 50.0;
-  double levelPoints = 100.0;
-  String level = 'Nou Barris';
+  int userPoints = 0;
+  int levelPoints = 100;
+  int levelNumber = 1;
+  String nhoodName = '';
+  String nhoodPath = '';
+  bool first = true;
+
   String userName = '';
 
+  ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
   void initState() {
-    obtenirNomUsuari();
+    super.initState();
     _controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
       _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
         setState(() {});
       });
+    }
+    getCityData().then((data) {
+      setState(() {
+        cityDataNotifier.value = data;
+        userPoints = data['points_user'];
+        levelPoints = data['points_total'];
+        levelNumber = data['number'];
+        nhoodName = data['neighborhood']['name'];
+        nhoodPath = data['neighborhood']['path'];
+        userName = data['user_name'];
+      });
+    });
+  }
+
+  Future<Map<String, dynamic>> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load city data');
+    }
+  }
+
+  Future<void> updateCityData(int points) async {
+    final response = await httpPut(
+      '/api/city/',
+      jsonEncode({'points_user': points}),
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> newCityData = jsonDecode(response.body);
+
+      setState(() {
+        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
+        cityDataNotifier.value = newCityData;
+        userPoints = newCityData['points_user'];
+        levelPoints = newCityData['points_total'];
+        levelNumber = newCityData['number'];
+        nhoodName = newCityData['neighborhood']['name'];
+        nhoodPath = newCityData['neighborhood']['path'];
+      });
+    } else {
+      throw Exception('Failed to update city data');
     }
   }
 
@@ -54,36 +102,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  obtenirNomUsuari() async {
-    userName = await UserAuth().readUserInfo('name');
+  void updateProgress(int points) {
+    updateCityData(points);
     setState(() {
-      userName = userName;
+      userPoints = points;
     });
-  }
-
-  void updateProgress(double newProgress) {
-    setState(() {
-      punts = newProgress;
-    });
-
-    if (punts <= 0) {
-      setState(() {
-        level = 'Nou Barris';
-        punts = 0;
-      });
-    } else if (punts > 100 && level == 'Nou Barris') {
-      setState(() {
-        levelPoints = 200.0;
-        level = 'Horta-Guinardó';
-        punts = 0;
-      });
-    } else if (punts > 200 && level == 'Horta-Guinardó') {
-      setState(() {
-        level = 'Sants-Montjuïc';
-        levelPoints = 400.0;
-        punts = 0;
-      });
-    }
   }
 
   @override
@@ -96,7 +119,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         ),
       );
     } else {
-      double opct = max(min(75, 100 - (punts / levelPoints) * 100), 0) / 100;
+      double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         body: CustomScrollView(
@@ -120,63 +143,63 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           children: [
                             Opacity(
                               opacity:
-                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
-                                  ? 'assets/cities/fog1.png'
+                                  ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
-                                      ? 'assets/cities/fog2.png'
-                                      : 'assets/cities/fog3.png'),
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
                             ),
-                            if (level == 'Nou Barris')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('cityModelViewer'),
-                                src: 'assets/cities/city_1.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
-                            if (level == 'Horta-Guinardó')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('city2ModelViewer'),
-                                src: 'assets/cities/Horta-Guinardo.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
-                            if (level == 'Sants-Montjuïc')
-                              const ModelViewer(
-                                debugLogging: false,
-                                key: Key('city3ModelViewer'),
-                                src: 'assets/cities/Sants-Montjuic.glb',
-                                autoRotate: true,
-                                disableZoom: true,
-                                rotationPerSecond:
-                                    "25deg", // Rota 30 grados por segundo
-                                autoRotateDelay:
-                                    1000, // Espera 1 segundos antes de rotar
-                                cameraControls:
-                                    false, // Evita que el usuario controle la cámara (true por defecto)
-                              ),
+                            ValueListenableBuilder<Map<String, dynamic>?>(
+                              valueListenable: cityDataNotifier,
+                              builder: (BuildContext context,
+                                  Map<String, dynamic>? cityData,
+                                  Widget? child) {
+                                if (cityData == null) {
+                                  // Los datos aún no están disponibles, muestra un indicador de carga.
+                                  return const Center(
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  if (first) {
+                                    // Los datos están disponibles, construye el ModelViewer.
+                                    userPoints = cityData['points_user'];
+                                    levelPoints = cityData['points_total'];
+                                    levelNumber = cityData['number'];
+                                    nhoodName =
+                                        cityData['neighborhood']['name'];
+                                    nhoodPath =
+                                        cityData['neighborhood']['path'];
+                                    first = false;
+                                  }
+
+                                  return ModelViewer(
+                                    debugLogging: false,
+                                    key: Key(nhoodName),
+                                    src: 'assets/neighborhoods/$nhoodPath',
+                                    autoRotate: true,
+                                    disableZoom: true,
+                                    rotationPerSecond: "25deg",
+                                    autoRotateDelay: 1000,
+                                    cameraControls: false,
+                                  );
+                                }
+                              },
+                            ),
                             Opacity(
                               opacity:
-                                  opct /*max(min(75, 100 - (punts / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
                               child: Image.asset(opct > 0.66
-                                  ? 'assets/cities/fog1.png'
+                                  ? 'assets/neighborhoods/fog1.png'
                                   : opct > 0.33
-                                      ? 'assets/cities/fog2.png'
-                                      : 'assets/cities/fog3.png'),
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
                             ),
                           ],
                         )),
@@ -188,10 +211,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         child: Column(
                           children: [
                             BarraProgres(
-                              punts: punts,
+                              userPoints: userPoints,
                               onProgressChanged: updateProgress,
                               levelPoints: levelPoints,
-                              level: level,
+                              nhoodName: nhoodName,
+                              levelNumber: levelNumber,
                             ),
                             buildplaypause(),
                             if (appState.totalDistance != 0)
@@ -325,18 +349,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void addPoints() {
     setState(() {
-      punts += 10;
+      userPoints += 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
     setState(() {
-      punts -= 10;
+      userPoints -= 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 }
 
@@ -422,17 +446,19 @@ Future<bool> comprovarUbicacio() async {
 }
 
 class BarraProgres extends StatelessWidget {
-  final double punts;
-  final Function(double) onProgressChanged;
-  final double levelPoints;
-  final String level;
+  final int userPoints;
+  final Function(int) onProgressChanged;
+  final int levelPoints;
+  final String nhoodName;
+  final int levelNumber;
 
   const BarraProgres({
     super.key,
-    required this.punts,
+    required this.userPoints,
     required this.onProgressChanged,
     required this.levelPoints,
-    required this.level,
+    required this.nhoodName,
+    required this.levelNumber,
   });
 
   @override
@@ -449,7 +475,7 @@ class BarraProgres extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  level,
+                  "Nivell $levelNumber - $nhoodName",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -462,7 +488,7 @@ class BarraProgres extends StatelessWidget {
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
-                  value: punts / levelPoints,
+                  value: userPoints / levelPoints,
                   backgroundColor: const Color.fromARGB(255, 205, 197, 197),
                   borderRadius: BorderRadius.circular(10.0),
                   valueColor: const AlwaysStoppedAnimation<Color>(
@@ -480,7 +506,7 @@ class BarraProgres extends StatelessWidget {
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
+                  'Punts: $userPoints/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );

@@ -1,15 +1,32 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review, Route)
+                    BicingStation, Statistics, FriendRequest, Review, Route, Neighborhood, Level, FavoriteStation)
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Station
-        fields = ['id', 'id', 'name', 'latitude', 'longitude', 'rating']
+        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
 
+class SimpleStationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Station
+        fields = ['id', 'name']
+
+class FavoriteStationSerializer(serializers.ModelSerializer):
+    station = SimpleStationSerializer(read_only=True)
+
+    class Meta:
+        model = FavoriteStation
+        fields = ['station']
 
 class UserSerializer(serializers.ModelSerializer):
+
+    favorite_stations = serializers.SerializerMethodField()
+
+    def get_favorite_stations(self, obj):
+        favorite_stations = FavoriteStation.objects.filter(user=obj)
+        return FavoriteStationSerializer(favorite_stations, many=True).data
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -17,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'email','password']
+        fields = ['username', 'first_name', 'email','password', 'favorite_stations']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,7 +98,23 @@ class ChargingStationSerializer(StationSerializer):
 class StatisticsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Statistics
-        exclude = ['id','user']
+        exclude = ['id']
+
+class NeighborhoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Neighborhood
+        exclude = ['id']
+
+class LevelSerializer(serializers.ModelSerializer):
+    neighborhood = NeighborhoodSerializer()
+    user_name = serializers.SerializerMethodField()  # new field
+
+    def get_user_name(self, obj):
+        return obj.user.first_name
+
+    class Meta:
+        model = Level
+        fields = ['number', 'completed', 'current', 'points_user', 'points_total', 'neighborhood', 'user_name']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
