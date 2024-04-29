@@ -73,10 +73,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
         padding: const EdgeInsets.all(30.0),
         child: ListView(
           children: [
-            _buildInfoCard('travelled', kmTotal, 'km', Icons.route),
-            _buildInfoCard('of CO2 consumed', co2Consumed, 'kg', Icons.cloud),
-            _buildInfoCard('of CO2 consumed by car', carCO2Consumed, 'kg',
-                Icons.directions_car),
+            _buildInfoCard(translate('travelled'), kmTotal, 'km', Icons.route),
+            _buildInfoCard(
+                translate('of CO2 consumed'), co2Consumed, 'kg', Icons.cloud),
+            _buildInfoCard(translate('of CO2 consumed by car'), carCO2Consumed,
+                'kg', Icons.directions_car),
             const SizedBox(height: 20),
             _buildRoutesButton(),
             const SizedBox(height: 40),
@@ -125,7 +126,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        width: 150.0,
+        width: 160.0,
         child: ElevatedButton(
           onPressed: () {
             Navigator.push(

@@ -43,7 +43,7 @@ class _RoutesPageState extends State<RoutesPage> {
         });
       }
     } else {
-      showMessage("Error loading routes");
+      showMessage(translate("Error loading routes"));
     }
   }
 
@@ -92,10 +92,12 @@ class _RoutesPageState extends State<RoutesPage> {
           child: Column(
             children: [
               buildHeader(formattedDateTime, totalTime),
-              buildInfoRow('Total distance: ', route['distance'], 'km'),
-              buildInfoRow('Consumed CO2: ', route['consumed_co2'], 'kg'),
               buildInfoRow(
-                  'Car consumed CO2: ', route['car_consumed_co2'], 'kg'),
+                  translate('Total distance: '), route['distance'], 'km'),
+              buildInfoRow(
+                  translate('Consumed CO2: '), route['consumed_co2'], 'kg'),
+              buildInfoRow(translate('Car consumed CO2: '),
+                  route['car_consumed_co2'], 'kg'),
               const SizedBox(height: 17),
               buildTransportIcons(route['transports']),
             ],

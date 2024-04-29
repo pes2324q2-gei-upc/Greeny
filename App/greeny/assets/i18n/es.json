@@ -64,7 +64,7 @@
     "Motorcycle": "Motocicleta",
     "Electric Car": "Coche eléctrico",
     "Car": "Coche",
-    "Error loading statistics": "Error cargando estadísticas",
+    "Error loading statistics": "Error cargando las estadísticas",
     "History": "Histórico",
     "Log out": "Cerrar sesión",
     "Statistics": "Estadísticas",
@@ -76,5 +76,13 @@
     "Please enter your password": "Introduce tu contraseña",
     "Please enter your email": "Introduce tu correo electrónico",
     "Enter a valid email address": "Introduce una dirección de correo electrónico válida",
-    "Passwords do not match": "Las contraseñas no coinciden"
+    "Passwords do not match": "Las contraseñas no coinciden",
+    "travelled": "recorridos",
+    "of CO2 consumed": "de CO2 consumidos",
+    "of CO2 consumed by car": "de CO2 consumidos en coche",
+    "My Routes": "Mis Rutas",
+    "Error loading routes": "Error cargando las rutas",
+    "Total distance: ": "Distancia total: ",
+    "Consumed CO2: ": "CO2 consumido: ",
+    "Car consumed CO2: ": "CO2 consumido en coche: "
 }
