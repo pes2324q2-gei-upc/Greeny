@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
-import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -42,7 +41,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    obtenirNomUsuari();
     _controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
     appState = context.read<AppState>(); // estat de l'aplicació
@@ -59,6 +57,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         levelNumber = data['number'];
         nhoodName = data['neighborhood']['name'];
         nhoodPath = data['neighborhood']['path'];
+        userName = data['user_name'];
       });
     });
   }
@@ -101,13 +100,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     _controller.dispose(); // per tancar el animation controller
     _updateTimer?.cancel();
     super.dispose();
-  }
-
-  obtenirNomUsuari() async {
-    userName = await UserAuth().readUserInfo('name');
-    setState(() {
-      userName = userName;
-    });
   }
 
   void updateProgress(int points) {
