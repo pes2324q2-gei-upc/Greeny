@@ -19,6 +19,7 @@ class AddReviewPage extends StatefulWidget {
       required this.stationName});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddReviewPageState createState() => _AddReviewPageState();
 }
 
@@ -141,6 +142,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
         }),
         'application/json');
     if (response.statusCode == 201) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } else {
       showMessage(translate("The review could not be saved"));
