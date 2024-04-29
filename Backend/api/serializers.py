@@ -111,7 +111,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'current', 'points_user', 'points_total', 'user', 'neighborhood']
+        fields = ['number', 'completed', 'current', 'points_user', 'points_total', 'neighborhood']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
