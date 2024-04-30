@@ -11,8 +11,10 @@ import 'package:intl/intl.dart';
 
 class FriendProfilePage extends StatefulWidget {
   final String friendUsername;
+  final bool isFriend;
 
-  const FriendProfilePage({Key? key, required this.friendUsername})
+  FriendProfilePage(
+      {Key? key, required this.friendUsername, required this.isFriend})
       : super(key: key);
 
   static const Color smallCardColor = Color.fromARGB(255, 240, 235, 235);
@@ -37,7 +39,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   }
 
   Future<void> getInfoUser() async {
-    List<dynamic> userData = [];
+    Map<String, dynamic> userData = {};
     final String endpoint = '/api/user/${widget.friendUsername}';
 
     final response = await httpGet(endpoint);
@@ -45,13 +47,13 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     if (response.statusCode == 200) {
       setState(() {
         userData = json.decode(response.body);
-        friendName = userData[0]['first_name'];
+        friendName = userData['first_name'];
         dateJoined = DateFormat('dd-MM-yyyy')
-            .format(DateTime.parse(userData[0]['date_joined']));
-        level = userData[0]['level'];
-        friends = userData[0]['friends_number'];
-        trips = userData[0]['routes_number'];
-        reviews = userData[0]['reviews_number'];
+            .format(DateTime.parse(userData['date_joined']));
+        level = userData['level'];
+        friends = userData['friends_number'];
+        trips = userData['routes_number'];
+        reviews = userData['reviews_number'];
       });
     } else {
       showMessage("Error loading user info");
@@ -130,7 +132,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                           borderRadius: BorderRadius.circular(
                               60), // Radio de borde igual a la mitad del ancho/alto
                           child: Image.asset(
-                            'assets/images/perfil.jpeg',
+                            'assets/images/blank-profile.jpg',
                             fit: BoxFit.cover,
                           ),
                         ),

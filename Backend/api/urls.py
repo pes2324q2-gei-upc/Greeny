@@ -36,4 +36,5 @@ urlpatterns = [
     path('city/', CityView.as_view(), name='city'),
     path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info'),
     path('ping', ping, name='ping'),
+    path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
 ]

@@ -82,8 +82,8 @@ class _FriendsPageState extends State<FriendsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                FriendProfilePage(friendUsername: friendUsername),
+            builder: (context) => FriendProfilePage(
+                friendUsername: friendUsername, isFriend: true),
           ),
         );
       },
@@ -120,7 +120,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   borderRadius: BorderRadius.circular(
                       60), // Radio de borde igual a la mitad del ancho/alto
                   child: Image.asset(
-                    'assets/images/perfil.jpeg',
+                    'assets/images/blank-profile.jpg',
                     fit: BoxFit.cover,
                   ),
                 ),

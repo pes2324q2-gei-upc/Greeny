@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
+import 'package:greeny/Friends/friend_profile.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/translate.dart' as t;
 
@@ -53,7 +54,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
               onPressed: () {
                 sendFriendRequest(_friendUsername);
               },
-              child: const Text('Enviar solicitud de amistad'),
+              child: const Text('Ver perfil'),
             ),
           ],
         ),
@@ -62,12 +63,12 @@ class _AddFriendPageState extends State<AddFriendPage> {
   }
 
   void sendFriendRequest(String username) async {
-    await httpPost(
-        'api/friend-request/',
-        jsonEncode({
-          'to_user': username,
-        }),
-        'application/json');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              FriendProfilePage(friendUsername: username, isFriend: false)),
+    );
   }
 
   void showMessage(String m) {
