@@ -60,7 +60,8 @@ class CityView(APIView):
         level = self.getCurrentLevel(user)
 
         if new_points is not None:
-            level.points_user += new_points  
+            level.points_user += new_points 
+            level.save() 
 
             level = self.updateLevel(user)
 
