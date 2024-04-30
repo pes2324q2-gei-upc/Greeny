@@ -56,8 +56,7 @@ class UserAuth {
   Future userDelete() async {
     var response = await httpDelete('api/user/');
     if (response.statusCode == 200) {
-      await SecureStorage().deleteSecureData('token');
-      await SecureStorage().deleteSecureData('name');
+      await userLogout();
       return true;
     } else {
       return false;
