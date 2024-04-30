@@ -73,11 +73,11 @@ class Command(BaseCommand):
                     self.stdout.write(self.style.ERROR('An error occurred while creating the Bicing Station'))
                     self.stdout.write(str(e))
             
-            if created:
-                self.stdout.write(self.style.SUCCESS('New Bicing Stations added!'))
-            elif created_s:
-                self.stdout.write(self.style.SUCCESS('New Charging Stations added!'))
-            else:
-                self.stdout.write(self.style.SUCCESS('Already up to date!'))
+        if created:
+            self.stdout.write(self.style.SUCCESS('New Bicing Stations added!'))
+        elif created_s:
+            self.stdout.write(self.style.SUCCESS('New Charging Stations added!'))
+        else:
+            self.stdout.write(self.style.SUCCESS('Already up to date!'))
 
             
