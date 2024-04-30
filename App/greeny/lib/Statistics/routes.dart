@@ -34,7 +34,6 @@ class _RoutesPageState extends State<RoutesPage> {
     final response = await httpGet('/api/routes');
     if (response.statusCode == 200) {
       List<dynamic> routesDataList = json.decode(response.body);
-      print(routesDataList);
       if (routesDataList.isNotEmpty) {
         setState(() {
           routes = routesDataList.cast<Map<String, dynamic>>();
