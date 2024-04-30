@@ -31,6 +31,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int friends = 0;
   int trips = 0;
   int reviews = 0;
+  int friendId = 0;
 
   @override
   void initState() {
@@ -54,6 +55,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         friends = userData['friends_number'];
         trips = userData['routes_number'];
         reviews = userData['reviews_number'];
+        friendId = userData['id'];
+        print(friendId.toString());
       });
     } else {
       showMessage("Error loading user info");
@@ -376,6 +379,14 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  if (!widget.isFriend) // Verifica si no es amigo
+                    ElevatedButton(
+                      onPressed: () {
+                        send_friend_request(friendId);
+                      },
+                      child: Text('Send Friend Request'),
+                    ),
                 ],
               ),
             ),
@@ -395,6 +406,17 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
+    }
+  }
+
+  void send_friend_request(int friendId) async {
+    final response = await httpPost('/api/friend-requests/',
+        jsonEncode({'to_user': friendId}), 'application/json');
+
+    if (response.statusCode == 200) {
+      showMessage('Friend request sent');
+    } else {
+      showMessage('Error sending friend request');
     }
   }
 
