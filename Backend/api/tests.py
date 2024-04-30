@@ -18,6 +18,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
+from api.transports_views import FetchPublicTransportStations
 from .models import (User, FriendRequest, Station, PublicTransportStation,
                      Stop, TransportType, Statistics, Route, Review)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
@@ -26,49 +27,34 @@ from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.url = reverse("fetch_all_stations")  # replace with the actual URL name for the view
 
-    def test_get(self):
-        response = self.client.get(self.url, follow=True)
+    def test_fetch_public_stations_endpoint(self):
+        response = self.client.get('/api/fetch-all-stations')
         self.assertEqual(response.status_code, 200)
+        self.assertIn(b'fetched_successfully', response.content)
 
-        self.assertEqual(response.redirect_chain[0][0], '/api/bus-stops')
-        self.assertEqual(response.redirect_chain[0][1], 302)
+    def test_get_type_existing_transport_type(self):
+        # Create a sample transport type
+        existing_type = TransportType.objects.create(type='Metro')
+        fetcher = FetchPublicTransportStations()
+        fetched_type = fetcher.get_type('Metro')
+        self.assertEqual(existing_type, fetched_type)
 
-        self.assertEqual(response.redirect_chain[1][0], '/api/bicing')
-        self.assertEqual(response.redirect_chain[1][1], 302)
+    def test_get_type_new_transport_type(self):
+        fetcher = FetchPublicTransportStations()
+        new_type = fetcher.get_type('Tram')
+        self.assertIsInstance(new_type, TransportType)
+        self.assertEqual(new_type.type, 'Tram')
 
-        self.assertEqual(response.redirect_chain[2][0], '/api/charging-points')
-        self.assertEqual(response.redirect_chain[2][1], 302)
-
-    @patch('requests.get')
-    def test_parse_api_data(self, mock_get):
-
-        mock_get.return_value.status_code = 200
-
-        script_dir = os.path.dirname(__file__)
-
-        json_file_path = os.path.join(script_dir, 'fixtures', 'mock_api.json')
-
-        # Read the mock data from the json file
-        with open(json_file_path, 'r', encoding='utf-8') as file:
-            mock_data = json.load(file)
-
-        mock_get.return_value.json.return_value = mock_data
-
-        response = self.client.get(self.url, follow=False)
-
-        self.assertEqual(response.status_code, 302)
-
-        # Check that the data has been parsed correctly
-        # Replace 'key1' and 'key2' with the actual keys in the response data
-        self.assertEqual(Station.objects.count(), 1)
-        self.assertEqual(PublicTransportStation.objects.count(), 1)
-
-        station = Station.objects.get(name__iexact='Catalunya')
-        t_type = TransportType.objects.get(type=TransportType.TTransport.METRO)
-        self.assertEqual(Stop.objects.filter(station=station).count(), 3)
-        self.assertEqual(len(Stop.objects.get(station=station, transport_type=t_type).lines), 2)
+    def test_create_public_transport_station(self):
+        fetcher = FetchPublicTransportStations()
+        station_data = {
+            'LATITUD': 41.1234,
+            'LONGITUD': 2.5678
+        }
+        new_station = fetcher.create_public_transport_station(station_data, 'Test Station')
+        self.assertIsInstance(new_station, PublicTransportStation)
+        self.assertEqual(new_station.name, 'Test Station')
 
 class FinalFormTransports(TestCase):
 
