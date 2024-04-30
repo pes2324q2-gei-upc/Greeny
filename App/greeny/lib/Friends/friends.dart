@@ -14,7 +14,9 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-  List<dynamic> friends = ['Marc', 'Arnau', 'Friend 3', 'Friend 4'];
+  List<dynamic> friends = [];
+  List<dynamic> friendRequests = ['Marc'];
+  List<dynamic> friendsTotal = [];
 
   @override
   void initState() {
@@ -23,23 +25,38 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> getFriends() async {
-    try {
-      const String endpoint = '/api/friends/list/';
-      final response =
-          await httpGet(endpoint); // Usa http.get en lugar de httpGet
+    const String endpoint = '/api/friends/';
+    final response = await httpGet(endpoint);
 
-      if (response.statusCode == 200) {
-        final List<dynamic> friendsData = json.decode(response.body);
-        setState(() {
-          // Itera sobre los datos de los amigos y añade los nombres a la lista
-          friends = friendsData.map((friend) => friend['username']).toList();
-        });
-      } else {
-        showMessage("Error loading user info");
-      }
-    } catch (error) {
-      showMessage("Error: $error");
+    if (response.statusCode == 200) {
+      final List<dynamic> friendsData = jsonDecode(response.body);
+      friends = friendsData.map((friend) => friend['username']).toList();
+    } else {
+      final body = jsonDecode(response.body);
+      showMessage(body['message']);
     }
+
+    const String endpointRequests = '/api/friend-requests/';
+    final responseRequests = await httpGet(endpointRequests);
+
+    if (responseRequests.statusCode == 200) {
+      final List<dynamic> friendRequestsData =
+          jsonDecode(responseRequests.body);
+      friendRequests = friendRequestsData
+          .map((request) => request['from_user_username'])
+          .toList();
+    } else {
+      final bodyReq = jsonDecode(responseRequests.body);
+      showMessage(bodyReq['message']);
+    }
+
+    print('Friends: $friends');
+    print('Friend Requests: $friendRequests');
+
+    setState(() {
+      friendsTotal.addAll(friends);
+      friendsTotal.addAll(friendRequests);
+    });
   }
 
   @override
@@ -61,21 +78,23 @@ class _FriendsPageState extends State<FriendsPage> {
       ),
       body: GridView.builder(
         padding: EdgeInsets.all(10),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // Dos tarjetas por fila
-          crossAxisSpacing: 10, // Espacio horizontal entre las tarjetas
-          mainAxisSpacing: 10, // Espacio vertical entre las tarjetas
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
         ),
-        itemCount: friends.length,
+        itemCount: friendsTotal.length, // Usar la longitud de friendsTotal
         itemBuilder: (BuildContext context, int index) {
-          return buildFriendCard(
-              friends[index]); // Construye la tarjeta del amigo
+          print(friendsTotal.length.toString());
+          final String friendUsername = friendsTotal[index];
+          final bool hasSentRequest = friendRequests.contains(friendUsername);
+          return buildFriendCard(friendUsername, hasSentRequest);
         },
       ),
     );
   }
 
-  Widget buildFriendCard(String friendUsername) {
+  Widget buildFriendCard(String friendUsername, hasSentRequest) {
     return GestureDetector(
       onTap: () {
         // Navegar al perfil del amigo
@@ -98,8 +117,8 @@ class _FriendsPageState extends State<FriendsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 100,
-                height: 100,
+                width: hasSentRequest ? 50 : 90,
+                height: hasSentRequest ? 50 : 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle, // Establece la forma como un círculo
                   border: Border.all(
@@ -125,7 +144,7 @@ class _FriendsPageState extends State<FriendsPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 9),
               Text(
                 friendUsername, // Nombre del amigo
                 style: const TextStyle(
@@ -133,6 +152,25 @@ class _FriendsPageState extends State<FriendsPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 9),
+              if (hasSentRequest)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        acceptFriendRequest(friendUsername);
+                      },
+                      icon: const Icon(Icons.check),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        rejectFriendRequest(friendUsername);
+                      },
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
@@ -145,6 +183,14 @@ class _FriendsPageState extends State<FriendsPage> {
       context,
       MaterialPageRoute(builder: (context) => AddFriendPage()),
     );
+  }
+
+  void acceptFriendRequest(String friendUsername) {
+    print('Aceptar solicitud de amistad de $friendUsername');
+  }
+
+  void rejectFriendRequest(String friendUsername) {
+    print('Rechazar solicitud de amistad de $friendUsername');
   }
 
   void showMessage(String m) {

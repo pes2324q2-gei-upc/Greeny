@@ -145,9 +145,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         return obj.author.username
 
 class FriendRequestSerializer(serializers.ModelSerializer):
+    from_user_username = serializers.ReadOnlyField(source='from_user.username')
+    to_user_username = serializers.ReadOnlyField(source='to_user.username')
+
     class Meta:
         model = FriendRequest
-        fields = ['from_user', 'to_user']
+        fields = ['from_user', 'to_user', 'from_user_username', 'to_user_username']
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
