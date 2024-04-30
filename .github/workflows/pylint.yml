@@ -33,6 +33,3 @@ jobs:
 
             - name: Run Pylint manage.py
               run: pylint Backend/manage.py --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member
-
-
-              pylint Backend/manage.py --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member
