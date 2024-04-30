@@ -44,6 +44,29 @@ class CityView(APIView):
         level_data = LevelSerializer(level).data
         return JsonResponse(level_data)
     
+    def update_points(self, user, new_points):
+        level = self.getCurrentLevel(user)
+
+        if new_points is not None:
+            level.points_user = new_points 
+            level.save()
+
+            level = self.updateLevel(user)
+
+            level_data = LevelSerializer(level).data
+            return level_data
+      
+    def add_points(self, user, new_points):
+        level = self.getCurrentLevel(user)
+
+        if new_points is not None:
+            level.points_user += new_points  
+
+            level = self.updateLevel(user)
+
+            level_data = LevelSerializer(level).data
+            return level_data
+
     def updateLevel(self, user):
         current_level = self.getCurrentLevel(user)
         if current_level.points_user > current_level.points_total:
@@ -51,7 +74,6 @@ class CityView(APIView):
             current_level.current = False
             current_level.points_user -= 10
             current_level.save()
-
             next_level_number = current_level.number + 1
             try:
                 next_level = Level.objects.get(user=user, number=next_level_number)
@@ -63,18 +85,6 @@ class CityView(APIView):
 
         return self.getCurrentLevel(user)
     
-    def update_points(self, user, new_points):
-        level = self.getCurrentLevel(user)
-
-        if new_points is not None:
-            level.points_user = new_points
-            level.save()
-
-            level = self.updateLevel(user)
-
-            level_data = LevelSerializer(level).data
-            return level_data
-
     def put(self, request):
         user = self.request.user
         new_points = request.data.get('points_user')
@@ -82,6 +92,5 @@ class CityView(APIView):
         if new_points is not None:
             level_data = self.update_points(user, new_points)
             return JsonResponse(level_data)
-
         else:
             return Response({'error': 'No se proporcionaron nuevos puntos.'}, status=status.HTTP_400_BAD_REQUEST)
