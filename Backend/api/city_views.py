@@ -12,7 +12,7 @@ class CityView(APIView):
         for neighborhood_data in neighborhoods_data:
             Neighborhood.objects.get_or_create(**neighborhood_data)
 
-    def getCurrentLevel(self, user):
+    def init_levels(self, user):
         if not Level.objects.filter(user=user).exists():
             points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
             for i in range(1, 9):
@@ -26,6 +26,9 @@ class CityView(APIView):
                     user=user,
                     neighborhood=neighborhood
                 )
+
+    def getCurrentLevel(self, user):
+        self.init_levels(user)
         try:
             return Level.objects.get(user=user, current=True)
         except Level.DoesNotExist:
@@ -41,16 +44,36 @@ class CityView(APIView):
         level_data = LevelSerializer(level).data
         return JsonResponse(level_data)
     
+    def update_points(self, user, new_points):
+        level = self.getCurrentLevel(user)
+
+        if new_points is not None:
+            level.points_user = new_points 
+            level.save()
+
+            level = self.updateLevel(user)
+
+            level_data = LevelSerializer(level).data
+            return level_data
+      
+    def add_points(self, user, new_points):
+        level = self.getCurrentLevel(user)
+
+        if new_points is not None:
+            level.points_user += new_points  
+
+            level = self.updateLevel(user)
+
+            level_data = LevelSerializer(level).data
+            return level_data
+
     def updateLevel(self, user):
         current_level = self.getCurrentLevel(user)
         if current_level.points_user > current_level.points_total:
-            # Completa el nivel actual
             current_level.completed = True
             current_level.current = False
             current_level.points_user -= 10
             current_level.save()
-
-            # Obtiene el siguiente nivel
             next_level_number = current_level.number + 1
             try:
                 next_level = Level.objects.get(user=user, number=next_level_number)
@@ -64,23 +87,10 @@ class CityView(APIView):
     
     def put(self, request):
         user = self.request.user
-        level = self.getCurrentLevel(user)
-
-        # Obtén los nuevos puntos del usuario de los datos de la solicitud
         new_points = request.data.get('points_user')
 
         if new_points is not None:
-            # Actualiza los puntos del usuario
-            level.points_user = new_points
-            level.save()
-
-            # Verifica si el usuario ha pasado de nivel
-            level = self.updateLevel(user)
-
-            # Devuelve una respuesta con los datos actualizados del nivel
-            level_data = LevelSerializer(level).data
+            level_data = self.update_points(user, new_points)
             return JsonResponse(level_data)
-
         else:
-            # Si 'points_user' no está en los datos de la solicitud, devuelve un error
             return Response({'error': 'No se proporcionaron nuevos puntos.'}, status=status.HTTP_400_BAD_REQUEST)
