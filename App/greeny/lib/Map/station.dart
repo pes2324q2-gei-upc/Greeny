@@ -21,9 +21,10 @@ class _StationPageState extends State<StationPage> {
   String get type => widget.type;
 
   bool isLoading = true;
+  bool isFavorite = false;
 
   Map<String, dynamic> station = {};
-  List<dynamic> reviews_list = [];
+  List<dynamic> reviewsList = [];
 
   @override
   void initState() {
@@ -73,6 +74,18 @@ class _StationPageState extends State<StationPage> {
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
+            IconButton(
+              onPressed: () async {
+                var responseFav = await httpPost('api/stations/$stationId',
+                    jsonEncode({}), 'application/json');
+                if (responseFav.statusCode == 200) {
+                  setState(() {
+                    isFavorite = !isFavorite;
+                  });
+                }
+              },
+              icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            )
           ],
         ));
   }
@@ -213,19 +226,19 @@ class _StationPageState extends State<StationPage> {
             ),
             const SizedBox(height: 20),
             //review_list(),
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.height * 0.48,  // Set the height to 50% of the screen height
-              child: review_list(),
+              child: reviewList(),
             )
           ],
         ));
   }
 
-  review_list() {
+  reviewList() {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
-        children: reviews_list.map((review) {
+        children: reviewsList.map((review) {
           return Card(
             color: Theme.of(context).colorScheme.inversePrimary,
             child: Column(
@@ -235,11 +248,11 @@ class _StationPageState extends State<StationPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(review['author_username'], style: TextStyle(fontWeight: FontWeight.bold)),
-                      Spacer(),
-                      Text(review['puntuation'].toString(), style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(review['author_username'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                      const Spacer(),
+                      Text(review['puntuation'].toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 5),
-                      Icon(Icons.star, color: Colors.yellow),
+                      const Icon(Icons.star, color: Colors.yellow),
                     ],
                   ),
                 ),
@@ -413,10 +426,28 @@ class _StationPageState extends State<StationPage> {
       var responseReviews = await httpGet('api/stations/$stationId/reviews/');
       if (responseStation.statusCode == 200) {
         String body = utf8.decode(responseReviews.bodyBytes);
-        reviews_list = jsonDecode(body);
+        reviewsList = jsonDecode(body);
         setState(() {
           isLoading = false;
         });
+      }
+      var responseFavs = await httpGet('api/user/');
+      if (responseFavs.statusCode == 200) {
+        List jsonList = jsonDecode(responseFavs.body);
+        if (jsonList.isNotEmpty) {
+          for (var json in jsonList) {
+            var favorites = json['favorite_stations'];
+            for (var favorite in favorites) {
+              var station = favorite['station'];
+              if (station['id'] == stationId) {
+                setState(() {
+                  isFavorite = true;
+                });
+                return;
+              }
+            }
+          }
+        }
         return;
       }
     }

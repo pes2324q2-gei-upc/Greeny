@@ -79,5 +79,13 @@
     "Please enter your password": "Introdueix la teva contrasenya",
     "Please enter your email": "Introdueix el teu correu electrònic",
     "Enter a valid email address": "Introdueix una adreça de correu electrònic vàlida",
-    "Passwords do not match": "Les contrasenyes no coincideixen"
+    "Passwords do not match": "Les contrasenyes no coincideixen",
+    "travelled": "recorreguts",
+    "of CO2 consumed": "de CO2 consumits",
+    "of CO2 consumed by car": "de CO2 consumits en cotxe",
+    "My Routes": "Les meves rutes",
+    "Error loading routes": "Error en carregar les rutes",
+    "Total distance: ": "Distància total: ",
+    "Consumed CO2: ": "CO2 consumit: ",
+    "Car consumed CO2: ": "CO2 consumit en cotxe: "
 }

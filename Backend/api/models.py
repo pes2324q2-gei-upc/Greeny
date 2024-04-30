@@ -106,7 +106,6 @@ class Review(models.Model):
     body = models.CharField(max_length = 1000, blank=True)
     puntuation = models.FloatField(default=0.0, blank=False, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
-
 class Route(models.Model):
 
     TRANSPORT_MODES = [
@@ -128,7 +127,7 @@ class Route(models.Model):
     car_consumed_co2 = models.FloatField(default=0.0)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
-    total_time = models.CharField(max_length=8, default='00:00:00')
+    total_time = models.CharField(default='00:00:00')
 
     def save(self, *args, **kwargs):
         # Calculate the difference between ended_at and started_at
@@ -140,3 +139,26 @@ class Route(models.Model):
         self.total_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
 
         super().save(*args, **kwargs)
+
+class FavoriteStation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'station', )
+
+class Neighborhood(models.Model):
+    name = models.CharField(max_length=50) 
+    path = models.CharField(max_length=100)  
+
+class Level(models.Model):
+    number = models.IntegerField()
+    completed = models.BooleanField(default=False)
+    current = models.BooleanField(default=False)
+    points_user = models.IntegerField(default=0)
+    points_total = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
+    
+
+

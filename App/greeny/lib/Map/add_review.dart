@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
-import 'package:greeny/Map/station.dart';
 
 class AddReviewPage extends StatefulWidget {
   final int stationId;
@@ -20,6 +19,7 @@ class AddReviewPage extends StatefulWidget {
       required this.stationName});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AddReviewPageState createState() => _AddReviewPageState();
 }
 
@@ -88,7 +88,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
                         itemSize: 40,
                         itemPadding: const EdgeInsets.symmetric(horizontal: 4),
                         itemBuilder: (context, _) =>
-                            const Icon(Icons.star, color: const Color.fromARGB(255, 1, 167, 164)),
+                            const Icon(Icons.star, color: Color.fromARGB(255, 1, 167, 164)),
                         updateOnDrag: true,
                         onRatingUpdate: (rating) => setState(() {
                           this.rating = rating;
@@ -142,6 +142,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
         }),
         'application/json');
     if (response.statusCode == 201) {
+      // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } else {
       showMessage(translate("The review could not be saved"));
