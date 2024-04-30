@@ -30,7 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_level(self, obj):
         level = Level.objects.filter(user=obj, current=True).first()
-        print (level)
         return level.number
 
     def get_friends_number(self, obj):
