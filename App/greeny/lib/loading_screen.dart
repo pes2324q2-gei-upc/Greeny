@@ -21,11 +21,7 @@ class _LoadingPageState extends State<LoadingPage>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          Navigator.of(context).pushReplacementNamed('/nextPage');
-        }
-      });
+    );
 
     startAnimationNotifier.addListener(() {
       if (startAnimationNotifier.value) {
