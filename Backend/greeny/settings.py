@@ -158,8 +158,11 @@ CRONJOBS = [
 
 #Important urls:
 BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
-URL_BICING = "https://opendata-ajuntament.barcelona.cat/data/dataset/informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/download/Informacio_Estacions_Bicing_securitzat.json"
-BASE_URL_AJT = "https://opendata-ajuntament.barcelona.cat/data/api/action/datastore_search?resource_id="
+URL_BICING = ("https://opendata-ajuntament.barcelona.cat/data/dataset/"
+              "informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/"
+              "download/Informacio_Estacions_Bicing_securitzat.json")
+BASE_URL_AJT = ("https://opendata-ajuntament.barcelona.cat/data/api/action/"
+                "datastore_search?resource_id=")
 ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
 APP_ID = os.environ.get('APP_ID')
 API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')
