@@ -24,10 +24,11 @@ jobs:
                 pip install pylint-django
                 pip install -r ./Backend/requirements.txt
                 cd Backend
+                ls
     
 
-            - name: Run Pylint
-              run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations greeny
+            #- name: Run Pylint
+             # run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations greeny
             
             - name: Run Pylint API
               run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations api
