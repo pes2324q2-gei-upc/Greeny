@@ -18,7 +18,7 @@ class _RoutesPageState extends State<RoutesPage> {
     'Walking': Icons.directions_walk,
     'Bike': Icons.directions_bike,
     'Bus': Icons.directions_bus,
-    'Train, Metro, Tram, FGC': Icons.train,
+    'Public Transport': Icons.train,
     'Motorcycle': Icons.motorcycle,
     'Electric Car': Icons.electric_car,
     'Car': Icons.directions_car,
@@ -34,10 +34,9 @@ class _RoutesPageState extends State<RoutesPage> {
     final response = await httpGet('/api/routes');
     if (response.statusCode == 200) {
       List<dynamic> routesDataList = json.decode(response.body);
-
+      print(routesDataList);
       if (routesDataList.isNotEmpty) {
         setState(() {
-          // Update the routes state variable
           routes = routesDataList.cast<Map<String, dynamic>>();
         });
       }
@@ -139,18 +138,31 @@ class _RoutesPageState extends State<RoutesPage> {
     );
   }
 
-  buildTransportIcons(List<dynamic> transports) {
+  IconData getIconForTransportMode(String mode) {
+    if (['Train', 'Metro', 'Tram', 'FGC'].contains(mode)) {
+      return transportIcons['Public Transport'] ?? Icons.error;
+    }
+    return transportIcons[mode] ?? Icons.error;
+  }
+
+  Widget buildTransportIcons(List<dynamic> transports) {
+    Set<String> uniqueTransports = transports.map<String>((transport) {
+      String transportMode = transport.toString();
+      if (['Train', 'Metro', 'Tram', 'FGC'].contains(transportMode)) {
+        return 'Public Transport';
+      }
+      return transportMode;
+    }).toSet();
+
     return Padding(
       padding: const EdgeInsets.only(right: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: transports.map<Widget>((transport) {
-          IconData iconData =
-              transportIcons[transport.toString()] ?? Icons.error;
-          Widget icon = Icon(iconData, size: 24);
+        children: uniqueTransports.map<Widget>((transport) {
+          IconData iconData = getIconForTransportMode(transport);
           return Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: icon,
+            child: Icon(iconData, size: 24),
           );
         }).toList(),
       ),

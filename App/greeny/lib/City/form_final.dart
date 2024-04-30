@@ -28,80 +28,91 @@ class _FormFinalPageState extends State<FormFinalPage> {
     'Electric Car',
     'Car'
   ];
+  final Map<String, double> transportPercentages = {};
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+      body: CustomScrollView(
+        scrollDirection: Axis.vertical,
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Column(
                     children: [
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: _showInformationDialog,
+                            child: const Icon(Icons.info_outline_rounded,
+                                size: 35),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        translate("Which transports have \nyou used?"),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 21, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 20.0),
+                      SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(isSelected.length, (index) {
+                              return GestureDetector(
+                                onTap: () => _toggleTransport(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(1),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  decoration: BoxDecoration(
+                                    color: isSelected[index]
+                                        ? const Color.fromARGB(131, 1, 164, 167)
+                                        : null,
+                                    borderRadius: BorderRadius.circular(30),
+                                    border:
+                                        Border.all(color: Colors.transparent),
+                                  ),
+                                  child: Icon(
+                                    _getTransportIcon(index),
+                                    size: 40,
+                                  ),
+                                ),
+                              );
+                            }),
+                          )),
+                      const SizedBox(height: 25.0),
+                      ..._buildSliders(),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _sendData,
+                        child: Text(translate("Submit")),
+                      ),
                       TextButton(
-                        onPressed: _showInformationDialog,
-                        child: const Icon(Icons.info_outline_rounded, size: 35),
+                        onPressed: _showExitDialog,
+                        child: Text(translate("Don't answer")),
                       ),
                     ],
                   ),
-                  Text(
-                    translate("Which transports have \nyou used?"),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 21, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20.0),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(isSelected.length, (index) {
-                          return GestureDetector(
-                            onTap: () => _toggleTransport(index),
-                            child: Container(
-                              padding: const EdgeInsets.all(1),
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                color: isSelected[index]
-                                    ? const Color.fromARGB(131, 1, 164, 167)
-                                    : null,
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(color: Colors.transparent),
-                              ),
-                              child: Icon(
-                                _getTransportIcon(index),
-                                size: 40,
-                              ),
-                            ),
-                          );
-                        }),
-                      )),
                 ],
               ),
-              Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: _sendData,
-                    child: Text(translate("Submit")),
-                  ),
-                  TextButton(
-                    onPressed: _showExitDialog,
-                    child: Text(translate("Don't answer")),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -128,6 +139,27 @@ class _FormFinalPageState extends State<FormFinalPage> {
   void _toggleTransport(int index) {
     setState(() {
       isSelected[index] = !isSelected[index];
+      if (isSelected[index]) {
+        if (index == 3) {
+          // 'Train, Metro, Tram, FGC' option selected
+          transportPercentages['Train'] = 0.0;
+          transportPercentages['Metro'] = 0.0;
+          transportPercentages['Tram'] = 0.0;
+          transportPercentages['FGC'] = 0.0;
+        } else {
+          transportPercentages[transportModes[index]] = 0.0;
+        }
+      } else {
+        if (index == 3) {
+          // 'Train, Metro, Tram, FGC' option deselected
+          transportPercentages.remove('Train');
+          transportPercentages.remove('Metro');
+          transportPercentages.remove('Tram');
+          transportPercentages.remove('FGC');
+        } else {
+          transportPercentages.remove(transportModes[index]);
+        }
+      }
     });
   }
 
@@ -191,7 +223,9 @@ class _FormFinalPageState extends State<FormFinalPage> {
         title: Text(translate("Are you sure?")),
         content: Text(
             translate(
-                "You chose not to answer. You will not get extra points to improve your city and your transports statics won't be updated."),
+              "You chose not to answer. You will not get extra points to improve "
+              "your city and your transports statics won't be updated.",
+            ),
             textAlign: TextAlign.justify),
         actions: <Widget>[
           TextButton(
@@ -229,9 +263,9 @@ class _FormFinalPageState extends State<FormFinalPage> {
     await httpPost(
         'api/send-form-transports',
         jsonEncode({
-          'selectedTransports': _getSelectedTransports(),
           'totalDistance': widget.totalDistance,
           'startedAt': widget.startedAt.toIso8601String(),
+          'transportPercentages': transportPercentages,
         }),
         'application/json');
 
@@ -245,21 +279,50 @@ class _FormFinalPageState extends State<FormFinalPage> {
   }
 
   Future<void> _sendData() async {
-    List<String> selectedTransports = _getSelectedTransports();
-    if (selectedTransports.isEmpty) {
+    if (transportPercentages.isEmpty) {
       _showExitDialog();
     } else {
       _sendDataToServer();
     }
   }
 
-  List<String> _getSelectedTransports() {
-    List<String> selectedTransports = [];
-    for (int i = 0; i < isSelected.length; i++) {
-      if (isSelected[i]) {
-        selectedTransports.add(transportModes[i]);
+  void _updateSliderValue(String mode, double value) {
+    setState(() {
+      double roundedValue = (value / 5).round() * 5.0;
+      transportPercentages[mode] = roundedValue;
+      double totalPercentage =
+          transportPercentages.values.fold(0.0, (prev, curr) => prev + curr);
+      if (totalPercentage > 100.0) {
+        double excess = totalPercentage - 100.0;
+        transportPercentages[mode] = roundedValue - excess;
       }
-    }
-    return selectedTransports;
+    });
+  }
+
+  List<Widget> _buildSliders() {
+    return transportPercentages.keys.map((mode) {
+      return Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(mode, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text('${transportPercentages[mode]!.round()}%'),
+              ],
+            ),
+          ),
+          Slider(
+            value: transportPercentages[mode]!,
+            min: 0,
+            max: 100,
+            onChanged: (double value) {
+              _updateSliderValue(mode, value);
+            },
+          ),
+        ],
+      );
+    }).toList();
   }
 }
