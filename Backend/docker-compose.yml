@@ -10,7 +10,7 @@ services:
 
   backend:
     build: .
-    entrypoint: ./entrypoint.sh
+    entrypoint: ["./entrypoint.sh"]
     volumes:
       - .:/code
     ports:
