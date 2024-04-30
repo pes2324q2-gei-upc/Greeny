@@ -15,7 +15,8 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage> {
   List<dynamic> friends = [];
-  List<dynamic> friendRequests = ['Marc'];
+  List<dynamic> friendRequests = [];
+  List<dynamic> friendRequestsUsers = [];
   List<dynamic> friendsTotal = [];
 
   @override
@@ -25,6 +26,10 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> getFriends() async {
+    friends = [];
+    friendRequests = [];
+    friendRequestsUsers = [];
+    friendsTotal = [];
     const String endpoint = '/api/friends/';
     final response = await httpGet(endpoint);
 
@@ -42,7 +47,12 @@ class _FriendsPageState extends State<FriendsPage> {
     if (responseRequests.statusCode == 200) {
       final List<dynamic> friendRequestsData =
           jsonDecode(responseRequests.body);
-      friendRequests = friendRequestsData
+      friendRequests = friendRequestsData.map((request) {
+        final int solId = request['id'];
+        final String fromUserName = request['from_user_username'];
+        return {'id': solId, 'username': fromUserName};
+      }).toList();
+      friendRequestsUsers = friendRequestsData
           .map((request) => request['from_user_username'])
           .toList();
     } else {
@@ -51,12 +61,13 @@ class _FriendsPageState extends State<FriendsPage> {
     }
 
     print('Friends: $friends');
+    print('Friend Requests: $friendRequestsUsers');
     print('Friend Requests: $friendRequests');
-
     setState(() {
       friendsTotal.addAll(friends);
-      friendsTotal.addAll(friendRequests);
+      friendsTotal.addAll(friendRequestsUsers);
     });
+    print('Friends: $friendsTotal');
   }
 
   @override
@@ -77,8 +88,8 @@ class _FriendsPageState extends State<FriendsPage> {
         ],
       ),
       body: GridView.builder(
-        padding: EdgeInsets.all(10),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        padding: const EdgeInsets.all(10),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
@@ -87,7 +98,8 @@ class _FriendsPageState extends State<FriendsPage> {
         itemBuilder: (BuildContext context, int index) {
           print(friendsTotal.length.toString());
           final String friendUsername = friendsTotal[index];
-          final bool hasSentRequest = friendRequests.contains(friendUsername);
+          final bool hasSentRequest =
+              friendRequestsUsers.contains(friendUsername);
           return buildFriendCard(friendUsername, hasSentRequest);
         },
       ),
@@ -109,7 +121,7 @@ class _FriendsPageState extends State<FriendsPage> {
       child: Card(
         elevation: 3, // Elevación de la tarjeta
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15), // Bordes redondeados
+          borderRadius: BorderRadius.circular(25), // Bordes redondeados
         ),
         child: Padding(
           padding: const EdgeInsets.all(15),
@@ -117,8 +129,8 @@ class _FriendsPageState extends State<FriendsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: hasSentRequest ? 50 : 90,
-                height: hasSentRequest ? 50 : 90,
+                width: hasSentRequest ? 60 : 90,
+                height: hasSentRequest ? 60 : 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle, // Establece la forma como un círculo
                   border: Border.all(
@@ -152,7 +164,6 @@ class _FriendsPageState extends State<FriendsPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 9),
               if (hasSentRequest)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -181,12 +192,23 @@ class _FriendsPageState extends State<FriendsPage> {
   void addFriend() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddFriendPage()),
+      MaterialPageRoute(builder: (context) => const AddFriendPage()),
     );
   }
 
   void acceptFriendRequest(String friendUsername) {
-    print('Aceptar solicitud de amistad de $friendUsername');
+    int id = findIdByUsername(friendUsername);
+    httpDelete('/api/friend-requests/$id/').then((response) {
+      if (response.statusCode == 200) {
+        // Recargar la pantalla
+        setState(() {
+          // Aquí puedes volver a llamar a tu función para obtener los amigos
+          getFriends();
+        });
+      } else {
+        // Manejar otros casos, como errores de red
+      }
+    });
   }
 
   void rejectFriendRequest(String friendUsername) {
@@ -204,5 +226,14 @@ class _FriendsPageState extends State<FriendsPage> {
         ),
       );
     }
+  }
+
+  int findIdByUsername(String username) {
+    for (var request in friendRequests) {
+      if (request['username'] == username) {
+        return request['id'];
+      }
+    }
+    return 0; // Retorna null si no se encuentra el username
   }
 }

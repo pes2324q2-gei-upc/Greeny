@@ -150,7 +150,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ['from_user', 'to_user', 'from_user_username', 'to_user_username']
+        fields = ['id', 'from_user', 'to_user', 'from_user_username', 'to_user_username']
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:
