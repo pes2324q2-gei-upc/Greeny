@@ -11,7 +11,7 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Set up Python
               uses: actions/setup-python@v2
@@ -23,12 +23,10 @@ jobs:
                 pip install pylint
                 pip install pylint-django
                 pip install -r ./Backend/requirements.txt
-                cd Backend
-                ls
     
 
-            #- name: Run Pylint
-             # run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations greeny
+            - name: Run Pylint
+              run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/greeny
             
             - name: Run Pylint API
-              run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations api
+              run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/api
