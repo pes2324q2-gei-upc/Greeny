@@ -4,5 +4,4 @@ requests==2.31.0
 djangorestframework==3.14.0
 django-extensions==3.2.3
 gunicorn==21.0.1
-django-crontab==0.7.1
 djangorestframework_simplejwt==5.3.1

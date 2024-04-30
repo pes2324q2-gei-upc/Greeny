@@ -6,11 +6,11 @@ services:
     env_file:
       - ./.env
     ports:
-     - "5432:5432"
+      - "5432:5432"
 
   backend:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    entrypoint: ./entrypoint.sh
     volumes:
       - .:/code
     ports:
@@ -19,3 +19,15 @@ services:
       - db
     env_file:
       - ./.env
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.scheluded.schedule: "0 0 1 * *"
+      ofelia.job-exec.scheluded.command: "python manage.py check_updates"
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - backend
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
