@@ -40,7 +40,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     List<dynamic> userData = [];
     final String endpoint = '/api/user/${widget.friendUsername}';
 
-    final response = await httpGet('endpoint');
+    final response = await httpGet(endpoint);
 
     if (response.statusCode == 200) {
       setState(() {
@@ -73,7 +73,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
             color: const Color.fromARGB(255, 1, 167, 164),
           ),
         ),
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(),
         ),
       );

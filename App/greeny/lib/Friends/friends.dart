@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
+import 'package:greeny/Friends/add_friend.dart';
 import 'package:greeny/Friends/friend_profile.dart';
 
 class FriendsPage extends StatefulWidget {
@@ -10,7 +14,33 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-  List<String> friends = ['Marc', 'Arnau', 'Friend 3', 'Friend 4'];
+  List<dynamic> friends = ['Marc', 'Arnau', 'Friend 3', 'Friend 4'];
+
+  @override
+  void initState() {
+    getFriends();
+    super.initState();
+  }
+
+  Future<void> getFriends() async {
+    try {
+      const String endpoint = '/api/friends/list/';
+      final response =
+          await httpGet(endpoint); // Usa http.get en lugar de httpGet
+
+      if (response.statusCode == 200) {
+        final List<dynamic> friendsData = json.decode(response.body);
+        setState(() {
+          // Itera sobre los datos de los amigos y añade los nombres a la lista
+          friends = friendsData.map((friend) => friend['username']).toList();
+        });
+      } else {
+        showMessage("Error loading user info");
+      }
+    } catch (error) {
+      showMessage("Error: $error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +141,22 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   void addFriend() {
-    // Add friend code here
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddFriendPage()),
+    );
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 10),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+    }
   }
 }
