@@ -9,7 +9,7 @@ the data that will be stored.
 """
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 class Station(models.Model):
@@ -19,12 +19,15 @@ class Station(models.Model):
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     def subclass_name(self):
         return self.__class__.__name__
 
 class PublicTransportStation(Station):
     pass
+
+class User(AbstractUser):
+    friends = models.ManyToManyField("self", blank=True)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
@@ -72,7 +75,8 @@ def validate_km_totals(instance):
 
 class Statistics(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
-    kg_CO2 = models.FloatField(default=0.0)
+    kg_CO2_consumed = models.FloatField(default=0.0)
+    kg_CO2_car_consumed = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
     km_Walked = models.FloatField(default=0.0)
     km_Biked = models.FloatField(default=0.0)
@@ -88,3 +92,73 @@ class Statistics(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(
+        User, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(
+    User, related_name='to_user', on_delete=models.CASCADE)
+
+class Review(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, max_length = 100,
+                                related_name='reviews')
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='reviews')
+    body = models.CharField(max_length = 1000, blank=True)
+    puntuation = models.FloatField(default=0.0, blank=False, null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+class Route(models.Model):
+
+    TRANSPORT_MODES = [
+        ('Walking', 'Walking'),
+        ('Bike', 'Bike'),
+        ('Bus', 'Bus'),
+        ('Train, Metro, Tram, FGC', 'Train, Metro, Tram, FGC'),
+        ('Motorcycle', 'Motorcycle'),
+        ('Electric Car', 'Electric Car'),
+        ('Car', 'Car')
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    distance = models.FloatField(default=0.0)
+    transports = ArrayField(
+        models.CharField(max_length=30, choices=TRANSPORT_MODES)
+    )
+    consumed_co2 = models.FloatField(default=0.0)
+    car_consumed_co2 = models.FloatField(default=0.0)
+    started_at = models.DateTimeField()
+    ended_at = models.DateTimeField()
+    total_time = models.CharField(default='00:00:00')
+
+    def save(self, *args, **kwargs):
+        # Calculate the difference between ended_at and started_at
+        total_time = self.ended_at - self.started_at
+
+        # Convert totalTime to hours, minutes, and seconds
+        hours, remainder = divmod(total_time.total_seconds(), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        self.total_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+
+        super().save(*args, **kwargs)
+
+class FavoriteStation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'station', )
+
+class Neighborhood(models.Model):
+    name = models.CharField(max_length=50) 
+    path = models.CharField(max_length=100)  
+
+class Level(models.Model):
+    number = models.IntegerField()
+    completed = models.BooleanField(default=False)
+    current = models.BooleanField(default=False)
+    points_user = models.IntegerField(default=0)
+    points_total = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
+    
+
+

@@ -6,7 +6,12 @@ import 'dart:convert';
 
 class FormFinalPage extends StatefulWidget {
   final double totalDistance;
-  const FormFinalPage({super.key, required this.totalDistance});
+  final DateTime startedAt;
+  const FormFinalPage({
+    super.key,
+    required this.totalDistance,
+    required this.startedAt,
+  });
 
   @override
   State<FormFinalPage> createState() => _FormFinalPageState();
@@ -226,6 +231,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
         jsonEncode({
           'selectedTransports': _getSelectedTransports(),
           'totalDistance': widget.totalDistance,
+          'startedAt': widget.startedAt.toIso8601String(),
         }),
         'application/json');
 

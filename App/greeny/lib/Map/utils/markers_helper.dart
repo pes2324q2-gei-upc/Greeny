@@ -102,10 +102,10 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
         if (transports[stop.transportType.type.toString().toLowerCase()]!) {
           markers.add(
             MapMarker(
-              id: pts.name,
+              id: pts.id.toString(),
               position: LatLng(pts.latitude, pts.longitude),
               icon: chooseIcon(pts, icons),
-              onTap: () => _gotoStation(pts, context, 'TMB'),
+              onTap: () => _gotoStation(pts.id, context, 'TMB'),
             ),
           );
           break;
@@ -119,10 +119,10 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
         markers.add(
           MapMarker(
-            id: bs.name,
+            id: bs.id.toString(),
             position: LatLng(bs.latitude, bs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['BUS']),
-            onTap: () => _gotoStation(bs, context, 'BUS'),
+            onTap: () => _gotoStation(bs.id, context, 'BUS'),
           ),
         );
       }
@@ -134,10 +134,10 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(bs.latitude, bs.longitude))) {
         markers.add(
           MapMarker(
-            id: bs.name,
+            id: bs.id.toString(),
             position: LatLng(bs.latitude, bs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['BICING']),
-            onTap: () => _gotoStation(bs, context, 'BICING'),
+            onTap: () => _gotoStation(bs.id, context, 'BICING'),
           ),
         );
       }
@@ -149,10 +149,10 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
       if (bounds.contains(LatLng(cs.latitude, cs.longitude))) {
         markers.add(
           MapMarker(
-            id: cs.name,
+            id: cs.id.toString(),
             position: LatLng(cs.latitude, cs.longitude),
             icon: BitmapDescriptor.fromBytes(icons['CAR']),
-            onTap: () => _gotoStation(cs, context, 'CAR'),
+            onTap: () => _gotoStation(cs.id, context, 'CAR'),
           ),
         );
       }
@@ -162,10 +162,10 @@ List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
   return markers;
 }
 
-void _gotoStation(station, BuildContext context, type) {
+void _gotoStation(stationId, BuildContext context, type) {
   Navigator.push(
     context,
     MaterialPageRoute(
-        builder: (context) => StationPage(station: station, type: type)),
+        builder: (context) => StationPage(stationId: stationId, type: type)),
   );
 }

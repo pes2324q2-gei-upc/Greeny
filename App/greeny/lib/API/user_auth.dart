@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
@@ -14,9 +13,8 @@ class UserAuth {
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      var valor = json['access'];
-      await SecureStorage().writeSecureData('token', valor);
-      await refreshUser();
+      await SecureStorage().writeSecureData('access_token', json['access']);
+      await SecureStorage().writeSecureData('refresh_token', json['refresh']);
       return true;
     } else {
       return false;
@@ -51,28 +49,8 @@ class UserAuth {
   }
 
   Future userLogout() async {
-    await SecureStorage().deleteSecureData('token');
-    await SecureStorage().deleteSecureData('name');
-  }
-
-  Future<bool> refreshUser() async {
-    var response = await httpGet('api/user/');
-    if (response.statusCode == 200) {
-      Map json = jsonDecode(response.body);
-      await writeUserData(json);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  writeUserData(Map info) async {
-    await SecureStorage().writeSecureData('name', info['first_name']);
-  }
-
-  Future<String> readUserInfo(String key) async {
-    String value = await SecureStorage().readSecureData(key);
-    return value;
+    await SecureStorage().deleteSecureData('access_token');
+    await SecureStorage().deleteSecureData('refresh_token');
   }
 
   Future userDelete() async {

@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_extensions',
+    'rest_framework.authtoken',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -147,3 +149,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'api.User'
+
+CRONJOBS = [
+    ('0 0 1 * *', 'api.tasks.check_update'), # Will execute every first day of each month at 00:00
+]
+
+#Important urls:
+BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
+URL_BICING = ("https://opendata-ajuntament.barcelona.cat/data/dataset/"
+              "informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/"
+              "download/Informacio_Estacions_Bicing_securitzat.json")
+BASE_URL_AJT = ("https://opendata-ajuntament.barcelona.cat/data/api/action/"
+                "datastore_search?resource_id=")
+ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
+APP_ID = os.environ.get('APP_ID')
+API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')

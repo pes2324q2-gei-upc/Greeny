@@ -35,6 +35,10 @@
     "Connector type": "Tipus de connector",
     "Reviews": "Resenyes",
     "Add review": "Afegir ressenya",
+    "Save Review": "Guardar ressenya",
+    "Write your review here": "Escriu la teva ressenya aquí",
+    "Score is not a valid number between 1 and 5": "La puntuació no és un número vàlid entre 1 i 5",
+    "The review could not be saved": "No s'ha pogut desar la ressenya",
     "Capacity": "Capacitat",
     "bikes": "bicicletes",
     "Map": "Mapa",
@@ -80,5 +84,14 @@
     "Level:": "Nivell:",
     "Friends:": "Amics:",
     "Trips:": "Viatges:",
-    "Reviews:": "Resenyes:"
+    "Reviews:": "Resenyes:",
+    "travelled": "recorreguts",
+    "of CO2 consumed": "de CO2 consumits",
+    "of CO2 consumed by car": "de CO2 consumits en cotxe",
+    "My Routes": "Les meves rutes",
+    "Error loading routes": "Error en carregar les rutes",
+    "Total distance: ": "Distància total: ",
+    "Consumed CO2: ": "CO2 consumit: ",
+    "Car consumed CO2: ": "CO2 consumit en cotxe: ",
+    "Connection to the server is not working.": "La connexió al servidor no funciona."
 }

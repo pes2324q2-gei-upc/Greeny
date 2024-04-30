@@ -32,24 +32,25 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   obtenirNomUsuari() async {
-    userName = await UserAuth().readUserInfo('name');
+    //userName = await UserAuth().readUserInfo('name');
     setState(() {
       userName = userName;
     });
   }
 
   Future<void> getInfoUser() async {
-    Map<String, dynamic> statsData = {};
+    List<dynamic> userData = [];
 
     final response = await httpGet('/api/user/');
 
     if (response.statusCode == 200) {
       setState(() {
-        statsData = json.decode(response.body);
-        userEmail = statsData['email'];
-        userUsername = statsData['username'];
+        userData = json.decode(response.body);
+        userName = userData[0]['first_name'];
+        userEmail = userData[0]['email'];
+        userUsername = userData[0]['username'];
         dateJoined = DateFormat('dd-MM-yyyy')
-            .format(DateTime.parse(statsData['date_joined']));
+            .format(DateTime.parse(userData[0]['date_joined']));
       });
     } else {
       showMessage("Error loading user info");
