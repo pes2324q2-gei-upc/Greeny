@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -23,19 +24,15 @@ class _ProfilePageState extends State<ProfilePage> {
   String userEmail = '';
   String userUsername = '';
   String dateJoined = '';
+  int level = 0;
+  int friends = 0;
+  int trips = 0;
+  int reviews = 0;
 
   @override
   void initState() {
-    obtenirNomUsuari();
     getInfoUser();
     super.initState();
-  }
-
-  obtenirNomUsuari() async {
-    //userName = await UserAuth().readUserInfo('name');
-    setState(() {
-      userName = userName;
-    });
   }
 
   Future<void> getInfoUser() async {
@@ -51,6 +48,10 @@ class _ProfilePageState extends State<ProfilePage> {
         userUsername = userData[0]['username'];
         dateJoined = DateFormat('dd-MM-yyyy')
             .format(DateTime.parse(userData[0]['date_joined']));
+        level = userData[0]['level'];
+        friends = userData[0]['friends_number'];
+        //trips = userData[0]['trips_number'];
+        reviews = userData[0]['reviews_number'];
       });
     } else {
       showMessage("Error loading user info");
@@ -290,9 +291,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 const Spacer(),
-                                const Text(
-                                  '100',
-                                  style: TextStyle(
+                                Text(
+                                  level.toString(),
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.normal,
                                     fontSize: 16,
                                   ),
@@ -325,9 +326,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 const Spacer(),
-                                const Text(
-                                  '200',
-                                  style: TextStyle(
+                                Text(
+                                  friends.toString(),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
@@ -359,9 +360,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 const Spacer(),
-                                const Text(
-                                  '5',
-                                  style: TextStyle(
+                                Text(
+                                  trips.toString(),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
@@ -393,9 +394,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 const Spacer(),
-                                const Text(
-                                  '10',
-                                  style: TextStyle(
+                                Text(
+                                  reviews.toString(),
+                                  style: const TextStyle(
                                     fontSize: 16,
                                   ),
                                 ),
