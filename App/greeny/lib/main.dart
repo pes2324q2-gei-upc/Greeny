@@ -10,6 +10,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:greeny/API/requests.dart';
 
+final ValueNotifier<bool> startAnimationNotifier = ValueNotifier<bool>(false);
+
 class TranslatePreferences implements ITranslatePreferences {
   static const String _selectedLocaleKey = 'selected_locale';
 
@@ -56,7 +58,6 @@ class Greeny extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
-
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
       child: MaterialApp(
@@ -95,8 +96,19 @@ class Greeny extends StatelessWidget {
 }
 
 Future<Widget> mainScreenIfUser() async {
-  String token = await getToken();
+  await Future.delayed(const Duration(seconds: 1));
+  bool conn = await checkConnection();
+  while (!conn) {
+    await Future.delayed(
+        const Duration(seconds: 1)); // wait for 1 second before trying again
+    conn = await checkConnection();
+  }
 
+  startAnimationNotifier.value = true;
+
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  String token = await getToken();
   if (token != '') {
     return const MainPage();
   } else {

@@ -84,3 +84,13 @@ httpPatch(String url, String params) async {
   );
   return response;
 }
+
+Future<bool> checkConnection() async {
+  var uri = Uri.http(backendURL, 'api/');
+  try {
+    await http.get(uri);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

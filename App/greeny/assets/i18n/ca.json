@@ -87,5 +87,6 @@
     "Error loading routes": "Error en carregar les rutes",
     "Total distance: ": "Distància total: ",
     "Consumed CO2: ": "CO2 consumit: ",
-    "Car consumed CO2: ": "CO2 consumit en cotxe: "
+    "Car consumed CO2: ": "CO2 consumit en cotxe: ",
+    "Connection to the server is not working.": "La connexió al servidor no funciona."
 }
