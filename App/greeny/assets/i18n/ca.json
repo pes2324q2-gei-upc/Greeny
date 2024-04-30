@@ -93,5 +93,9 @@
     "Total distance: ": "Distància total: ",
     "Consumed CO2: ": "CO2 consumit: ",
     "Car consumed CO2: ": "CO2 consumit en cotxe: ",
-    "Connection to the server is not working.": "La connexió al servidor no funciona."
+    "Connection to the server is not working.": "La connexió al servidor no funciona.",
+    "Confirm Delete": "Confirma l'eliminació",
+    "Are you sure you want to delete your account?": "Estàs segur que vols eliminar el teu compte?",
+    "Delete": "Eliminar",
+    "Delete Account": "Eliminar compte"
 }

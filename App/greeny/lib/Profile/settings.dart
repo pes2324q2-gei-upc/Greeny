@@ -54,16 +54,40 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void deleteAccount() async {
-    bool esborrat = await UserAuth().userDelete();
-    if (mounted && esborrat) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LogInPage()),
-        (Route<dynamic> route) => false,
-      );
-    } else {
-      showMessage('Error deleting account');
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translate('Confirm Delete')),
+          content:
+              Text(translate('Are you sure you want to delete your account?')),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+              },
+              child: Text(translate('Cancel')),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Eliminar la cuenta si el usuario confirma
+                bool esborrat = await UserAuth().userDelete();
+                if (esborrat) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LogInPage()),
+                    (Route<dynamic> route) => false,
+                  );
+                } else {
+                  showMessage('Error deleting account');
+                }
+              },
+              child: Text(translate('Delete')),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void showMessage(String m) {

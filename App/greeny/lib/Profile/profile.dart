@@ -171,36 +171,49 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(
                   height: 20,
                 ),
-                Expanded(
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                    color: Colors.white, // Color de fondo de la tarjeta
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.2), // Color de la sombra
+                        spreadRadius: 5, // Extensión de la sombra
+                        blurRadius: 7, // Desenfoque de la sombra
+                        offset:
+                            const Offset(0, 3), // Desplazamiento de la sombra
+                      ),
+                    ],
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: double.infinity,
+                    minHeight: 0,
+                  ),
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    //padding: const EdgeInsets.only(bottom: 20),
                     child: Container(
                       width: double.infinity, // Ocupa todo el ancho disponible
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30),
                         ),
                         color: Colors.white, // Color de fondo de la tarjeta
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey
-                                .withOpacity(0.2), // Color de la sombra
-                            spreadRadius: 5, // Extensión de la sombra
-                            blurRadius: 7, // Desenfoque de la sombra
-                            offset: const Offset(
-                                0, 3), // Desplazamiento de la sombra
-                          ),
-                        ],
                       ),
                       padding: const EdgeInsets.all(20), // Espaciado interno
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           //aqui va la informació de l'usuari
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 5),
                           //Email
                           Container(
                             decoration: BoxDecoration(
@@ -403,9 +416,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 const SizedBox(width: 5),
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 10,
                           ),
                         ],
                       ),
