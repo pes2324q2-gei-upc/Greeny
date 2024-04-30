@@ -51,3 +51,20 @@ class FriendViewSet(viewsets.ViewSet):
         friends = user.friends.all()
         serializer = FriendUserSerializer(friends, many=True)
         return Response(serializer.data)
+    
+    def destroy(self, request, pk=None):
+        user = self.request.user
+        try:
+            friend = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if friend in user.friends.all():
+            user.friends.remove(friend)
+            friend.friends.remove(user)
+            user.save()
+            friend.save()
+            return Response({'message': 'Friend removed.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'This user is not your friend.'}, status=status.HTTP_400_BAD_REQUEST)
+
