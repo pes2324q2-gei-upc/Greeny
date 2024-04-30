@@ -29,9 +29,13 @@ class UserSerializer(serializers.ModelSerializer):
     level = serializers.SerializerMethodField()
 
     def get_level(self, obj):
-        level = Level.objects.filter(user=obj, current=True).first()
-        #return level.number
-        return 100 #ERROR: Al registrar un usuari, no es crea el seu nivell
+        try:
+            level = Level.objects.filter(user=obj, current=True).first()
+            if level is None:
+                return 1
+            return level.number
+        except Level.DoesNotExist:
+            return 1
 
     def get_friends_number(self, obj):
         return obj.friends.count()

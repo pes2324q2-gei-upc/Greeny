@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
-from .models import *
-from .serializers import *
+from .models import Neighborhood, Level
+from .serializers import LevelSerializer
 
 class CityView(APIView):
     def init_neighborhoods(self):
@@ -28,7 +28,7 @@ class CityView(APIView):
                 )
 
     def getCurrentLevel(self, user):
-        self.init_levels(user)
+        # self.init_levels(user)
         try:
             return Level.objects.get(user=user, current=True)
         except Level.DoesNotExist:
@@ -38,7 +38,7 @@ class CityView(APIView):
         return Neighborhood.objects.get(id=level.neighborhood_id)
     
     def get(self, request):
-        self.init_neighborhoods()
+        # self.init_neighborhoods()
         user = self.request.user
         level = self.getCurrentLevel(user)
         level_data = LevelSerializer(level).data
