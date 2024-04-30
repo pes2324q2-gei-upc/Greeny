@@ -72,7 +72,7 @@ class CityView(APIView):
         if current_level.points_user > current_level.points_total:
             current_level.completed = True
             current_level.current = False
-            current_level.points_user -= 10
+            current_level.points_user = current_level.points_total
             current_level.save()
             next_level_number = current_level.number + 1
             try:
