@@ -50,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
             .format(DateTime.parse(userData[0]['date_joined']));
         level = userData[0]['level'];
         friends = userData[0]['friends_number'];
-        //trips = userData[0]['trips_number'];
+        trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
       });
     } else {
