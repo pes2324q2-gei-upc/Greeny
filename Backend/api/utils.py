@@ -10,9 +10,9 @@ def calculate_co2_consumed(transports, total_distance):
     # 0.03577 kg CO2 per km for FGC
     # 0.04688 kg CO2 per km for Train
 
-    transport_dist = total_distance / len(transports)
     co2_consumed = 0.0
-    for transport in transports:
+    for transport, percentage in transports.items():
+        transport_dist = total_distance * (percentage / 100)
         if transport in ('Walking', 'Bike'):
             co2_consumed += 0.0
         elif transport == 'Metro':
@@ -31,7 +31,6 @@ def calculate_co2_consumed(transports, total_distance):
             co2_consumed += 0.143 * transport_dist
         elif transport == 'Electric Car':
             co2_consumed += 0.070 * transport_dist
-
     return co2_consumed
 
 def calculate_car_co2_consumed(total_distance):
@@ -51,35 +50,24 @@ def calculate_statistics(transports, total_distance):
         'km_Totals': 0.0,
     }
 
-    if len(transports) != 0:
-        total_transports = len(transports)
-        transport_modes = ['Walking', 'Bus', 'Train, Metro, Tram, FGC', 'Bike', 'Car', 'Motorcycle',
-                           'Electric Car']
+    field_mapping = {
+        'Walking': 'km_Walked',
+        'Bus': 'km_Bus',
+        'Train': 'km_PublicTransport',
+        'Metro': 'km_PublicTransport',
+        'Tram': 'km_PublicTransport',
+        'FGC': 'km_PublicTransport',
+        'Bike': 'km_Biked',
+        'Car': 'km_Car',
+        'Motorcycle': 'km_Motorcycle',
+        'Electric Car': 'km_ElectricCar'
+    }
 
-        percentage = 100 / total_transports / 100
-        km_mode = percentage * total_distance
+    for transport, percentage in transports.items():
+        km_mode = total_distance * (percentage / 100)
+        update_fields[field_mapping[transport]] += km_mode
 
-        transport_percentages = {}
-        for mode in transport_modes:
-            if mode in transports:
-                transport_percentages[mode] = km_mode
-            else:
-                transport_percentages[mode] = 0.0
-
-        field_mapping = {
-            'Walking': 'km_Walked',
-            'Bus': 'km_Bus',
-            'Train, Metro, Tram, FGC': 'km_PublicTransport',
-            'Bike': 'km_Biked',
-            'Car': 'km_Car',
-            'Motorcycle': 'km_Motorcycle',
-            'Electric Car': 'km_ElectricCar'
-        }
-
-        for key, value in transport_percentages.items():
-            update_fields[field_mapping[key]] = value
-
-        update_fields['km_Totals'] = total_distance
+    update_fields['km_Totals'] = total_distance
 
     return update_fields
 

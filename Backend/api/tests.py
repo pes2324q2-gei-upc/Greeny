@@ -79,7 +79,7 @@ class FinalFormTransports(TestCase):
 
     def test_post_success(self):
         data = {
-            'selectedTransports': ['Walking', 'Bus', 'Bike'],
+            'transportPercentages': {'Walking': 33.33, 'Bus': 33.33, 'Bike': 33.34},
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
@@ -92,71 +92,81 @@ class FinalFormTransports(TestCase):
 
     def test_data_statistics(self):
         data = {
-            'selectedTransports': ['Walking', 'Bus', 'Bike', 'Motorcycle'],
+            'transportPercentages': {'Walking': 40, 'Bus': 30, 'Bike': 15, 'Motorcycle': 15},
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data),
-                                    content_type='application/json')
+                         content_type='application/json')
 
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Walked, 25)
-        self.assertEqual(Statistics.objects.get().km_Bus, 25)
-        self.assertEqual(Statistics.objects.get().km_Biked, 25)
-        self.assertEqual(Statistics.objects.get().km_Motorcycle, 25)
+        self.assertEqual(Statistics.objects.get().km_Walked, 40)
+        self.assertEqual(Statistics.objects.get().km_Bus, 30)
+        self.assertEqual(Statistics.objects.get().km_Biked, 15)
+        self.assertEqual(Statistics.objects.get().km_Motorcycle, 15)
 
     def test_statics_km_totals(self):
         data1 = {
-            'selectedTransports': ['Walking', 'Bus', 'Bike'],
+            'transportPercentages': {'Walking': 33.33, 'Bus': 33.33, 'Bike': 33.34},
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
         data2 = {
-            'selectedTransports': ['Train, Metro, Tram, FGC', 'Bike'],
+            'transportPercentages': {'Train': 20, 'Bike': 80},
             'totalDistance': 43.5,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
+        data3 = {
+            'transportPercentages': {},
+            'totalDistance': 2,
+            'startedAt': '2024-04-25T16:33:14.90961'
+        }
+
         self.client.post(reverse('final_form_transports'), data=json.dumps(data1),
-                                    content_type='application/json')
+                         content_type='application/json')
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data2),
                          content_type='application/json')
 
+        self.client.post(reverse('final_form_transports'), data=json.dumps(data3),
+                         content_type='application/json')
+
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().km_Totals, 143.5)
+        self.assertEqual(Statistics.objects.get().km_Totals, 145.5)
 
     def test_two_routes(self):
         data = {
-            'selectedTransports': ['Walking', 'Bus'],
+            'transportPercentages': {'Walking': 50, 'Bus': 50},
             'totalDistance': 150.70,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data),
-                                    content_type='application/json')
+                         content_type='application/json')
 
         self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Statistics.objects.count(), 1)
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data),
-                                    content_type='application/json')
+                         content_type='application/json')
 
         self.assertEqual(Route.objects.count(), 2)
         self.assertEqual(Statistics.objects.count(), 1)
 
     def test_not_answering_form(self):
         data = {
-            'selectedTransports': [],
+            'transportPercentages': {},
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data),
-                                    content_type='application/json')
+                         content_type='application/json')
 
+        self.assertEqual(Route.objects.count(), 1)
         self.assertEqual(Statistics.objects.count(), 1)
         self.assertEqual(Statistics.objects.get().km_Walked, 0)
         self.assertEqual(Statistics.objects.get().km_Bus, 0)
@@ -165,34 +175,36 @@ class FinalFormTransports(TestCase):
         self.assertEqual(Statistics.objects.get().km_Car, 0)
         self.assertEqual(Statistics.objects.get().km_PublicTransport, 0)
         self.assertEqual(Statistics.objects.get().km_ElectricCar, 0)
-        self.assertEqual(Statistics.objects.get().km_Totals, 0)
-        self.assertEqual(Route.objects.count(), 1)
+        self.assertEqual(Statistics.objects.get().km_Totals, 100)
 
     def test_co2_consumed(self):
         data = {
-            'selectedTransports': ['Bus'],
+            'transportPercentages': {'Metro': 30, 'Tram': 70},
             'totalDistance': 100,
             'startedAt': '2024-04-25T16:33:14.90961'
         }
 
         self.client.post(reverse('final_form_transports'), data=json.dumps(data),
-                                    content_type='application/json')
+                         content_type='application/json')
+
+        stats = Statistics.objects.get()
+        route = Route.objects.get()
 
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(Statistics.objects.get().kg_CO2_consumed, 0.08074 * 100)
-        self.assertEqual(Statistics.objects.get().kg_CO2_car_consumed, 0.143 * 100)
+        self.assertEqual(stats.kg_CO2_consumed, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
+        self.assertEqual(stats.kg_CO2_car_consumed, 0.143 * 100)
         self.assertEqual(Route.objects.count(), 1)
-        self.assertEqual(Route.objects.get().consumed_co2, 0.08074 * 100)
-        self.assertEqual(Route.objects.get().car_consumed_co2, 0.143 * 100)
+        self.assertEqual(route.consumed_co2, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
+        self.assertEqual(route.car_consumed_co2, 0.143 * 100)
+
 
     def test_calculate_co2_consumed(self):
-        self.assertAlmostEqual(calculate_co2_consumed(['Walking', 'Walking'], 10), 0.0)
-        self.assertAlmostEqual(calculate_co2_consumed(['Bike', 'Bike', 'Bike'], 20), 0.0)
-        self.assertAlmostEqual(calculate_co2_consumed(['Bus'], 15), 0.08074 * 15)
-        self.assertAlmostEqual(calculate_co2_consumed(['Car'], 25), 0.143 * 25)
-        self.assertAlmostEqual(calculate_co2_consumed(['Electric Car'], 30), 0.070 * 30)
-        self.assertAlmostEqual(calculate_co2_consumed(['Metro', 'Metro']
-                                                      , 40), 0.05013 * 20 + 0.05013 * 20)
+        self.assertAlmostEqual(calculate_co2_consumed({'Walking': 100}, 10), 0.0)
+        self.assertAlmostEqual(calculate_co2_consumed({'Bike': 100}, 20), 0.0)
+        self.assertAlmostEqual(calculate_co2_consumed({'Bus': 100}, 15), 0.08074 * 15)
+        self.assertAlmostEqual(calculate_co2_consumed({'Car': 100}, 25), 0.143 * 25)
+        self.assertAlmostEqual(calculate_co2_consumed({'Electric Car': 100}, 30), 0.070 * 30)
+        self.assertAlmostEqual(calculate_co2_consumed({'Metro': 50, 'Tram': 50}, 40), 0.05013 * 20 + 0.08012 * 20)
 
     def test_calculate_car_co2_consumed(self):
         self.assertAlmostEqual(calculate_car_co2_consumed(20), 0.143 * 20)

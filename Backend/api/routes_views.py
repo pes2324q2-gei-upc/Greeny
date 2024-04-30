@@ -30,7 +30,7 @@ class RoutesView(APIView):
 
         data = request.data
 
-        transports = data['selectedTransports']
+        transports_percentages = data['transportPercentages']
         total_distance = data['totalDistance']
         started_at = data['startedAt']
 
@@ -42,8 +42,8 @@ class RoutesView(APIView):
         consumed_co2 = 0.0
         car_consumed_co2 = 0.0
 
-        if len(transports) != 0:
-            consumed_co2 = calculate_co2_consumed(transports, total_distance)
+        if len(transports_percentages) != 0:
+            consumed_co2 = calculate_co2_consumed(transports_percentages, total_distance)
             car_consumed_co2 = calculate_car_co2_consumed(total_distance)
 
             # si no responen el form, tenen 0 punts --> No se si ho farem aixi al final
@@ -53,14 +53,14 @@ class RoutesView(APIView):
         Route.objects.create(
             user=user,
             distance=total_distance,
-            transports=transports,
+            transports=list(transports_percentages.keys()),
             consumed_co2=consumed_co2,
             car_consumed_co2=car_consumed_co2,
             started_at=started_at,
             ended_at=ended_at,
         )
 
-        update_fields = calculate_statistics(transports, total_distance)
+        update_fields = calculate_statistics(transports_percentages, total_distance)
 
         try:
             user_statics = Statistics.objects.get(user=user)

@@ -55,26 +55,8 @@ class ChargingStation(Station):
     current_type = models.CharField(max_length=100)
     connexion_type = models.CharField(max_length=100)
 
-
-def validate_km_totals(instance):
-    # Calculate the sum of all km fields
-    total_kms = sum([
-        instance.km_Walked,
-        instance.km_Biked,
-        instance.km_ElectricCar,
-        instance.km_PublicTransport,
-        instance.km_Bus,
-        instance.km_Motorcycle,
-        instance.km_Car
-    ])
-
-    # Check if the sum matches km_Totals with a precision of 2
-    if abs(total_kms - instance.km_Totals) > 0.01:
-        raise ValidationError('Sum of kms does not match km_Totals')
-
-
 class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100, related_name='statistics')
     kg_CO2_consumed = models.FloatField(default=0.0)
     kg_CO2_car_consumed = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
@@ -85,13 +67,6 @@ class Statistics(models.Model):
     km_Bus = models.FloatField(default=0.0)
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
-
-    def clean(self):
-        validate_km_totals(self)
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
 
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
@@ -118,7 +93,7 @@ class Route(models.Model):
         ('Car', 'Car')
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='routes')
     distance = models.FloatField(default=0.0)
     transports = ArrayField(
         models.CharField(max_length=30, choices=TRANSPORT_MODES)
@@ -141,8 +116,8 @@ class Route(models.Model):
         super().save(*args, **kwargs)
 
 class FavoriteStation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_stations')
+    station = models.ForeignKey(Station, on_delete=models.CASCADE, related_name='favorite_station')
 
     class Meta:
         unique_together = ('user', 'station', )
@@ -158,7 +133,7 @@ class Level(models.Model):
     points_user = models.IntegerField(default=0)
     points_total = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)  
-    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE, related_name='levels')
     
 
 
