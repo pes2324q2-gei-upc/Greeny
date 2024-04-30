@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/app_state.dart';
+import 'package:greeny/loading_screen.dart';
 import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';
@@ -78,7 +79,7 @@ class Greeny extends StatelessWidget {
           future: mainScreenIfUser(),
           builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const LoadingPage();
             } else {
               if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
@@ -95,7 +96,7 @@ class Greeny extends StatelessWidget {
 
 Future<Widget> mainScreenIfUser() async {
   String token = await getToken();
-  
+
   if (token != '') {
     return const MainPage();
   } else {
