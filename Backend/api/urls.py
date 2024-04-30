@@ -16,7 +16,7 @@ from api.transports_views import (
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from api.routes_views import RoutesView
 from api.city_views import CityView
-
+from api.ping_view import ping
 
 router = DefaultRouter()
 
@@ -34,5 +34,6 @@ urlpatterns = [
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list'),
     path('city/', CityView.as_view(), name='city'),
-    path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info')
+    path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(), name='charging_station_info'),
+    path('ping', ping, name='ping'),
 ]

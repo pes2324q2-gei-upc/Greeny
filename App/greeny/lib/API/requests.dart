@@ -98,10 +98,13 @@ httpDelete(String url) async {
 }
 
 Future<bool> checkConnection() async {
-  var uri = Uri.http(backendURL, 'api/');
+  var uri = Uri.http(backendURL, 'api/ping');
   try {
-    await http.get(uri);
-    return true;
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
   } catch (e) {
     return false;
   }
