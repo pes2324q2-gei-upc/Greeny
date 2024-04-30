@@ -23,24 +23,6 @@ class FavoriteStationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 
     favorite_stations = serializers.SerializerMethodField()
-    reviews_number = serializers.SerializerMethodField()
-    routes_number = serializers.SerializerMethodField()
-    friends_number = serializers.SerializerMethodField()
-    level = serializers.SerializerMethodField()
-
-    def get_level(self, obj):
-        level = Level.objects.filter(user=obj, current=True).first()
-        print (level)
-        return level.number
-
-    def get_friends_number(self, obj):
-        return obj.friends.count()
-
-    def get_routes_number(self, obj):
-        return obj.routes.count()
-
-    def get_reviews_number(self, obj):
-        return obj.reviews.count()
 
     def get_favorite_stations(self, obj):
         favorite_stations = FavoriteStation.objects.filter(user=obj)
@@ -52,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'email', 'favorite_stations', 'reviews_number', 'routes_number', 'friends_number', 'level']
+        fields = ['username', 'first_name', 'email','password', 'favorite_stations']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:

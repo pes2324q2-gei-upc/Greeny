@@ -227,8 +227,7 @@ class _StationPageState extends State<StationPage> {
             const SizedBox(height: 20),
             //review_list(),
             SizedBox(
-              height: MediaQuery.of(context).size.height *
-                  0.48, // Set the height to 50% of the screen height
+              height: MediaQuery.of(context).size.height * 0.48,  // Set the height to 50% of the screen height
               child: reviewList(),
             )
           ],
@@ -249,28 +248,26 @@ class _StationPageState extends State<StationPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('@${review['author_username']}',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(review['author_username'], style: const TextStyle(fontWeight: FontWeight.bold)),
                       const Spacer(),
-                      Text(review['puntuation'].toString(),
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(review['puntuation'].toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 5),
                       const Icon(Icons.star, color: Colors.yellow),
                     ],
                   ),
                 ),
                 review['body'].isEmpty
-                    ? Container()
-                    : Container(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            review['body'],
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      )
+                  ? Container()
+                  : Container(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        review['body'],
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  )
               ],
             ),
           );
@@ -285,9 +282,7 @@ class _StationPageState extends State<StationPage> {
       MaterialPageRoute(
           builder: (context) => AddReviewPage(
               stationId: stationId, type: type, stationName: station['name'])),
-    ).then((_) {
-      getInfo();
-    });
+    ).then((_) {getInfo();});
   }
 
   tmbStops() {
