@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
+import 'package:greeny/API/requests.dart';
 
 class UserAuth {
   Future userAuth(String username, String password) async {
@@ -50,5 +51,16 @@ class UserAuth {
   Future userLogout() async {
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
+  }
+
+  Future userDelete() async {
+    var response = await httpDelete('api/user/');
+    if (response.statusCode == 200) {
+      await SecureStorage().deleteSecureData('token');
+      await SecureStorage().deleteSecureData('name');
+      return true;
+    } else {
+      return false;
+    }
   }
 }

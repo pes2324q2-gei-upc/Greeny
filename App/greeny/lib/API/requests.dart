@@ -85,6 +85,18 @@ httpPatch(String url, String params) async {
   return response;
 }
 
+httpDelete(String url) async {
+  var token = await getToken();
+  var uri = Uri.http(backendURL, url);
+  var response = await http.delete(
+    uri,
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  return response;
+}
+
 Future<bool> checkConnection() async {
   var uri = Uri.http(backendURL, 'api/');
   try {

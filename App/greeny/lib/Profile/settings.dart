@@ -34,6 +34,9 @@ class _SettingsPageState extends State<SettingsPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextButton(onPressed: logOut, child: Text(translate('Log Out'))),
+          TextButton(
+              onPressed: deleteAccount,
+              child: Text(translate('Delete Account'))),
         ],
       )),
     );
@@ -46,6 +49,32 @@ class _SettingsPageState extends State<SettingsPage> {
         context,
         MaterialPageRoute(builder: (context) => const LogInPage()),
         (Route<dynamic> route) => false,
+      );
+    }
+  }
+
+  void deleteAccount() async {
+    bool esborrat = await UserAuth().userDelete();
+    if (mounted && esborrat) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LogInPage()),
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      showMessage('Error deleting account');
+    }
+  }
+
+  void showMessage(String m) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(translate(m)),
+          duration: const Duration(seconds: 5),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
       );
     }
   }
