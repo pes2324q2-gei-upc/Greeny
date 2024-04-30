@@ -118,7 +118,7 @@ class Route(models.Model):
         ('Car', 'Car')
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='routes')
     distance = models.FloatField(default=0.0)
     transports = ArrayField(
         models.CharField(max_length=30, choices=TRANSPORT_MODES)
@@ -157,7 +157,7 @@ class Level(models.Model):
     current = models.BooleanField(default=False)
     points_user = models.IntegerField(default=0)
     points_total = models.IntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='level')  
     neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE) 
     
 
