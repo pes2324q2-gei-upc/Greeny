@@ -9,10 +9,7 @@ from api.user_views import UsersView
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews
 from api.transports_views import (
-    EstacionsBicing,
-    CarregadorsElectricsView,
     FetchPublicTransportStations,
-    ParadesBus,
     StationsView,
     ThirdPartyChargingStationInfoView
 )
@@ -29,10 +26,7 @@ router.register(r'statistics', StatisticsView, basename="statistics")
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('charging-points', CarregadorsElectricsView.as_view(), name='charging_points'),
     path('fetch-all-stations', FetchPublicTransportStations.as_view(), name='fetch_all_stations'),
-    path('bus-stops', ParadesBus.as_view(), name='bus_stops'),
-    path('bicing', EstacionsBicing.as_view(), name='bicing'),
     path('send-form-transports', RoutesView.as_view(), name='final_form_transports'),
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list'),

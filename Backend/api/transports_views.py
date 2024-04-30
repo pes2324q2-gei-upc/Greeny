@@ -7,6 +7,7 @@ import requests
 from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
+from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,38 +19,10 @@ from .models import (PublicTransportStation, Stop, BusStation,
 from .serializers import (PublicTransportStationSerializer, BusStationSerializer,
                         BicingStationSerializer, ChargingStationSerializer)
 
-BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
-headers_OD = {"X-App-Token" : os.environ.get('APP_ID')}
+headers_OD = {"X-App-Token" : settings.APP_ID}
+headers_AJT = {"Authorization" : settings.API_TOKEN_AJT, "Accept" : "application/json"}
 
-BASE_URL_AJT = "https://opendata-ajuntament.barcelona.cat/data/api/action/datastore_search?resource_id="
-ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
-headers_AJT = {"Authorization" : os.environ.get('API_TOKEN_AJT'), "Accept" : "application/json"}
-
-#GET carregadors electrics
-class CarregadorsElectricsView(View):
-    def get(self, request):
-        response = requests.get(url=(BASE_URL_OD
-                                    + "tb2m-m33b.json?"
-                                    + "$limit=1000"),
-                                headers=headers_OD,
-                                timeout=5)
-        data = response.json()
-
-        for point in data:
-            ChargingStation.objects.create(
-                name = point.get("designaci_descriptiva"),
-                latitude = point.get("latitud"),
-                longitude = point.get("longitud"),
-                acces = point.get("acces"),
-                charging_velocity = point.get("tipus_velocitat"),
-                power = point.get("kw"),
-                current_type = point.get("ac_dc"),
-                connexion_type = point.get("tipus_connexi")
-            )
-        data = {"status" : "fetched_successfully"}
-        return JsonResponse(data, safe=False)
-
-# #GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
+#GET estacions Transport Public Barcelona (METRO, TRAM, FGC, RENFE)
 class FetchPublicTransportStations(View):
     def get_type(self, transport_type):
         try:
@@ -74,9 +47,78 @@ class FetchPublicTransportStations(View):
             station = None
         return station
 
-    def get(self, request):
-        response = requests.get(url=(BASE_URL_AJT
-                                    + ID_ESTACIONS_TRANSPORT
+    def fetch_buses(self):
+        # Fetch Buses
+        response = requests.get(url=(settings.BASE_URL_AJT +
+                                    "2d190658-93ac-4c43-a23f-c5d313b1ae9c"
+                                    + "&limit=3226"),
+                                timeout=5)
+
+        data = response.json().get("result").get("records")
+
+        for bus in data:
+            if "Estació" in bus.get("EQUIPAMENT"):
+                continue
+            lines_bus = bus.get("EQUIPAMENT").split(" -")[1].replace("--", "").split("-")
+            lat = bus.get("LATITUD")
+            long = bus.get("LONGITUD")
+
+            try:
+                stat = Station.objects.get(latitude=lat, longitude=long)
+            except Station.DoesNotExist:
+                stat = None
+
+            if stat is None:
+                BusStation.objects.create(
+                    name = "BUS " + str(bus.get("_id")) + " (" + bus.get("NOM_BARRI") + ")",
+                    latitude = lat,
+                    longitude = long,
+                    lines = lines_bus
+                )
+            else:
+                bus_station = BusStation.objects.get(station_ptr_id=stat.id)
+                bus_station.lines = bus_station.lines + lines_bus
+                bus_station.save()
+
+    def fetch_charging_stations(self):
+        # Fetch Charging Stations
+        response = requests.get(url=(settings.BASE_URL_OD
+                                    + "tb2m-m33b.json?"
+                                    + "$limit=1000"),
+                                headers=headers_OD,
+                                timeout=5)
+        data = response.json()
+
+        for point in data:
+            ChargingStation.objects.create(
+                name = point.get("designaci_descriptiva"),
+                latitude = point.get("latitud"),
+                longitude = point.get("longitud"),
+                acces = point.get("acces"),
+                charging_velocity = point.get("tipus_velocitat"),
+                power = point.get("kw"),
+                current_type = point.get("ac_dc"),
+                connexion_type = point.get("tipus_connexi")
+            )
+
+    def fetch_bicing(self):
+        # Fetch Bicing
+        
+        response = requests.get(url=settings.URL_BICING, headers=headers_AJT, timeout=5)
+        response.raise_for_status()
+        data = response.json().get("data").get("stations")
+
+        for stop in data:
+            BicingStation.objects.create(
+                name = stop.get("name"),
+                latitude = stop.get("lat"),
+                longitude = stop.get("lon"),
+                capacitat = stop.get("capacity")
+            )
+    
+    def fetch_public_stations(self):
+        response = requests.get(url=(settings.BASE_URL_AJT
+                                    + settings.ID_ESTACIONS_TRANSPORT
                                     + "&limit=700"),
                                 timeout=10)
         data = response.json()
@@ -184,7 +226,15 @@ class FetchPublicTransportStations(View):
                 except Stop.DoesNotExist:
                     Stop.objects.create(station=station, transport_type=trans_type, lines=[])
 
-        return redirect('bus_stops')
+    def get(self, request):
+        
+        self.fetch_public_stations()
+        self.fetch_buses()
+        self.fetch_bicing()
+        self.fetch_charging_stations()
+
+        data = {"status" : "fetched_successfully"}
+        return JsonResponse(data, safe=False)
 
 class StationsView(APIView):
     def get(self, request, pk=None):
@@ -246,62 +296,6 @@ class StationsView(APIView):
 
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-#GET parades de bus Barcelona
-class ParadesBus(View):
-    def get(self, request):
-        response = requests.get(url=(BASE_URL_AJT +
-                                    "2d190658-93ac-4c43-a23f-c5d313b1ae9c"
-                                    + "&limit=3226"),
-                                timeout=5)
-
-        data = response.json().get("result").get("records")
-
-        for bus in data:
-            if "Estació" in bus.get("EQUIPAMENT"):
-                continue
-            lines_bus = bus.get("EQUIPAMENT").split(" -")[1].replace("--", "").split("-")
-            lat = bus.get("LATITUD")
-            long = bus.get("LONGITUD")
-
-            try:
-                stat = Station.objects.get(latitude=lat, longitude=long)
-            except Station.DoesNotExist:
-                stat = None
-
-            if stat is None:
-                BusStation.objects.create(
-                    name = "BUS " + str(bus.get("_id")) + " (" + bus.get("NOM_BARRI") + ")",
-                    latitude = lat,
-                    longitude = long,
-                    lines = lines_bus
-                )
-            else:
-                bus_station = BusStation.objects.get(station_ptr_id=stat.id)
-                bus_station.lines = bus_station.lines + lines_bus
-                bus_station.save()
-
-        return redirect('bicing')
-
-#GET estacions Bicing
-class EstacionsBicing(View):
-    def get(self, request):
-        url = "https://opendata-ajuntament.barcelona.cat/data/dataset/informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/download/Informacio_Estacions_Bicing_securitzat.json"
-        response = requests.get(url=url, headers=headers_AJT, timeout=5)
-        response.raise_for_status()
-        data = response.json().get("data").get("stations")
-
-        for stop in data:
-            BicingStation.objects.create(
-                name = stop.get("name"),
-                latitude = stop.get("lat"),
-                longitude = stop.get("lon"),
-                capacitat = stop.get("capacity")
-            )
-
-        return redirect('charging_points')
-
 
 class ThirdPartyChargingStationInfoView(APIView):
 
