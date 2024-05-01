@@ -87,8 +87,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         appBar: (AppBar(
           backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-          title: Text(translate('Profile'),
-              style: const TextStyle(fontWeight: FontWeight.bold)),
           leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
@@ -385,14 +383,14 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                       onPressed: () {
                         sendFriendRequest(friendId);
                       },
-                      child: Text('Send Friend Request'),
+                      child: Text(translate('Send Friend Request')),
                     )
                   else // Si es amigo
                     ElevatedButton(
                       onPressed: () {
                         deleteFriend();
                       },
-                      child: Text('Delete Friend'),
+                      child: Text(translate('Delete Friend')),
                     ),
                 ],
               ),
@@ -423,7 +421,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         return AlertDialog(
           title: Text(translate('Confirm Delete')),
           content:
-              Text(translate('Are you sure you want to delete your friend?')),
+              Text(translate('Are you sure you want to delete this friend?')),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -436,12 +434,12 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                 final response = await httpDelete('/api/friends/$friendId/');
 
                 if (response.statusCode == 200) {
-                  showMessage('Friend deleted');
+                  showMessage(translate('Friend deleted'));
                 } else {
-                  showMessage('Error deleting friend');
+                  showMessage(translate('Error deleting friend'));
                 }
               },
-              child: Text(translate('Delete friend')),
+              child: Text(translate('Delete Friend')),
             ),
           ],
         );

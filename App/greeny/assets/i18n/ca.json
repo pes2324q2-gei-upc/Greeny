@@ -97,5 +97,10 @@
     "Confirm Delete": "Confirma l'eliminació",
     "Are you sure you want to delete your account?": "Estàs segur que vols eliminar el teu compte?",
     "Delete": "Eliminar",
-    "Delete Account": "Eliminar compte"
+    "Delete Account": "Eliminar compte",
+    "profile": "perfil",
+    "Delete Friend": "Eliminar amic",
+    "Are you sure you want to delete this friend?": "Estàs segur que vols eliminar aquest amic?",
+    "Search Profile": "Buscar perfil",
+    "Send Friend Request": "Enviar sol·licitud d'amistat"
 }

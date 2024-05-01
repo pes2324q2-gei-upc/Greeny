@@ -98,5 +98,10 @@
     "Confirm Delete": "Confirmar Borrado",
     "Are you sure you want to delete your account?": "¿Estás seguro de que quieres borrar tu cuenta?",
     "'Delete": "Borrar",
-    "Delete Account": "Borrar Cuenta"
+    "Delete Account": "Borrar Cuenta",
+    "profile": "perfil",
+    "Delete Friend": "Borrar Amigo",
+    "Are you sure you want to delete this friend?": "¿Estás seguro de que quieres borrar a este amigo?",
+    "Search Profile": "Buscar perfil",
+    "Send Friend Request": "Enviar solicitud de amistad"
 }

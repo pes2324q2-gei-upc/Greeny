@@ -45,7 +45,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
                 });
               },
               decoration: InputDecoration(
-                labelText: 'Username',
+                labelText: translate('Username'),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -54,7 +54,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
               onPressed: () {
                 sendFriendRequest(_friendUsername);
               },
-              child: const Text('Ver perfil'),
+              child: Text(translate('Search Profile')),
             ),
           ],
         ),
