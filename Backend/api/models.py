@@ -9,13 +9,13 @@ the data that will be stored.
 """
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    location = models.PointField()
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
@@ -102,7 +102,7 @@ class Route(models.Model):
     car_consumed_co2 = models.FloatField(default=0.0)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
-    total_time = models.CharField(default='00:00:00')
+    total_time = models.CharField(max_length=8, default='00:00:00')
 
     def save(self, *args, **kwargs):
         # Calculate the difference between ended_at and started_at

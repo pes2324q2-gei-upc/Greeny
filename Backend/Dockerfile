@@ -11,7 +11,9 @@ WORKDIR /code
 
 # install dependencies
 COPY requirements.txt /code/
-RUN pip install -r requirements.txt
-
+RUN apt-get update && \
+    apt install netcat-traditional && \
+    apt-get install -y libgdal-dev && \
+    pip install -r requirements.txt
 # copy project
 COPY . /code/
