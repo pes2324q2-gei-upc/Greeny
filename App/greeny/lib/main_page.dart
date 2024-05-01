@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
             ),
             icon: Stack(
               children: [
-                const Icon(Icons.people_rounded),
+                const Icon(Icons.people_outline_rounded),
                 if (friendRequestsCount > 0)
                   Positioned(
                     left: 10,

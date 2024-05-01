@@ -472,7 +472,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     if (response.statusCode == 200) {
       showMessage(translate('Friend request sent'));
       Navigator.pop(context);
-      Navigator.pop(context);
     } else {
       showMessage(translate('Error sending friend request'));
     }
