@@ -2,13 +2,12 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 jobs:
   build:
-
     runs-on: ubuntu-20.04
 
     services:
@@ -25,39 +24,41 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-       python-version: '3.12'
-    
-    - name: Install Dependencies
-      working-directory: Backend
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gdal-bin libgdal-dev
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install braintree mysqlclient apprise
-    - name: Run Tests
-      working-directory: Backend
-      env:
-        DB: postgres
-        DB_HOST: 127.0.0.1
-        DB_PORT: 5432
-        DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_HOST: ${{ secrets.DB_HOST }}
-        API_KEY: ${{ secrets.API_KEY }}
-        API_KEY_ID: ${{ secrets.API_KEY_ID }}
-        APP_TOKEN: ${{ secrets.APP_TOKEN }}
-        APP_ID: ${{ secrets.APP_ID }}
-        API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
-        
-      run: |
-        python manage.py makemigrations
-        python manage.py migrate
-        python manage.py test
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        working-directory: Backend
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev python3-dev
+          sudo apt-get install -y default-libmysqlclient-dev
+          sudo apt-get install -y libgdal-dev
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install braintree mysqlclient apprise
+      - name: Run Tests
+        working-directory: Backend
+        env:
+          DB: postgres
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.DB_HOST }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          APP_TOKEN: ${{ secrets.APP_TOKEN }}
+          APP_ID: ${{ secrets.APP_ID }}
+          API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
+
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+          python manage.py test
