@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #migrations
-python manage.py makemigrations
-python manage.py migrate
+#python manage.py makemigrations
+#python manage.py migrate
 
 #ini db
 python manage.py fetchstations
