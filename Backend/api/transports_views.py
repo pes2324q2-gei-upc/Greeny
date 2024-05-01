@@ -8,6 +8,8 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.views import View
 from django.conf import settings
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -34,8 +36,7 @@ class FetchPublicTransportStations(View):
     def create_public_transport_station(self, item, station_name):
         new_station_tp = PublicTransportStation.objects.create(
                         name = station_name,
-                        latitude = item.get('LATITUD'),
-                        longitude = item.get('LONGITUD'),
+                        location = Point(float(item.get('LONGITUD')), float(item.get('LATITUD'))),
                     )
 
         return new_station_tp
@@ -60,19 +61,16 @@ class FetchPublicTransportStations(View):
             if "Estació" in bus.get("EQUIPAMENT"):
                 continue
             lines_bus = bus.get("EQUIPAMENT").split(" -")[1].replace("--", "").split("-")
-            lat = bus.get("LATITUD")
-            long = bus.get("LONGITUD")
-
+            loc = Point(float(bus.get("LONGITUD")), float(bus.get("LATITUD")))
             try:
-                stat = Station.objects.get(latitude=lat, longitude=long)
+                stat = Station.objects.get(location=loc)
             except Station.DoesNotExist:
                 stat = None
 
             if stat is None:
                 BusStation.objects.create(
                     name = "BUS " + str(bus.get("_id")) + " (" + bus.get("NOM_BARRI") + ")",
-                    latitude = lat,
-                    longitude = long,
+                    location = loc,
                     lines = lines_bus
                 )
             else:
@@ -92,8 +90,7 @@ class FetchPublicTransportStations(View):
         for point in data:
             ChargingStation.objects.create(
                 name = point.get("designaci_descriptiva"),
-                latitude = point.get("latitud"),
-                longitude = point.get("longitud"),
+                location = Point(float(point.get("longitud")), float(point.get("latitud"))),
                 acces = point.get("acces"),
                 charging_velocity = point.get("tipus_velocitat"),
                 power = point.get("kw"),
@@ -111,8 +108,7 @@ class FetchPublicTransportStations(View):
         for stop in data:
             BicingStation.objects.create(
                 name = stop.get("name"),
-                latitude = stop.get("lat"),
-                longitude = stop.get("lon"),
+                location = Point(float(stop.get("lon")), float(stop.get("lat"))),
                 capacitat = stop.get("capacity")
             )
     
@@ -302,23 +298,47 @@ class ThirdPartyChargingStationInfoView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, fmt=None):
-        # lat = round(float(request.data['lat']),5)
-        # longi = round(float(request.data['long']), 6)
-
-        lat = request.data['lat']
-        longi = request.data['long']
-
-        charging_station = Station.objects.get(latitude=lat, longitude=longi)
-
-        favs = FavoriteStation.objects.filter(station_id = charging_station.id).count()
-
-        return Response({"data" :{
-            "name" : charging_station.name,
-            "faved_by" : favs
-        }}, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        lat = request.data['lat']
+        longi = request.data['long']
+        e = request.data['exact']
+        user_location = Point(float(longi), float(lat), srid=4326)
+
+        if not e == 'true':
+            try:
+                # Get the nearest station within a certain radius
+                charging_station = Station.objects.annotate(distance=Distance('location', user_location)).order_by('distance').first()
+
+                if charging_station is None:
+                    raise Station.DoesNotExist
+
+                favs = FavoriteStation.objects.filter(station_id=charging_station.id).count()
+
+                return Response({"data" :{
+                    "name" : charging_station.name,
+                    "faved_by" : favs
+                }}, status=status.HTTP_200_OK)
+
+            except Station.DoesNotExist:
+                return Response({"error": "Charging station not found within the specified radius"}, status=status.HTTP_404_NOT_FOUND)
+        
+        else:
+
+            try:
+                charging_station = Station.objects.get(location = user_location)
+
+                favs = FavoriteStation.objects.filter(station_id = charging_station.id).count()
+
+                return Response({"data" :{
+                    "name" : charging_station.name,
+                    "faved_by" : favs
+                }}, status=status.HTTP_200_OK)
+            
+            except:
+                return Response({"error": "Charging station not found in provided coordinates"}, status=status.HTTP_404_NOT_FOUND)
+
 
     def put(self, request, *args, **kwargs):
         return Response(status=status.HTTP_403_FORBIDDEN)
