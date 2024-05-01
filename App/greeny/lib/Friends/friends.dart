@@ -60,14 +60,10 @@ class _FriendsPageState extends State<FriendsPage> {
       showMessage(bodyReq['message']);
     }
 
-    print('Friends: $friends');
-    print('Friend Requests: $friendRequestsUsers');
-    print('Friend Requests: $friendRequests');
     setState(() {
       friendsTotal.addAll(friends);
       friendsTotal.addAll(friendRequestsUsers);
     });
-    print('Friends: $friendsTotal');
   }
 
   @override
@@ -113,8 +109,8 @@ class _FriendsPageState extends State<FriendsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => FriendProfilePage(
-                friendUsername: friendUsername, isFriend: true),
+            builder: (context) =>
+                FriendProfilePage(friendUsername: friendUsername),
           ),
         );
       },

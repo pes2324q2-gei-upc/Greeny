@@ -101,8 +101,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              FriendProfilePage(friendUsername: username, isFriend: false)),
+          builder: (context) => FriendProfilePage(friendUsername: username)),
     );
   }
 

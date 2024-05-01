@@ -11,11 +11,8 @@ import 'package:intl/intl.dart';
 
 class FriendProfilePage extends StatefulWidget {
   final String friendUsername;
-  final bool isFriend;
 
-  FriendProfilePage(
-      {Key? key, required this.friendUsername, required this.isFriend})
-      : super(key: key);
+  FriendProfilePage({Key? key, required this.friendUsername}) : super(key: key);
 
   static const Color smallCardColor = Color.fromARGB(255, 240, 235, 235);
   static const Color titolColor = Color.fromARGB(255, 133, 131, 131);
@@ -39,7 +36,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   void initState() {
     getInfoUser();
     super.initState();
-    isFriend = widget.isFriend;
     userIsFriend();
   }
 
