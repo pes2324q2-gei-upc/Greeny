@@ -4,8 +4,6 @@ import os
 
 # Third-party imports
 import requests
-from django.shortcuts import redirect
-from django.http import JsonResponse
 from django.views import View
 from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
@@ -230,7 +228,7 @@ class FetchPublicTransportStations(View):
         self.fetch_charging_stations()
 
         data = {"status" : "fetched_successfully"}
-        return JsonResponse(data, safe=False)
+        return Response(data)
 
 class StationsView(APIView):
     def get(self, request, pk=None):
@@ -279,7 +277,7 @@ class StationsView(APIView):
             serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
             data['chargingStations'] = serializer_charging.data
 
-            return JsonResponse({'stations': data}, safe=False)
+            return Response({'stations': data})
 
     def post(self, request, pk=None):
         if pk:
