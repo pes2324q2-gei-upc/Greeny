@@ -36,7 +36,7 @@ jobs:
       working-directory: Backend
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgdal-dev
+        sudo apt-get install -y gdal-bin libgdal-dev
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install braintree mysqlclient apprise
