@@ -15,7 +15,7 @@ Future<String> getToken() async {
   if (hasExpired) {
     String refresh = await SecureStorage().readSecureData('refresh_token');
     var uri = Uri.http(backendURL, 'api/token/refresh/');
-    var response = await http.post(
+    final response = await http.post(
       uri,
       body: {'refresh': refresh},
     );
@@ -27,7 +27,18 @@ Future<String> getToken() async {
       return '';
     }
   } else {
-    return access;
+    var uri = Uri.http(backendURL, 'api/user/');
+    final response = await http.get(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $access',
+      },
+    );
+    if (response.statusCode == 401) {
+      return '';
+    } else {
+      return access;
+    }
   }
 }
 

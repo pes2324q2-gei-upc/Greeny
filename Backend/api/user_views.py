@@ -5,11 +5,18 @@ from .models import User, Neighborhood, Level
 from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication]
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(UsersView, self).get_permissions()
 
     def init_neighborhoods(self):
         if Neighborhood.objects.exists():
