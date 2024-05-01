@@ -109,7 +109,7 @@ Future<Widget> mainScreenIfUser() async {
   await Future.delayed(const Duration(milliseconds: 500));
 
   String token = await getToken();
-  if (token != '') {
+  if (token != '' && await checkTokenFirstTime(token)) {
     return const MainPage();
   } else {
     return const LogInPage();

@@ -9,7 +9,7 @@ class StationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Station
-        fields = ['id', 'name', 'latitude', 'longitude']
+        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
 
     def get_latitude(self, obj):
         return obj.location.y

@@ -27,19 +27,19 @@ Future<String> getToken() async {
       return '';
     }
   } else {
-    var uri = Uri.http(backendURL, 'api/user/');
-    final response = await http.get(
-      uri,
-      headers: {
-        'Authorization': 'Bearer $access',
-      },
-    );
-    if (response.statusCode == 401) {
-      return '';
-    } else {
-      return access;
-    }
+    return access;
   }
+}
+
+Future<bool> checkTokenFirstTime(token) async {
+  var uri = Uri.http(backendURL, 'api/user/');
+  final response = await http.get(
+    uri,
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  return response.statusCode == 200;
 }
 
 httpGet(String url) async {
