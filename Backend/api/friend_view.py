@@ -8,21 +8,31 @@ class FriendRequestViewSet(viewsets.ViewSet):
     authentication_classes = [JWTAuthentication]
 
     def create(self, request):
-
         from_user = self.request.user
         to_user = User.objects.get(id=request.data['to_user'])
-        created = FriendRequest.objects.get_or_create(
-                                                from_user=from_user,
-                                                to_user=to_user)
 
-        if created:
-            return Response(
-                {'message': 'friend request sent'},
-                status=status.HTTP_200_OK)
+        if from_user.id != to_user.id:
+            
+            if to_user in from_user.friends.all():
+                return Response(
+                    {'error': 'User is already a friend'},
+                    status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(
-            {'message': 'friend request already sent'},
-            status=status.HTTP_409_CONFLICT)
+            created, _ = FriendRequest.objects.get_or_create(
+                from_user=from_user,
+                to_user=to_user)
+
+            if created:
+                return Response(
+                    {'message': 'friend request sent'},
+                    status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {'message': 'friend request already sent'},
+                    status=status.HTTP_409_CONFLICT)
+        else:
+            return Response({'error': 'can\'t add yourself as a friend'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
         user = self.request.user
@@ -33,13 +43,25 @@ class FriendRequestViewSet(viewsets.ViewSet):
 
     def destroy(self, request, pk=None):
         user = self.request.user
+        action = request.data['accept']
 
-        friend_request = FriendRequest.objects.get(id=pk)
+        try:
+            friend_request = FriendRequest.objects.get(id=pk)
+        except FriendRequest.DoesNotExist as e:
+            return Response({'error': 'Friend request does not exist'}, status.HTTP_400_BAD_REQUEST)
+        
         if friend_request.to_user == user:
-            friend_request.to_user.friends.add(friend_request.from_user)
-            friend_request.from_user.friends.add(friend_request.to_user)
+            if action == 'true':
+                try:
+                    friend_request.to_user.friends.add(friend_request.from_user)
+                    friend_request.from_user.friends.add(friend_request.to_user)
+                except Exception as e:
+                    return Response({'message': 'There has been an error adding the friend',
+                                     'error': f'{e}'})
             friend_request.delete()
-            return Response({'message': 'friend request accepted'}, status=status.HTTP_200_OK)
+            message = "Friend request accepted" if action == 'true' else "Friend request not accepted"
+            return Response({'message': message}, status=status.HTTP_200_OK)
+
         return Response({'message': 'friend request not accepted'}, status=status.HTTP_409_CONFLICT)
 
 class FriendViewSet(viewsets.ViewSet):
