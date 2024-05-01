@@ -39,28 +39,30 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     Map<String, dynamic> userData = {};
 
     final String endpoint = '/api/user/${widget.friendUsername}';
+    if (mounted) {
+      final response = await httpGet(endpoint);
 
-    final response = await httpGet(endpoint);
-
-    if (response.statusCode == 200) {
-      setState(() {
-        userData = json.decode(response.body);
-        friendName = userData['first_name'];
-        dateJoined = DateFormat('dd-MM-yyyy')
-            .format(DateTime.parse(userData['date_joined']));
-        level = userData['level'];
-        friends = userData['friends_number'];
-        trips = userData['routes_number'];
-        reviews = userData['reviews_number'];
-        friendId = userData['id'];
-        print(friendId.toString());
-      });
-    } else if (response.statusCode == 404) {
-      showMessage(translate("User not found"));
-      Navigator.pop(context);
-    } else {
-      showMessage(translate("Error loading user info"));
-      Navigator.pop(context);
+      if (response.statusCode == 200) {
+        setState(() {
+          userData = json.decode(response.body);
+          friendName = userData['first_name'];
+          dateJoined = DateFormat('dd-MM-yyyy')
+              .format(DateTime.parse(userData['date_joined']));
+          level = userData['level'];
+          friends = userData['friends_number'];
+          trips = userData['routes_number'];
+          reviews = userData['reviews_number'];
+          friendId = userData['id'];
+        });
+      } else if (response.statusCode == 404) {
+        showMessage(translate("User not found"));
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      } else {
+        showMessage(translate("Error loading user info"));
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -447,14 +449,18 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
             ),
             TextButton(
               onPressed: () async {
-                final response = await httpDelete('/api/friends/$friendId/');
+                if (mounted) {
+                  final response = await httpDelete('/api/friends/$friendId/');
 
-                if (response.statusCode == 200) {
-                  showMessage(translate('Friend deleted'));
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                } else {
-                  showMessage(translate('Error deleting friend'));
+                  if (response.statusCode == 200) {
+                    showMessage(translate('Friend deleted'));
+                    // ignore: use_build_context_synchronously
+                    Navigator.pop(context);
+                    // ignore: use_build_context_synchronously
+                    Navigator.pop(context);
+                  } else {
+                    showMessage(translate('Error deleting friend'));
+                  }
                 }
               },
               child: Text(translate('Delete Friend')),
@@ -466,16 +472,19 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   }
 
   void sendFriendRequest(int friendId) async {
-    final response = await httpPost('/api/friend-requests/',
-        jsonEncode({'to_user': friendId}), 'application/json');
+    if (mounted) {
+      final response = await httpPost('/api/friend-requests/',
+          jsonEncode({'to_user': friendId}), 'application/json');
 
-    if (response.statusCode == 200) {
-      showMessage(translate('Friend request sent'));
-      Navigator.pop(context);
-    } else if (response.statusCode == 409) {
-      showMessage(translate('Friend Request Already Sent'));
-    } else {
-      showMessage(translate('Error sending friend request'));
+      if (response.statusCode == 200) {
+        showMessage(translate('Friend request sent'));
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      } else if (response.statusCode == 409) {
+        showMessage(translate('Friend Request Already Sent'));
+      } else {
+        showMessage(translate('Error sending friend request'));
+      }
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friend_profile.dart';
-import 'package:http/http.dart' as http;
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
