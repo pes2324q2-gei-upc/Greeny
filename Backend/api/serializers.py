@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     favorite_stations = serializers.SerializerMethodField()
     reviews_number = serializers.SerializerMethodField()
-    #routes_number = serializers.SerializerMethodField()
+    routes_number = serializers.SerializerMethodField()
     friends_number = serializers.SerializerMethodField()
     level = serializers.SerializerMethodField()
 
@@ -48,11 +48,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_friends_number(self, obj):
         return obj.friends.count()
-
-    '''
+    
     def get_routes_number(self, obj):
         return obj.routes.count()
-    '''
 
     def get_reviews_number(self, obj):
         return obj.reviews.count()
@@ -67,7 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'email','password', 'date_joined', 'favorite_stations', 'reviews_number', 'friends_number', 'level']
+        fields = ['id', 'username', 'first_name', 'email','password', 'date_joined', 'favorite_stations', 'routes_number', 'reviews_number', 'friends_number', 'level']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -160,9 +158,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         return obj.author.username
 
 class FriendRequestSerializer(serializers.ModelSerializer):
+    from_user_username = serializers.ReadOnlyField(source='from_user.username')
+    to_user_username = serializers.ReadOnlyField(source='to_user.username')
+
     class Meta:
         model = FriendRequest
-        fields = ['from_user', 'to_user']
+        fields = ['id', 'from_user', 'to_user', 'from_user_username', 'to_user_username']
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:

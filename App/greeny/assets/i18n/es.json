@@ -98,5 +98,15 @@
     "Confirm Delete": "Confirmar Borrado",
     "Are you sure you want to delete your account?": "¿Estás seguro de que quieres borrar tu cuenta?",
     "'Delete": "Borrar",
-    "Delete Account": "Borrar Cuenta"
+    "Delete Account": "Borrar Cuenta",
+    "profile": "perfil",
+    "Delete Friend": "Borrar Amigo",
+    "Are you sure you want to delete this friend?": "¿Estás seguro de que quieres borrar a este amigo?",
+    "Search Profile": "Buscar perfil",
+    "Send Friend Request": "Enviar solicitud de amistad",
+    "Please enter a username": "Por favor, introduce un nombre de usuario",
+    "You cannot add yourself as a friend": "No puedes añadirte a ti mismo como amigo",
+    "Error, please try again": "Error, por favor inténtalo de nuevo",
+    "Friend request sent": "Solicitud de amistad enviada",
+    "Error sending friend request": "Error enviando solicitud de amistad"
 }
