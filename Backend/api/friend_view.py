@@ -18,7 +18,7 @@ class FriendRequestViewSet(viewsets.ViewSet):
                     {'error': 'User is already a friend'},
                     status=status.HTTP_400_BAD_REQUEST)
 
-            created, _ = FriendRequest.objects.get_or_create(
+            _ , created  = FriendRequest.objects.get_or_create(
                 from_user=from_user,
                 to_user=to_user)
 
