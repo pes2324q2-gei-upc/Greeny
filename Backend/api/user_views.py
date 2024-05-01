@@ -1,15 +1,50 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
-from .models import User
+from .models import User, Neighborhood, Level
 from .serializers import UserSerializer
-import requests
 from rest_framework.response import Response
+from rest_framework import status
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
     authentication_classes = [JWTAuthentication]
+
+    def init_neighborhoods(self):
+        if Neighborhood.objects.exists():
+            return
+        names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi', 'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
+        neighborhoods_data = [
+            {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
+        ]
+        for neighborhood_data in neighborhoods_data:
+            Neighborhood.objects.get_or_create(**neighborhood_data)
+
+    def init_levels(self, user):
+        points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
+        for i in range(1, 9):
+            neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
+            level = Level.objects.create(
+                number=i,
+                completed=False,
+                current=(i == 1),
+                points_user=0,
+                points_total = points_total[i-1],
+                user=user,
+                neighborhood=neighborhood
+            )
+            print(f"Created level {level.number} for user {user.id}")
+
+    def create(self, request, *args, **kwargs):
+        print("user creantse")
+        response = super().create(request, *args, **kwargs)
+        print(f"Response status code: {response.status_code}")
+        self.init_neighborhoods()
+        if response.status_code == 201:  # HTTP 201 Created
+            user = User.objects.latest('id')
+            self.init_levels(user)
+        return response
 
     def get_queryset(self):
         user = self.request.user

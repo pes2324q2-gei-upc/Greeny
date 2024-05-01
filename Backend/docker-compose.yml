@@ -10,7 +10,12 @@ services:
 
   backend:
     build: .
-    entrypoint: ["./entrypoint.sh"]
+    command: 
+      - /bin/bash
+      - -c
+      - |
+        python manage.py fetchstations
+        python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
