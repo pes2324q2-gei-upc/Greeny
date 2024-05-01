@@ -32,15 +32,20 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int trips = 0;
   int reviews = 0;
   int friendId = 0;
+  bool isFriend = false;
+  bool isUser = false;
 
   @override
   void initState() {
     getInfoUser();
     super.initState();
+    isFriend = widget.isFriend;
+    userIsFriend();
   }
 
   Future<void> getInfoUser() async {
     Map<String, dynamic> userData = {};
+
     final String endpoint = '/api/user/${widget.friendUsername}';
 
     final response = await httpGet(endpoint);
@@ -61,6 +66,20 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     } else {
       showMessage("Error loading user info");
     }
+  }
+
+  Future<void> userIsFriend() async {
+    List<dynamic> userFriends = [];
+    const String endpoint = '/api/friends/';
+    final response = await httpGet(endpoint);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> friendsData = jsonDecode(response.body);
+      userFriends = friendsData.map((friend) => friend['username']).toList();
+    } else {
+      showMessage('Failed checking if user is friend');
+    }
+    isFriend = userFriends.contains(widget.friendUsername);
   }
 
   @override
@@ -378,7 +397,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  if (!widget.isFriend) // Verifica si no es amigo
+                  if (!isFriend) // Verifica si no es amigo
                     ElevatedButton(
                       onPressed: () {
                         sendFriendRequest(friendId);
@@ -452,9 +471,9 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         jsonEncode({'to_user': friendId}), 'application/json');
 
     if (response.statusCode == 200) {
-      showMessage('Friend request sent');
+      showMessage(translate('Friend request sent'));
     } else {
-      showMessage('Error sending friend request');
+      showMessage(translate('Error sending friend request'));
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Friends/friend_profile.dart';
+import 'package:greeny/Profile/profile.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/translate.dart' as t;
 
@@ -17,6 +18,28 @@ class AddFriendPage extends StatefulWidget {
 
 class _AddFriendPageState extends State<AddFriendPage> {
   String _friendUsername = '';
+  String userUsername = '';
+
+  Future<void> getInfoUser() async {
+    List<dynamic> userData = [];
+
+    final response = await httpGet('/api/user/');
+
+    if (response.statusCode == 200) {
+      setState(() {
+        userData = json.decode(response.body);
+        userUsername = userData[0]['username'];
+      });
+    } else {
+      showMessage("Error loading user info");
+    }
+  }
+
+  @override
+  void initState() {
+    getInfoUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +75,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                sendFriendRequest(_friendUsername);
+                searchFriend(_friendUsername);
               },
               child: Text(translate('Search Profile')),
             ),
@@ -62,7 +85,19 @@ class _AddFriendPageState extends State<AddFriendPage> {
     );
   }
 
-  void sendFriendRequest(String username) async {
+  void searchFriend(String username) async {
+    if (username.isEmpty) {
+      showMessage(translate('Please enter a username'));
+      return;
+    }
+    if (username == userUsername) {
+      showMessage(translate('You cannot add yourself as a friend'));
+      return;
+    }
+    if (userUsername == '') {
+      showMessage(translate('Error, please try again'));
+      return;
+    }
     Navigator.push(
       context,
       MaterialPageRoute(
