@@ -30,6 +30,8 @@ class _FriendsPageState extends State<FriendsPage> {
     friendRequests = [];
     friendRequestsUsers = [];
     friendsTotal = [];
+
+    //Obtener amigos
     const String endpoint = '/api/friends/';
     final response = await httpGet(endpoint);
 
@@ -41,6 +43,7 @@ class _FriendsPageState extends State<FriendsPage> {
       showMessage(body['message']);
     }
 
+    //Obtener solicitudes de amistad
     const String endpointRequests = '/api/friend-requests/';
     final responseRequests = await httpGet(endpointRequests);
 
@@ -60,6 +63,7 @@ class _FriendsPageState extends State<FriendsPage> {
       showMessage(bodyReq['message']);
     }
 
+    // Combinar amigos y solicitudes de amistad
     setState(() {
       friendsTotal.addAll(friends);
       friendsTotal.addAll(friendRequestsUsers);
@@ -68,36 +72,38 @@ class _FriendsPageState extends State<FriendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      appBar: AppBar(
-        title: Text(translate('Friends'),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center),
+    return RefreshIndicator(
+      onRefresh: getFriends,
+      child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        actions: [
-          IconButton(
-            onPressed: addFriend,
-            icon: const Icon(Icons.person_add),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-        ],
-      ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(10),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+        appBar: AppBar(
+          title: Text(translate('Friends'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center),
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          actions: [
+            IconButton(
+              onPressed: addFriend,
+              icon: const Icon(Icons.person_add),
+              color: const Color.fromARGB(255, 1, 167, 164),
+            ),
+          ],
         ),
-        itemCount: friendsTotal.length, // Usar la longitud de friendsTotal
-        itemBuilder: (BuildContext context, int index) {
-          print(friendsTotal.length.toString());
-          final String friendUsername = friendsTotal[index];
-          final bool hasSentRequest =
-              friendRequestsUsers.contains(friendUsername);
-          return buildFriendCard(friendUsername, hasSentRequest);
-        },
+        body: GridView.builder(
+          padding: const EdgeInsets.all(10),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: friendsTotal.length, // Usar la longitud de friendsTotal
+          itemBuilder: (BuildContext context, int index) {
+            final String friendUsername = friendsTotal[index];
+            final bool hasSentRequest =
+                friendRequestsUsers.contains(friendUsername);
+            return buildFriendCard(friendUsername, hasSentRequest);
+          },
+        ),
       ),
     );
   }
@@ -198,11 +204,10 @@ class _FriendsPageState extends State<FriendsPage> {
       if (response.statusCode == 200) {
         // Recargar la pantalla
         setState(() {
-          // Aquí puedes volver a llamar a tu función para obtener los amigos
           getFriends();
         });
       } else {
-        // Manejar otros casos, como errores de red
+        showMessage(translate('Error, please try again'));
       }
     });
   }
@@ -230,6 +235,6 @@ class _FriendsPageState extends State<FriendsPage> {
         return request['id'];
       }
     }
-    return 0; // Retorna null si no se encuentra el username
+    return 0; // Retorna 0 si no se encuentra el username
   }
 }

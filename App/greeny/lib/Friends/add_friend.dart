@@ -20,6 +20,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   String _friendUsername = '';
   String userUsername = '';
 
+  //Obtener username del usuario para evitar que se busque a sí mismo
   Future<void> getInfoUser() async {
     List<dynamic> userData = [];
 

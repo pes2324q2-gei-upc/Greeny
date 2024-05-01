@@ -30,7 +30,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int reviews = 0;
   int friendId = 0;
   bool isFriend = false;
-  bool isUser = false;
 
   @override
   void initState() {
@@ -39,6 +38,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     userIsFriend();
   }
 
+  //Obtener información del usuario a visitar
   Future<void> getInfoUser() async {
     Map<String, dynamic> userData = {};
 
@@ -59,11 +59,16 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
         friendId = userData['id'];
         print(friendId.toString());
       });
+    } else if (response.statusCode == 404) {
+      showMessage(translate("User not found"));
+      Navigator.pop(context);
     } else {
-      showMessage("Error loading user info");
+      showMessage(translate("Error loading user info"));
+      Navigator.pop(context);
     }
   }
 
+  //Comprobar si el usuario es amigo
   Future<void> userIsFriend() async {
     List<dynamic> userFriends = [];
     const String endpoint = '/api/friends/';
@@ -196,7 +201,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                         ),
                       ],
                     ),
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       minWidth: double.infinity,
                       minHeight: 0,
                     ),
@@ -440,7 +445,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+                Navigator.of(context).pop();
               },
               child: Text(translate('Cancel')),
             ),
@@ -450,6 +455,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
                 if (response.statusCode == 200) {
                   showMessage(translate('Friend deleted'));
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 } else {
                   showMessage(translate('Error deleting friend'));
                 }
@@ -468,6 +475,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
     if (response.statusCode == 200) {
       showMessage(translate('Friend request sent'));
+      Navigator.pop(context);
+      Navigator.pop(context);
     } else {
       showMessage(translate('Error sending friend request'));
     }
