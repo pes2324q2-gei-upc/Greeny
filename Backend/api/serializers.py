@@ -4,9 +4,18 @@ from .models import (Station, User, PublicTransportStation,
                     BicingStation, Statistics, FriendRequest, Review, Route, Neighborhood, Level, FavoriteStation)
 
 class StationSerializer(serializers.ModelSerializer):
+    latitude = serializers.SerializerMethodField()
+    longitude = serializers.SerializerMethodField()
+
     class Meta:
         model = Station
-        fields = ['id', 'name', 'latitude', 'longitude', 'rating']
+        fields = ['id', 'name', 'latitude', 'longitude']
+
+    def get_latitude(self, obj):
+        return obj.location.y
+
+    def get_longitude(self, obj):
+        return obj.location.x
 
 class SimpleStationSerializer(serializers.ModelSerializer):
     class Meta:
