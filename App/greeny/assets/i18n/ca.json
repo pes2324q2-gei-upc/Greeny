@@ -107,5 +107,8 @@
     "You cannot add yourself as a friend": "No puedes añadirte a ti mismo como amigo",
     "Error, please try again": "Error, por favor inténtalo de nuevo",
     "Friend request sent": "Solicitud de amistad enviada",
-    "Error sending friend request": "Error enviando solicitud de amistad"
+    "Error sending friend request": "Error enviando solicitud de amistad",
+    "Friend Request Accepted": "Solicitud d'amistat acceptada",
+    "Friend Request Already Sent": "Solicitud d'amistat ja enviada",
+    "Friend Request Rejected": "Solicitud d'amistat rebutjada"
 }

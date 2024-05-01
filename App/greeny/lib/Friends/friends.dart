@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friend_profile.dart';
+import 'package:http/http.dart' as http;
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -260,22 +261,32 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  void acceptFriendRequest(String friendUsername) {
+  Future<void> acceptFriendRequest(String friendUsername) async {
     int id = findIdByUsername(friendUsername);
-    httpDelete('/api/friend-requests/$id/').then((response) {
-      if (response.statusCode == 200) {
-        // Recargar la pantalla
-        setState(() {
-          getFriends();
-        });
-      } else {
-        showMessage(translate('Error, please try again'));
-      }
-    });
+    final response = await sendAcceptFriendRequest(id);
+    if (response.statusCode == 200) {
+      showMessage(translate('Friend Request Accepted'));
+      // Recargar la pantalla
+      setState(() {
+        getFriends();
+      });
+    } else {
+      showMessage(translate('Error, please try again'));
+    }
   }
 
-  void rejectFriendRequest(String friendUsername) {
-    print('Rechazar solicitud de amistad de $friendUsername');
+  void rejectFriendRequest(String friendUsername) async {
+    int id = findIdByUsername(friendUsername);
+    final response = await sendRejectFriendRequest(id);
+    if (response.statusCode == 200) {
+      // Recargar la pantalla
+      showMessage(translate('Friend Request Rejected'));
+      setState(() {
+        getFriends();
+      });
+    } else {
+      showMessage(translate('Error, please try again'));
+    }
   }
 
   void showMessage(String m) {

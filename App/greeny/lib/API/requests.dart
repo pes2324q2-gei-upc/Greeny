@@ -120,3 +120,37 @@ Future<bool> checkConnection() async {
     return false;
   }
 }
+
+sendAcceptFriendRequest(int id) async {
+  var uri = Uri.http(backendURL, '/api/friend-requests/$id/');
+  var token = await getToken();
+  final response = await http.delete(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization':
+          'Bearer $token', // Agregar el token como un encabezado de autorización
+    },
+    body: jsonEncode(<String, dynamic>{
+      'accept': 'true',
+    }),
+  );
+  return response;
+}
+
+sendRejectFriendRequest(int id) async {
+  var uri = Uri.http(backendURL, '/api/friend-requests/$id/');
+  var token = await getToken();
+  final response = await http.delete(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization':
+          'Bearer $token', // Agregar el token como un encabezado de autorización
+    },
+    body: jsonEncode(<String, dynamic>{
+      'accept': 'false',
+    }),
+  );
+  return response;
+}
