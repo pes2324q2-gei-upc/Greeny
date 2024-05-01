@@ -383,9 +383,16 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                   if (!widget.isFriend) // Verifica si no es amigo
                     ElevatedButton(
                       onPressed: () {
-                        send_friend_request(friendId);
+                        sendFriendRequest(friendId);
                       },
                       child: Text('Send Friend Request'),
+                    )
+                  else // Si es amigo
+                    ElevatedButton(
+                      onPressed: () {
+                        deleteFriend();
+                      },
+                      child: Text('Delete Friend'),
                     ),
                 ],
               ),
@@ -409,7 +416,40 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     }
   }
 
-  void send_friend_request(int friendId) async {
+  void deleteFriend() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translate('Confirm Delete')),
+          content:
+              Text(translate('Are you sure you want to delete your friend?')),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+              },
+              child: Text(translate('Cancel')),
+            ),
+            TextButton(
+              onPressed: () async {
+                final response = await httpDelete('/api/friends/$friendId/');
+
+                if (response.statusCode == 200) {
+                  showMessage('Friend deleted');
+                } else {
+                  showMessage('Error deleting friend');
+                }
+              },
+              child: Text(translate('Delete friend')),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void sendFriendRequest(int friendId) async {
     final response = await httpPost('/api/friend-requests/',
         jsonEncode({'to_user': friendId}), 'application/json');
 
