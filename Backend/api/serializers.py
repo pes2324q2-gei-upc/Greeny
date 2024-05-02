@@ -65,7 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'email','password', 'date_joined', 'favorite_stations', 'routes_number', 'reviews_number', 'friends_number', 'level']
+        fields = ['id', 'username', 'first_name', 'email', 'date_joined', 'favorite_stations', 'routes_number', 'reviews_number', 'friends_number', 'level']
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:

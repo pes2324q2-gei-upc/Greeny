@@ -93,6 +93,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'greeny.wsgi.application'
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_ROOT = '/code/static/'
+STATIC_URL = '/static/'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
