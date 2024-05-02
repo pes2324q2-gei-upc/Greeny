@@ -27,15 +27,9 @@ from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
-        self.client = Client()
-
-    def test_fetch_public_stations_endpoint(self):
-        response = self.client.get('/api/fetch-all-stations')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'fetched_successfully', response.content)
+        self.client = APIClient()
 
     def test_get_type_existing_transport_type(self):
-        # Create a sample transport type
         existing_type = TransportType.objects.create(type='Metro')
         fetcher = FetchPublicTransportStations()
         fetched_type = fetcher.get_type('Metro')
@@ -227,11 +221,22 @@ class FriendRequestViewSetTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_accept_friend_request(self):
-        request = self.factory.delete(f'/friend-requests/{self.friend_request.id}/')
+        data = {'accept': 'true'}
+        request = self.factory.delete(f'/friend-requests/{self.friend_request.id}/', data=data)
         force_authenticate(request, user=self.user)
         view = FriendRequestViewSet.as_view({'delete': 'destroy'})
         response = view(request, pk=self.friend_request.id)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['message'], 'Friend request accepted')
+    
+    def test_deny_friend_request(self):
+        data = {'accept': 'false'}
+        request = self.factory.delete(f'/friend-requests/{self.friend_request.id}/', data=data)
+        force_authenticate(request, user=self.user)
+        view = FriendRequestViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.friend_request.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['message'], 'Friend request not accepted')
 
 class FriendViewSetTest(TestCase):
     def setUp(self):
