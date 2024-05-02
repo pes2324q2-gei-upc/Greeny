@@ -66,7 +66,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     final response = await httpGet('/api/city/');
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load city data');
     }
