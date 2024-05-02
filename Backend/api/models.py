@@ -10,7 +10,6 @@ the data that will be stored.
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
-import logging
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
