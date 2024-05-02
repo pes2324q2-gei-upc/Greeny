@@ -36,13 +36,13 @@ jobs:
           pip install -r requirements.txt
           pip install braintree mysqlclient apprise
 
+      - name: Set up Django settings module
+        run: echo "export DJANGO_SETTINGS_MODULE=greeny.settings" >> $GITHUB_ENV
+
       - name: Install Pylint
         run: |
           python -m pip install pylint
           python -m pip install pylint-django
-
-      - name: Set up Django settings module
-        run: echo "export DJANGO_SETTINGS_MODULE=greeny.settings" >> $GITHUB_ENV
 
       - name: Run Pylint
         run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
