@@ -62,10 +62,16 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret.pop('password', None)
+        return ret
 
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'email', 'password', 'date_joined', 'favorite_stations', 'routes_number', 'reviews_number', 'friends_number', 'level']
+        extra_kwargs = {'password': {'write_only': True}} 
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
