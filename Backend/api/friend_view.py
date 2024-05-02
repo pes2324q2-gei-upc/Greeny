@@ -12,7 +12,7 @@ class FriendRequestViewSet(viewsets.ViewSet):
         to_user = User.objects.get(id=request.data['to_user'])
 
         if from_user.id != to_user.id:
-            
+
             if to_user in from_user.friends.all():
                 return Response(
                     {'error': 'User is already a friend'},
@@ -31,7 +31,7 @@ class FriendRequestViewSet(viewsets.ViewSet):
                     {'message': 'friend request already sent'},
                     status=status.HTTP_409_CONFLICT)
         else:
-            return Response({'error': 'can\'t add yourself as a friend'}, 
+            return Response({'error': 'can\'t add yourself as a friend'},
                             status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request):
@@ -49,7 +49,7 @@ class FriendRequestViewSet(viewsets.ViewSet):
             friend_request = FriendRequest.objects.get(id=pk)
         except FriendRequest.DoesNotExist as e:
             return Response({'error': 'Friend request does not exist'}, status.HTTP_400_BAD_REQUEST)
-        
+
         if friend_request.to_user == user:
             if action == 'true':
                 try:
@@ -59,7 +59,8 @@ class FriendRequestViewSet(viewsets.ViewSet):
                     return Response({'message': 'There has been an error adding the friend',
                                      'error': f'{e}'})
             friend_request.delete()
-            message = "Friend request accepted" if action == 'true' else "Friend request not accepted"
+            message = "Friend request accepted" if action == 'true' \
+                else "Friend request not accepted"
             return Response({'message': message}, status=status.HTTP_200_OK)
 
         return Response({'message': 'friend request not accepted'}, status=status.HTTP_409_CONFLICT)
@@ -89,4 +90,3 @@ class FriendViewSet(viewsets.ViewSet):
             return Response({'message': 'Friend removed.'}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'This user is not your friend.'}, status=status.HTTP_400_BAD_REQUEST)
-
