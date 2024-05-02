@@ -254,13 +254,13 @@ class FriendViewSetTest(TestCase):
         response = view(request, pk=self.friend.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn(self.friend, self.user.friends.all())
-    
+
     def test_remove_nonexistent_friend(self):
-            request = self.factory.delete('/friends/9999/')
-            force_authenticate(request, user=self.user)
-            view = FriendViewSet.as_view({'delete': 'destroy'})
-            response = view(request, pk=9999)
-            self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        request = self.factory.delete('/friends/9999/')
+        force_authenticate(request, user=self.user)
+        view = FriendViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=9999)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_remove_non_friend(self):
         non_friend = User.objects.create(username='nonfriend', email='nonfriend@mail.com')
@@ -268,6 +268,14 @@ class FriendViewSetTest(TestCase):
         force_authenticate(request, user=self.user)
         view = FriendViewSet.as_view({'delete': 'destroy'})
         response = view(request, pk=non_friend.pk)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_remove_friend_when_no_friends(self):
+        user_without_friends = User.objects.create_user(username='user3', password='pass')
+        request = self.factory.delete(f'/friends/{self.friend.pk}/')
+        force_authenticate(request, user=user_without_friends)
+        view = FriendViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.friend.pk)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 class UsersViewTestCase(TestCase):
