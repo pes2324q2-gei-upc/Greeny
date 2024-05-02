@@ -11,24 +11,16 @@ from .serializers import RouteSerializer
 
 class RoutesView(APIView):
 
-    # POST final form --> save new route
-    def post(self, request):
-        user = self.request.user
-
-        data = request.data
-
-        transports_percentages = data['transportPercentages']
-        total_distance = data['totalDistance']
-        started_at = data['startedAt']
-
-        started_at = datetime.strptime(started_at, '%Y-%m-%dT%H:%M:%S.%f')
+    def get_current_time_spain(self):
         spain_tz = pytz.timezone('Europe/Madrid')
-        started_at = spain_tz.localize(started_at)
-        ended_at = datetime.now(spain_tz)
+        return datetime.now(spain_tz)
 
-        consumed_co2 = 0.0
-        car_consumed_co2 = 0.0
+    def localize_time(self, time_str):
+        time = datetime.strptime(time_str, '%Y-%m-%dT%H:%M:%S.%f')
+        spain_tz = pytz.timezone('Europe/Madrid')
+        return spain_tz.localize(time)
 
+    def calculate_and_add_points(self, user, transports_percentages, total_distance):
         if len(transports_percentages) != 0:
             consumed_co2 = calculate_co2_consumed(transports_percentages, total_distance)
             car_consumed_co2 = calculate_car_co2_consumed(total_distance)
@@ -37,6 +29,22 @@ class RoutesView(APIView):
             points = calculate_points(consumed_co2, car_consumed_co2)
             city_view = CityView()
             city_view.add_points(user, points)
+            return consumed_co2, car_consumed_co2
+        return 0.0, 0.0
+
+    # POST final form --> save new route
+    def post(self, request):
+        user = self.request.user
+
+        data = request.data
+
+        transports_percentages = data['transportPercentages']
+        total_distance = data['totalDistance']
+        started_at = self.localize_time(data['startedAt'])
+        ended_at = self.get_current_time_spain()
+
+        consumed_co2, car_consumed_co2 = self.calculate_and_add_points(
+            user, transports_percentages, total_distance)
 
         Route.objects.create(
             user=user,
