@@ -61,7 +61,15 @@ class FinalFormTransports(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username='testuser', password='testpass')
+        user_data = {
+            "username": "alba",
+            "password": "password123",
+            "email": "alba@upc.es",
+            "first_name": "alba"
+        }
+        response = self.client.post('/api/user/', user_data)
+        self.assertEqual(response.status_code, 201)
+        self.user = User.objects.get(username='alba')
         self.client.force_authenticate(user=self.user)
 
     def test_post_success(self):
@@ -178,12 +186,11 @@ class FinalFormTransports(TestCase):
         route = Route.objects.get()
 
         self.assertEqual(Statistics.objects.count(), 1)
-        self.assertEqual(stats.kg_CO2_consumed, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
-        self.assertEqual(stats.kg_CO2_car_consumed, 0.143 * 100)
+        self.assertAlmostEqual(stats.kg_CO2_consumed, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
+        self.assertAlmostEqual(stats.kg_CO2_car_consumed, 0.143 * 100)
         self.assertEqual(Route.objects.count(), 1)
-        self.assertEqual(route.consumed_co2, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
-        self.assertEqual(route.car_consumed_co2, 0.143 * 100)
-
+        self.assertAlmostEqual(route.consumed_co2, 0.05013 * (100 * 0.3) + 0.08012 * (100 * 0.7))
+        self.assertAlmostEqual(route.car_consumed_co2, 0.143 * 100)
 
     def test_calculate_co2_consumed(self):
         self.assertAlmostEqual(calculate_co2_consumed({'Walking': 100}, 10), 0.0)
