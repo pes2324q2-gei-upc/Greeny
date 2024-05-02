@@ -38,7 +38,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   Future<void> getInfoUser() async {
     Map<String, dynamic> userData = {};
 
-    final String endpoint = '/api/user/${widget.friendUsername}';
+    final String endpoint = '/api/user/${widget.friendUsername}/';
     if (mounted) {
       final response = await httpGet(endpoint);
 
