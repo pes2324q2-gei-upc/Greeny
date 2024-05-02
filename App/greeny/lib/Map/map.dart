@@ -5,7 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:greeny/Map/utils/locations.dart';
-import 'package:greeny/app_state.dart';
+import 'package:greeny/utils/app_state.dart';
 import 'package:provider/provider.dart';
 import 'utils/locations.dart' as locations;
 // ignore: library_prefixes
@@ -13,6 +13,7 @@ import 'utils/markers_helper.dart' as markersHelper;
 import 'package:fluster/fluster.dart';
 import 'utils/map_marker.dart';
 import 'utils/map_helper.dart';
+import 'package:greeny/utils/utils.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -138,7 +139,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     t = Timer(const Duration(seconds: 5), () {
-      showMessage('This is taking more than expected.');
+      if (mounted) {
+        showMessage(context, translate('This is taking more than expected.'));
+      }
     });
     camposition = Provider.of<AppState>(context, listen: false).cameraPosition;
     getLocation();
@@ -151,17 +154,21 @@ class _MapPageState extends State<MapPage> {
     stations = Provider.of<AppState>(context, listen: false).stations;
     if (stations.stations.publicTransportStations.isEmpty) {
       stations = await locations.getStations();
-      // ignore: use_build_context_synchronously
-      Provider.of<AppState>(context, listen: false).setStations(stations);
+      if (mounted) {
+        Provider.of<AppState>(context, listen: false).setStations(stations);
+      }
     }
-    // ignore: use_build_context_synchronously
-    icons = Provider.of<AppState>(context, listen: false).icons;
+    if (mounted) {
+      icons = Provider.of<AppState>(context, listen: false).icons;
+    }
     if (icons['BUS'] == null) {
-      icons = await markersHelper
-          // ignore: use_build_context_synchronously
-          .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
-      // ignore: use_build_context_synchronously
-      Provider.of<AppState>(context, listen: false).setIcons(icons);
+      if (mounted) {
+        icons = await markersHelper
+            .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
+      }
+      if (mounted) {
+        Provider.of<AppState>(context, listen: false).setIcons(icons);
+      }
     }
 
     if (mounted) {
@@ -398,18 +405,5 @@ class _MapPageState extends State<MapPage> {
         );
       },
     );
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

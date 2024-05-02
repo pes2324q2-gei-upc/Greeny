@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/main.dart';
+import 'package:greeny/utils/utils.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
@@ -31,7 +32,7 @@ class _LoadingPageState extends State<LoadingPage>
 
     Future.delayed(const Duration(seconds: 3), () {
     if (mounted) {
-      showMessage('Connection to the server is not working');
+      showMessage(context, translate('Connection to the server is not working'));
     }
   });
 
@@ -72,18 +73,5 @@ Widget build(BuildContext context) {
 
   void startAnimation() {
     _controller.forward();
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

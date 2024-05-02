@@ -9,6 +9,7 @@ import 'City/city.dart';
 import 'Friends/friends.dart';
 import 'Profile/profile.dart';
 import 'Statistics/statistics.dart';
+import 'package:greeny/utils/utils.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -21,10 +22,20 @@ class _MainPageState extends State<MainPage> {
   int currentPageIndex = 0;
   int friendRequestsCount = 0;
 
+  Timer _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
+
   @override
   void initState() {
     getFriends();
     super.initState();
+    _timer =
+        Timer.periodic(const Duration(seconds: 5), (timer) => getFriends());
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   Future<void> getFriends() async {
@@ -41,7 +52,8 @@ class _MainPageState extends State<MainPage> {
       });
     } else {
       final bodyReq = jsonDecode(responseRequests.body);
-      showMessage(bodyReq['message']);
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate(bodyReq['message']));
     }
   }
 
@@ -138,21 +150,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   void indexSelected(int index) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     setState(() {
       currentPageIndex = index;
     });
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

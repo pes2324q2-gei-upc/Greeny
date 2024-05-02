@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:intl/intl.dart';
+import 'package:greeny/utils/utils.dart';
 
 class RoutesPage extends StatefulWidget {
   const RoutesPage({super.key});
@@ -40,7 +41,9 @@ class _RoutesPageState extends State<RoutesPage> {
         });
       }
     } else {
-      showMessage(translate("Error loading routes"));
+      if (mounted) {
+        showMessage(context, translate("Error loading routes"));
+      }
     }
   }
 
@@ -183,18 +186,5 @@ class _RoutesPageState extends State<RoutesPage> {
         }).toList(),
       ),
     );
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

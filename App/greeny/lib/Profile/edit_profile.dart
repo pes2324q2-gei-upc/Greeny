@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Registration/log_in.dart';
+import 'package:greeny/utils/utils.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -60,7 +61,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     (Route<dynamic> route) => false,
                   );
                 } else {
-                  showMessage('Error deleting account');
+                  if (mounted) {
+                    // ignore: use_build_context_synchronously
+                    showMessage(context, translate('Error deleting account'));
+                  }
                 }
               },
               child: Text(translate('Delete')),
@@ -69,18 +73,5 @@ class _EditProfilePageState extends State<EditProfilePage> {
         );
       },
     );
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 5),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

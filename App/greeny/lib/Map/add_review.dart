@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/utils/utils.dart';
 
 class AddReviewPage extends StatefulWidget {
   final int stationId;
@@ -130,7 +131,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
   Future<void> sendReview() async {
     String reviewText = reviewController.text;
     if (rating == 0.0 || rating < 1.0 || rating > 5.0) {
-      showMessage(translate("Score is not a valid number between 1 and 5"));
+      showMessage(context, translate("Score is not a valid number between 1 and 5"));
       return;
     }
 
@@ -145,20 +146,9 @@ class _AddReviewPageState extends State<AddReviewPage> {
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
     } else {
-      showMessage(translate("The review could not be saved"));
-    }
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
+      if (mounted) {
+        showMessage(context, translate("The review could not be saved"));
+      }
     }
   }
 }
