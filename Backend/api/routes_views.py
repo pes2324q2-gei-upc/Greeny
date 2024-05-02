@@ -35,7 +35,6 @@ class RoutesView(APIView):
 
             # si no responen el form, tenen 0 punts --> No se si ho farem aixi al final
             points = calculate_points(consumed_co2, car_consumed_co2)
-            print("PUNTS ",points)
             city_view = CityView()
             city_view.add_points(user, points)
 

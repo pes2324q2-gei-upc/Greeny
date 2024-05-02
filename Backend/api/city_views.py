@@ -60,7 +60,7 @@ class CityView(APIView):
                 next_level.current = True
                 next_level.save()
             except Level.DoesNotExist:
-                print("next level not found")
+                return "Next level not found"
 
         return self.get_current_level(user)
 

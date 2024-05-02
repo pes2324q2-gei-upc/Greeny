@@ -33,7 +33,7 @@ class UsersView(ModelViewSet):
         points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
         for i in range(1, 9):
             neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
-            level = Level.objects.create(
+            Level.objects.create(
                 number=i,
                 completed=False,
                 current=(i == 1),
@@ -42,12 +42,9 @@ class UsersView(ModelViewSet):
                 user=user,
                 neighborhood=neighborhood
             )
-            print(f"Created level {level.number} for user {user.id}")
 
     def create(self, request, *args, **kwargs):
-        print("user creantse")
         response = super().create(request, *args, **kwargs)
-        print(f"Response status code: {response.status_code}")
         self.init_neighborhoods()
         if response.status_code == 201:  # HTTP 201 Created
             user = User.objects.latest('id')
