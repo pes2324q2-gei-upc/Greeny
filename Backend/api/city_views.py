@@ -81,7 +81,7 @@ class CityView(APIView):
                 next_level.current = True
                 next_level.save()
             except Level.DoesNotExist:
-                print("Next level not found")
+                print("next level not found")
 
         return self.getCurrentLevel(user)
     
@@ -93,4 +93,4 @@ class CityView(APIView):
             level_data = self.update_points(user, new_points)
             return JsonResponse(level_data)
         else:
-            return Response({'error': 'No se proporcionaron nuevos puntos.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'no se proporcionaron nuevos puntos.'}, status=status.HTTP_400_BAD_REQUEST)
