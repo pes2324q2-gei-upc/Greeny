@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:greeny/Map/utils/locations.dart';
+import 'package:greeny/utils/app_state.dart';
+import 'package:provider/provider.dart';
 import 'utils/locations.dart' as locations;
 // ignore: library_prefixes
 import 'utils/markers_helper.dart' as markersHelper;
 import 'package:fluster/fluster.dart';
 import 'utils/map_marker.dart';
 import 'utils/map_helper.dart';
+import 'package:greeny/utils/utils.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -21,38 +25,32 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  LatLng _center = const LatLng(0.0, 0.0);
   bool serviceEnabled = false;
   LocationPermission permission = LocationPermission.denied;
-  var transports = {
-    'tram': true,
-    'bus': true,
-    'fgc': true,
-    'bicing': true,
-    'renfe': true,
-    'car': true,
-    'metro': true
-  };
+  Map<String, bool> get transports =>
+      Provider.of<AppState>(context, listen: false).transports;
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
   // ignore: prefer_typing_uninitialized_variables
-  var icons;
+  Map icons = {};
   // ignore: prefer_typing_uninitialized_variables
-  var stations;
+  Locations stations = locations.Locations(
+      stations: locations.Stations(
+          publicTransportStations: [],
+          busStations: [],
+          bicingStations: [],
+          chargingStations: []));
 
   //nous
-  final Set<Marker> _markerss = {};
+  Set<Marker> get _markerss =>
+      Provider.of<AppState>(context, listen: false).markers;
   final int _minClusterZoom = 0;
   final int _maxClusterZoom = 19;
   Fluster<MapMarker>? _clusterManager;
-  double _currentZoom = 16;
 
-  // ignore: unused_field
-  bool _areMarkersLoading = true;
   MapType _currentMapType = MapType.normal;
   final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
   bool isLoading = true;
   bool gettingLocation = true;
-  LatLng? _currentPosition = const LatLng(0.0, 0.0);
   GoogleMapController? mapController;
   final Map<int, int> _zoomToDistance = {
     0: 4294967296,
@@ -81,25 +79,27 @@ class _MapPageState extends State<MapPage> {
   };
   // ignore: prefer_typing_uninitialized_variables
   var t;
+  CameraPosition camposition =
+      const CameraPosition(target: LatLng(0, 0), zoom: 16);
 
-  Future<void> _updateMarkers(CameraPosition position, bool moving) async {
+  Future<void> _updateMarkers(
+      CameraPosition newposition, bool moving, bool forceupdate) async {
+    if (!forceupdate &&
+        _markerss.isNotEmpty &&
+        camposition.target.latitude == newposition.target.latitude) {
+      return;
+    }
+
     var dist = markersHelper.distanceBetweenTwoCoords(
-        position.target, _currentPosition!);
+        newposition.target, camposition.target);
 
     if (moving &&
-        dist < _zoomToDistance[position.zoom.toInt()]! &&
-        _currentZoom.toInt() == position.zoom.toInt()) {
+        dist < _zoomToDistance[newposition.zoom.toInt()]! &&
+        camposition.zoom.toInt() == newposition.zoom.toInt()) {
       return;
     }
 
     var visible = await mapController!.getVisibleRegion();
-
-    _currentZoom = position.zoom;
-    _currentPosition = position.target;
-
-    setState(() {
-      _areMarkersLoading = true;
-    });
 
     final List<MapMarker> markers = markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
@@ -107,7 +107,7 @@ class _MapPageState extends State<MapPage> {
         icons,
         stations,
         visible,
-        _currentPosition,
+        newposition.target,
         // ignore: use_build_context_synchronously
         context);
 
@@ -119,7 +119,7 @@ class _MapPageState extends State<MapPage> {
 
     final updatedMarkers = await MapHelper.getClusterMarkers(
       _clusterManager,
-      _currentZoom,
+      newposition.zoom,
       // ignore: use_build_context_synchronously
       Theme.of(context).colorScheme.primary,
       Colors.white,
@@ -127,20 +127,23 @@ class _MapPageState extends State<MapPage> {
       (MediaQuery.of(context).devicePixelRatio.toInt() * 20),
     );
 
-    _markerss
-      ..clear()
-      ..addAll(updatedMarkers);
+    camposition = newposition;
 
     setState(() {
-      _areMarkersLoading = false;
+      _markerss
+        ..clear()
+        ..addAll(updatedMarkers);
     });
   }
 
   @override
   void initState() {
     t = Timer(const Duration(seconds: 5), () {
-      showMessage('This is taking more than expected.');
+      if (mounted) {
+        showMessage(context, translate('This is taking more than expected.'));
+      }
     });
+    camposition = Provider.of<AppState>(context, listen: false).cameraPosition;
     getLocation();
     getInfo();
     _gotoLocation();
@@ -148,16 +151,41 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> getInfo() async {
-    stations = await locations.getStations();
-    icons = await markersHelper
-        // ignore: use_build_context_synchronously
-        .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
-    setState(() {
-      isLoading = false;
-    });
+    stations = Provider.of<AppState>(context, listen: false).stations;
+    if (stations.stations.publicTransportStations.isEmpty) {
+      stations = await locations.getStations();
+      if (mounted) {
+        Provider.of<AppState>(context, listen: false).setStations(stations);
+      }
+    }
+    if (mounted) {
+      icons = Provider.of<AppState>(context, listen: false).icons;
+    }
+    if (icons['BUS'] == null) {
+      if (mounted) {
+        icons = await markersHelper
+            .createIcons(MediaQuery.of(context).devicePixelRatio.toInt() * 20);
+      }
+      if (mounted) {
+        Provider.of<AppState>(context, listen: false).setIcons(icons);
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> getLocation() async {
+    if (camposition.target.latitude != 0 || camposition.target.longitude != 0) {
+      if (mounted) {
+        setState(() {
+          gettingLocation = false;
+        });
+      }
+    }
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       showAlert('Location services are disabled.');
@@ -187,22 +215,43 @@ class _MapPageState extends State<MapPage> {
     if (mounted) {
       setState(() {
         gettingLocation = false;
-        _center = LatLng(position.latitude, position.longitude);
+        camposition = CameraPosition(
+            target: LatLng(position.latitude, position.longitude), zoom: 16);
+        Provider.of<AppState>(context, listen: false)
+            .setCameraPosition(camposition);
       });
     }
+  }
+
+  late AppState appState;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    appState = Provider.of<AppState>(context, listen: false);
+  }
+
+  @override
+  void dispose() {
+    // Use the saved reference to AppState here
+    appState.setCameraPosition(camposition);
+    appState.setStations(stations);
+
+    // Don't forget to dispose your other resources such as controllers
+    mapController?.dispose();
+
+    super.dispose();
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     t.cancel();
     mapController = controller;
-    _updateMarkers(
-        CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
     _controller.complete(controller);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!serviceEnabled || isLoading || gettingLocation) {
+    if (isLoading || gettingLocation) {
       return const Scaffold(
         backgroundColor: Color.fromARGB(255, 220, 255, 255),
         body: Center(
@@ -210,85 +259,88 @@ class _MapPageState extends State<MapPage> {
         ),
       );
     } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(translate('Filter'),
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: Container(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    for (final transport in transports.keys)
-                      IconButton(
-                        onPressed: () => filter(transport),
-                        icon: Image(
-                          image: AssetImage('assets/transports/$transport.png'),
-                          height:
-                              MediaQuery.of(context).devicePixelRatio.toInt() *
+      return Consumer<AppState>(
+        builder: (context, appState, child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(translate('Filter'),
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(kToolbarHeight),
+                child: Container(
+                  padding:
+                      const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        for (final transport in transports.keys)
+                          IconButton(
+                            onPressed: () => filter(transport),
+                            icon: Image(
+                              image: AssetImage(
+                                  'assets/transports/$transport.png'),
+                              height: MediaQuery.of(context)
+                                      .devicePixelRatio
+                                      .toInt() *
                                   12,
-                          width:
-                              MediaQuery.of(context).devicePixelRatio.toInt() *
+                              width: MediaQuery.of(context)
+                                      .devicePixelRatio
+                                      .toInt() *
                                   12,
-                          color: transports[transport]! ? null : disabledColor,
-                          colorBlendMode: BlendMode.dstIn,
-                        ),
-                      ),
-                  ],
+                              color:
+                                  transports[transport]! ? null : disabledColor,
+                              colorBlendMode: BlendMode.dstIn,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-        body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              myLocationEnabled: true,
-              mapType: _currentMapType,
-              myLocationButtonEnabled: true,
-              mapToolbarEnabled: true,
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: _center,
-                zoom: _currentZoom,
-              ),
-              markers: _markerss,
-              onCameraMove: (position) => _updateMarkers(position, true),
+            body: Stack(
+              children: <Widget>[
+                GoogleMap(
+                    myLocationEnabled: true,
+                    mapType: _currentMapType,
+                    myLocationButtonEnabled: true,
+                    mapToolbarEnabled: true,
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition: camposition,
+                    markers: Set<Marker>.of(appState.markers),
+                    onCameraMove: (position) => {
+                          _updateMarkers(position, true, false),
+                        }),
+                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: FloatingActionButton(
+                      onPressed: _mapType,
+                      backgroundColor: Colors.white,
+                      child: const Icon(Icons.map),
+                    ),
+                  )
+                ]),
+              ],
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: FloatingActionButton(
-                  onPressed: _mapType,
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.map),
-                ),
-              )
-            ]),
-          ],
-        ),
+          );
+        },
       );
     }
   }
 
   Future<void> _gotoLocation() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      target: _center,
-      zoom: _currentZoom,
-    )));
+    controller.animateCamera(CameraUpdate.newCameraPosition(camposition));
   }
 
   Future<void> filter(String type) async {
     setState(() {
       transports[type] = !transports[type]!;
     });
-    _updateMarkers(
-        CameraPosition(target: _currentPosition!, zoom: _currentZoom), false);
+    _updateMarkers(camposition, false, true);
   }
 
   void _mapType() {
@@ -353,18 +405,5 @@ class _MapPageState extends State<MapPage> {
         );
       },
     );
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }

@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  intl: ^0.18.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -50,6 +51,9 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.2.2
   url_launcher: ^6.2.5
+  flutter_secure_storage: ^9.0.0
+  flutter_rating_bar: ^4.0.1
+  jwt_decoder: ^2.0.1
 
 
 dev_dependencies:
@@ -84,7 +88,8 @@ flutter:
   - assets/transports/
   - assets/locations/
   - .env
-  - assets/cities/
+  - assets/images/
+  - assets/neighborhoods/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -116,5 +121,6 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icons/appicon.jpg"
-  image_path_ios: "assets/icons/appicon.jpg"
+  remove_alpha_ios: true
+  image_path: "assets/icons/appicon.png"
+  image_path_ios: "assets/icons/appicon.png"

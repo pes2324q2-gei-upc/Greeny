@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/main_page.dart';
 import 'log_in.dart';
-import '../translate.dart' as t;
+import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/utils/utils.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -16,12 +18,14 @@ class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
+  final nameContoller = TextEditingController();
 
   final signUpForm = GlobalKey<FormState>();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
+    nameContoller.dispose();
     usernameController.dispose();
     passwordController.dispose();
     passwordConfirmController.dispose();
@@ -75,6 +79,15 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           TextFormField(
                             obscureText: false,
+                            controller: nameContoller,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translate('Name'),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            obscureText: false,
                             controller: emailController,
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
@@ -82,9 +95,7 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             validator: emailValidator,
                           ),
-                          const SizedBox(
-                            height: 20
-                          ),
+                          const SizedBox(height: 20),
                           TextFormField(
                             obscureText: false,
                             controller: usernameController,
@@ -128,9 +139,7 @@ class _SignInPageState extends State<SignInPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(
-                            height: 20
-                          ),
+                    const SizedBox(height: 20),
                     Column(
                       children: [
                         Text(
@@ -149,9 +158,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                            height: 20
-                          ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -178,16 +185,29 @@ class _SignInPageState extends State<SignInPage> {
 
   Future<void> sendSignUp() async {
     if (signUpForm.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
-      );
+      final username = usernameController.text;
+      final password = passwordController.text;
+      final email = emailController.text;
+      final name = nameContoller.text;
+      String res =
+          await UserAuth().userRegister(name, username, email, password);
+      if (res == 'ok') {
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
+      } else {
+        if (mounted) {
+          showMessage(context, translate(res));
+        }
+      }
     }
   }
 
-  Future<void> googleSignIn() async {
-    print('Signing in with Google');
-  }
+  Future<void> googleSignIn() async {}
 
   Future<void> logInHere() async {
     Navigator.push(
@@ -198,7 +218,7 @@ class _SignInPageState extends State<SignInPage> {
 
   String? emailValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your email');
     }
 
     const pattern = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'"
@@ -211,29 +231,29 @@ class _SignInPageState extends State<SignInPage> {
     final regex = RegExp(pattern);
 
     return value.isNotEmpty && !regex.hasMatch(value)
-        ? 'Enter a valid email address'
+        ? translate('Enter a valid email address')
         : null;
   }
 
   String? usernameValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your username');
     }
     return null;
   }
 
   String? passwordValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your password');
     }
     return null;
   }
 
   String? passwordConfirmValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter some text';
+      return translate('Please enter your password');
     } else if (passwordController.text != passwordConfirmController.text) {
-      return 'Passwords do not match';
+      return translate('Passwords do not match');
     }
     return null;
   }

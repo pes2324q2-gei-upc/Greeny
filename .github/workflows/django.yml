@@ -2,58 +2,84 @@ name: Django CI
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop", "hotfix/jangoCI"]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ["main", "develop"]
 
 jobs:
   build:
-
     runs-on: ubuntu-20.04
 
     services:
       postgres:
-        image: postgres
+        image: mdillon/postgis:latest
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_NAME }}
+        ports:
+          - "5432:5432"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
-      
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-       python-version: '3.12'
-    
-    - name: Install Dependencies
-      working-directory: Backend
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install braintree mysqlclient apprise
-    - name: Run Tests
-      working-directory: Backend
-      env:
-        DB: postgres
-        DB_HOST: 127.0.0.1
-        DB_PORT: 5432
-        DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
-        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        POSTGRES_HOST: ${{ secrets.DB_HOST }}
-        API_KEY: ${{ secrets.API_KEY }}
-        API_KEY_ID: ${{ secrets.API_KEY_ID }}
-        APP_TOKEN: ${{ secrets.APP_TOKEN }}
-        APP_ID: ${{ secrets.APP_ID }}
-        API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
-        
-      run: |
-        python manage.py test
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Wait for PostgreSQL to start
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }}; do
+            echo "Waiting for PostgreSQL to start..."
+            sleep 2
+          done
+
+      - name: Install System Dependencies
+        run: |
+          sudo add-apt-repository -y ppa:ubuntugis/ppa
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev
+          export CPLUS_INCLUDE_PATH=/usr/include/gdal
+          export C_INCLUDE_PATH=/usr/include/gdal
+
+      - name: Install GDAL Python Package
+        run: |
+          pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==3.3.0
+
+      - name: Install PostgreSQL PostGIS Extension
+        run: |
+          PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql -h localhost -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+
+      - name: Install Python Dependencies
+        working-directory: Backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install braintree mysqlclient apprise
+
+      - name: Run Tests
+        working-directory: Backend
+        env:
+          DB: postgres
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.DB_HOST }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          APP_TOKEN: ${{ secrets.APP_TOKEN }}
+          APP_ID: ${{ secrets.APP_ID }}
+          API_TOKEN_AJT: ${{ secrets.API_TOKEN_AJT }}
+
+        run: |
+          python manage.py makemigrations
+          python manage.py migrate
+          python manage.py test

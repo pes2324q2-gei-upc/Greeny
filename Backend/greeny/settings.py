@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +25,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-25u8vl1*fk=zt4ql@o-u&o(t9(9#_iz&i*pb4el5)ju(-sxamf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
+DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
+ALLOWED_HOSTS = [os.getenv('SERVER_NAME')]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+}
 
 # Application definition
 
@@ -40,7 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
-    'django_extensions'
+    'rest_framework_simplejwt',
+    'django_extensions',
+    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'greeny.urls'
@@ -73,13 +95,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'greeny.wsgi.application'
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_ROOT = '/code/static/'
+STATIC_URL = '/static/'
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.environ.get('POSTGRES_NAME'),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
@@ -119,15 +146,20 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'api.User'
+
+#Important urls:
+BASE_URL_OD = "https://analisi.transparenciacatalunya.cat/resource/"
+URL_BICING = ("https://opendata-ajuntament.barcelona.cat/data/dataset/"
+              "informacio-estacions-bicing/resource/f60e9291-5aaa-417d-9b91-612a9de800aa/"
+              "download/Informacio_Estacions_Bicing_securitzat.json")
+BASE_URL_AJT = ("https://opendata-ajuntament.barcelona.cat/data/api/action/"
+                "datastore_search?resource_id=")
+ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
+APP_ID = os.environ.get('APP_ID')
+API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')

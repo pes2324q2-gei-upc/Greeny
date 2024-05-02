@@ -1,17 +1,18 @@
 import 'dart:math';
 
 import 'dart:async';
-//import 'dart:html'; HO HE HAGUT DE TREURE NO SE PERQUE
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:greeny/City/LocationService.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/utils/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/API/requests.dart';
+import 'dart:convert';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -27,20 +28,73 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _controller; // controlador per l'animació del botó play/pause
   Timer? _updateTimer;
 
-  double progressPercentage = 0.3;
-  double punts = 50.0;
-  double levelPoints = 100.0;
-  String level = 'Nou Barris';
+  int userPoints = 0;
+  int levelPoints = 100;
+  int levelNumber = 1;
+  String nhoodName = '';
+  String nhoodPath = '';
+  bool first = true;
+
+  String userName = '';
+  bool isStaff = false;
+
+  ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
   void initState() {
+    super.initState();
     _controller =
         AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    super.initState();
     appState = context.read<AppState>(); // estat de l'aplicació
     if (appState.isPlaying) {
       _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
         setState(() {});
       });
+    }
+    getCityData().then((data) {
+      setState(() {
+        cityDataNotifier.value = data;
+        userPoints = data['points_user'];
+        levelPoints = data['points_total'];
+        levelNumber = data['number'];
+        nhoodName = data['neighborhood']['name'];
+        nhoodPath = data['neighborhood']['path'];
+        userName = data['user_name'];
+        isStaff = data['is_staff'];
+      });
+    });
+  }
+
+  Future<Map<String, dynamic>> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } else {
+      throw Exception('Failed to load city data');
+    }
+  }
+
+  Future<void> updateCityData(int points) async {
+    final response = await httpPut(
+      '/api/city/',
+      jsonEncode({'points_user': points}),
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> newCityData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+
+      setState(() {
+        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
+        cityDataNotifier.value = newCityData;
+        userPoints = newCityData['points_user'];
+        levelPoints = newCityData['points_total'];
+        levelNumber = newCityData['number'];
+        nhoodName = newCityData['neighborhood']['name'];
+        nhoodPath = newCityData['neighborhood']['path'];
+      });
+    } else {
+      throw Exception('Failed to update city data');
     }
   }
 
@@ -51,167 +105,169 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void updateProgress(double newProgress) {
+  void updateProgress(int points) {
+    updateCityData(points);
     setState(() {
-      punts = newProgress;
+      userPoints = points;
     });
-
-    if (punts <= 0) {
-      setState(() {
-        level = 'Nou Barris';
-        punts = 0;
-      });
-    } else if (punts > 100 && level == 'Nou Barris') {
-      setState(() {
-        levelPoints = 200.0;
-        level = 'Horta-Guinardó';
-        punts = 0;
-      });
-    } else if (punts > 200 && level == 'Horta-Guinardó') {
-      setState(() {
-        level = 'Sants-Montjuïc';
-        levelPoints = 400.0;
-        punts = 0;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      body: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  const Text('Julia\'s City',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 25.0)),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.width * 0.9,
-                      child: Stack(
-                        children: [
-                          Opacity(
-                            opacity: max(
-                                    min(75, 100 - (punts / levelPoints) * 100),
-                                    0) /
-                                100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset('assets/cities/fog.png'),
-                          ),
-                          if (level == 'Nou Barris')
-                            const ModelViewer(
-                              key: Key('cityModelViewer'),
-                              src: 'assets/cities/city_1.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          if (level == 'Horta-Guinardó')
-                            const ModelViewer(
-                              key: Key('city2ModelViewer'),
-                              src: 'assets/cities/Horta-Guinardo.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          if (level == 'Sants-Montjuïc')
-                            const ModelViewer(
-                              key: Key('city3ModelViewer'),
-                              src: 'assets/cities/Sants-Montjuic.glb',
-                              autoRotate: true,
-                              disableZoom: true,
-                              rotationPerSecond:
-                                  "25deg", // Rota 30 grados por segundo
-                              autoRotateDelay:
-                                  1000, // Espera 1 segundos antes de rotar
-                              cameraControls:
-                                  false, // Evita que el usuario controle la cámara (true por defecto)
-                            ),
-                          Opacity(
-                            opacity: max(
-                                    min(75, 100 - (punts / levelPoints) * 100),
-                                    0) /
-                                100, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                            child: Image.asset('assets/cities/fog.png'),
-                          ),
-                        ],
-                      )),
-                  const SizedBox(height: 20),
-                  if (!appState.isPlaying)
+    if (userName == '') {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
+      return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+        body: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text('$userName\'s City',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25.0)),
+                    const SizedBox(height: 20),
                     SizedBox(
-                      height: 300,
-                      width: 300,
-                      child: Column(
-                        children: [
-                          BarraProgres(
-                            punts: punts,
-                            onProgressChanged: updateProgress,
-                            levelPoints: levelPoints,
-                            level: level,
-                          ),
-                          buildplaypause(),
-                          if (appState.totalDistance != 0)
-                            LastTravel(km: appState.totalDistance),
-                        ],
-                      ),
-                    )
-                  else
-                    SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: MediaQuery.of(context).size.width * 0.9,
+                        child: Stack(
+                          children: [
+                            Opacity(
+                              opacity:
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
+                                  ? 'assets/neighborhoods/fog1.png'
+                                  : opct > 0.33
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
+                            ),
+                            ValueListenableBuilder<Map<String, dynamic>?>(
+                              valueListenable: cityDataNotifier,
+                              builder: (BuildContext context,
+                                  Map<String, dynamic>? cityData,
+                                  Widget? child) {
+                                if (cityData == null) {
+                                  // Los datos aún no están disponibles, muestra un indicador de carga.
+                                  return const Center(
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  if (first) {
+                                    // Los datos están disponibles, construye el ModelViewer.
+                                    userPoints = cityData['points_user'];
+                                    levelPoints = cityData['points_total'];
+                                    levelNumber = cityData['number'];
+                                    nhoodName =
+                                        cityData['neighborhood']['name'];
+                                    nhoodPath =
+                                        cityData['neighborhood']['path'];
+                                    first = false;
+                                  }
+
+                                  return ModelViewer(
+                                    debugLogging: false,
+                                    key: Key(nhoodName),
+                                    src: 'assets/neighborhoods/$nhoodPath',
+                                    autoRotate: true,
+                                    disableZoom: true,
+                                    rotationPerSecond: "25deg",
+                                    autoRotateDelay: 1000,
+                                    cameraControls: false,
+                                  );
+                                }
+                              },
+                            ),
+                            Opacity(
+                              opacity:
+                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
+                              child: Image.asset(opct > 0.66
+                                  ? 'assets/neighborhoods/fog1.png'
+                                  : opct > 0.33
+                                      ? 'assets/neighborhoods/fog2.png'
+                                      : 'assets/neighborhoods/fog3.png'),
+                            ),
+                          ],
+                        )),
+                    const SizedBox(height: 20),
+                    if (!appState.isPlaying)
+                      SizedBox(
                         height: 300,
                         width: 300,
-                        child: Column(children: [
-                          KmTravelled(km: appState.totalDistance),
-                          const SizedBox(height: 10),
-                          buildplaypause(),
-                        ])),
-                ],
+                        child: Column(
+                          children: [
+                            BarraProgres(
+                              userPoints: userPoints,
+                              onProgressChanged: updateProgress,
+                              levelPoints: levelPoints,
+                              nhoodName: nhoodName,
+                              levelNumber: levelNumber,
+                            ),
+                            buildplaypause(),
+                            if (appState.totalDistance != 0)
+                              LastTravel(km: appState.totalDistance),
+                          ],
+                        ),
+                      )
+                    else
+                      SizedBox(
+                          height: 300,
+                          width: 300,
+                          child: Column(children: [
+                            KmTravelled(km: appState.totalDistance),
+                            const SizedBox(height: 10),
+                            buildplaypause(),
+                          ])),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        leading: IconButton(
-            onPressed: viewHistory,
-            icon: const Icon(Icons.restore),
-            color: const Color.fromARGB(255, 1, 167, 164)),
-        actions: [
-          IconButton(
-            onPressed: () {
-              addPoints();
-            },
-            icon: const Icon(Icons.add),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-          IconButton(
-            onPressed: () {
-              removePoints();
-            },
-            icon: const Icon(Icons.remove),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          leading: IconButton(
+              onPressed: viewHistory,
+              icon: const Icon(Icons.restore),
+              color: const Color.fromARGB(255, 1, 167, 164)),
+          actions: isStaff
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      addPoints();
+                    },
+                    icon: const Icon(Icons.add),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      removePoints();
+                    },
+                    icon: const Icon(Icons.remove),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                ]
+              : [],
+        ),
+      );
+    }
   }
 
   // inicia el comptador de km i pasa al estat isPlaying true
@@ -220,6 +276,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     setState(() {
       appState.totalDistance = 0;
       appState.isPlaying = true;
+      appState.startedAt = DateTime.now();
     });
     _updateTimer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
       // Actualizar el widget KmTravelled con la distancia actualizada
@@ -248,8 +305,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              FormFinalPage(totalDistance: appState.totalDistance)),
+          builder: (context) => FormFinalPage(
+              totalDistance: appState.totalDistance,
+              startedAt: appState.startedAt!)),
       (route) => false,
     );
   }
@@ -296,20 +354,18 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   void addPoints() {
     setState(() {
-      punts += 10;
+      userPoints += 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
     setState(() {
-      punts -= 10;
+      userPoints -= 10;
     });
     updateProgress(
-        punts); // Llama a la función para actualizar la barra de progreso
-    print(punts);
+        userPoints); // Llama a la función para actualizar la barra de progreso
   }
 }
 
@@ -395,22 +451,24 @@ Future<bool> comprovarUbicacio() async {
 }
 
 class BarraProgres extends StatelessWidget {
-  final double punts;
-  final Function(double) onProgressChanged;
-  final double levelPoints;
-  final String level;
+  final int userPoints;
+  final Function(int) onProgressChanged;
+  final int levelPoints;
+  final String nhoodName;
+  final int levelNumber;
 
   const BarraProgres({
     super.key,
-    required this.punts,
+    required this.userPoints,
     required this.onProgressChanged,
     required this.levelPoints,
-    required this.level,
+    required this.nhoodName,
+    required this.levelNumber,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width *
           0.8, // Establecer el ancho del contenedor
       child: Column(
@@ -422,7 +480,7 @@ class BarraProgres extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  level,
+                  "Nivell $levelNumber - $nhoodName",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -431,11 +489,11 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
-              return Container(
+              return SizedBox(
                 height: 23,
                 //margin: const EdgeInsets.symmetric(horizontal: 100.0),
                 child: LinearProgressIndicator(
-                  value: punts / levelPoints,
+                  value: userPoints / levelPoints,
                   backgroundColor: const Color.fromARGB(255, 205, 197, 197),
                   borderRadius: BorderRadius.circular(10.0),
                   valueColor: const AlwaysStoppedAnimation<Color>(
@@ -453,7 +511,7 @@ class BarraProgres extends StatelessWidget {
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: ${(punts).toStringAsFixed(1)}/$levelPoints',
+                  'Punts: $userPoints/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/utils/app_state.dart';
 import 'package:provider/provider.dart';
 
 //singleton per trackejar els km recorreguts

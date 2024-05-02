@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:http/http.dart' as http;
+import 'package:greeny/API/requests.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 part 'locations.g.dart';
 
@@ -40,9 +39,8 @@ class Stations {
 @JsonSerializable()
 class PublicTransportStation {
   PublicTransportStation({
+    required this.id,
     required this.stops,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -51,19 +49,17 @@ class PublicTransportStation {
       _$PublicTransportStationFromJson(json);
   Map<String, dynamic> toJson() => _$PublicTransportStationToJson(this);
 
+  final int id;
   final List<Stop> stops;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
 class BusStation {
   BusStation({
+    required this.id,
     required this.lines,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -72,19 +68,17 @@ class BusStation {
       _$BusStationFromJson(json);
   Map<String, dynamic> toJson() => _$BusStationToJson(this);
 
+  final int id;
   final List<String> lines;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
 class BicingStation {
   BicingStation({
+    required this.id,
     required this.capacitat,
-    required this.name,
-    required this.rating,
     required this.latitude,
     required this.longitude,
   });
@@ -93,18 +87,16 @@ class BicingStation {
       _$BicingStationFromJson(json);
   Map<String, dynamic> toJson() => _$BicingStationToJson(this);
 
+  final int id;
   final int capacitat;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
 }
 
 @JsonSerializable()
 class ChargingStation {
   ChargingStation({
-    required this.name,
-    required this.rating,
+    required this.id,
     required this.latitude,
     required this.longitude,
     required this.acces,
@@ -121,10 +113,9 @@ class ChargingStation {
       _$ChargingStationFromJson(json);
   Map<String, dynamic> toJson() => _$ChargingStationToJson(this);
 
+  final int id;
   final double latitude;
   final double longitude;
-  final String name;
-  final double rating;
   final String acces;
   // ignore: non_constant_identifier_names
   final String charging_velocity;
@@ -166,11 +157,9 @@ class TransportType {
 }
 
 Future<Locations> getStations() async {
-  var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/get-stations');
-
   // Retrieve the locations  offices
   try {
-    final response = await http.get(backendURL);
+    final response = await httpGet('api/stations/');
     if (response.statusCode == 200) {
       return Locations.fromJson(
           json.decode(response.body) as Map<String, dynamic>);

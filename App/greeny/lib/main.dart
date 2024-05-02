@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:greeny/appState.dart';
+import 'package:greeny/utils/app_state.dart';
+import 'package:greeny/utils/loading_screen.dart';
+import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:greeny/API/requests.dart';
+
+final ValueNotifier<bool> startAnimationNotifier = ValueNotifier<bool>(false);
 
 class TranslatePreferences implements ITranslatePreferences {
   static const String _selectedLocaleKey = 'selected_locale';
@@ -53,7 +58,6 @@ class Greeny extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
-
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
       child: MaterialApp(
@@ -72,8 +76,42 @@ class Greeny extends StatelessWidget {
               seedColor: const Color.fromARGB(255, 1, 167, 164)),
           useMaterial3: true,
         ),
-        home: const LogInPage(),
+        home: FutureBuilder<Widget>(
+          future: mainScreenIfUser(),
+          builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const LoadingPage();
+            } else {
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return snapshot.data ?? Container();
+              }
+            }
+          },
+        ),
       ),
     );
+  }
+}
+
+Future<Widget> mainScreenIfUser() async {
+  await Future.delayed(const Duration(seconds: 1));
+  bool conn = await checkConnection();
+  while (!conn) {
+    await Future.delayed(
+        const Duration(seconds: 1)); // wait for 1 second before trying again
+    conn = await checkConnection();
+  }
+
+  startAnimationNotifier.value = true;
+
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  String token = await getToken();
+  if (token != '' && await checkTokenFirstTime(token)) {
+    return const MainPage();
+  } else {
+    return const LogInPage();
   }
 }
