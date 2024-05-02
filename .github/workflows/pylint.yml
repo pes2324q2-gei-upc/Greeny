@@ -1,32 +1,32 @@
 name: Pylint
 
 on:
-    push:
-    pull_request:
-       
+  push:
+  pull_request:
 
 jobs:
-    pylint:
-        runs-on: ubuntu-20.04
+  pylint:
+    runs-on: ubuntu-20.04
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Set up Python
-              uses: actions/setup-python@v2
-              with:
-                python-version: 3.x
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-            - name: Install dependencies
-              run: |
-                pip install pylint
-                pip install pylint-django
-                pip install -r ./Backend/requirements.txt
-    
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y libgdal-dev
+          pip install pylint
+          pip install pylint-django
+          pip install -r ./Backend/requirements.txt
 
-            - name: Run Pylint
-              run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
-            
-            - name: Run Pylint API
-              run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/api
+      - name: Run Pylint
+        run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
+
+      - name: Run Pylint API
+        run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/api
