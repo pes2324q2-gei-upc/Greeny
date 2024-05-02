@@ -6,8 +6,6 @@
 Backend/.env
 .vscode/
 
-Backend/api/migrations/
-
 App/greeny/pubspec.lock
 App/greeny/linux/flutter/generated_plugin_registrant.cc
 App/greeny/linux/flutter/generated_plugins.cmake
