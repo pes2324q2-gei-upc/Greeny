@@ -11,10 +11,20 @@ Aplicació de mobilitat sostenible
 - Tajahuerce Brulles, Arnau
 - Vega Centeno, Javier
 
----
+## Conception of the project
 
-## Backend
-### Posar en marxa:
+<p align="center">
+  <img src="https://github.com/pes2324q2-gei-upc/Greeny/blob/develop/App/greeny/assets/icons/appicon.png?raw=true" alt="Greeny Logo" width="200"/>
+</p>
+
+El nostre projecte consisteix en una aplicació mòbil que té com a idea principal un concepte innovador: un joc interactiu orientat en la sostenibilitat urbana, centrat en l'objectiu de descontaminar una ciutat. Mitjançant una aplicació mòbil, els usuaris tindran l'oportunitat de participar activament en aquest desafiament ambiental. A través de mecàniques de joc inspiradores i educatives, els jugadors seran responsables de prendre decisions sobre els seus desplaçaments diaris i, al mateix temps, contribuir a la reducció de la contaminació i al creixement de la sostenibilitat urbana.
+
+La proposta del nostre projecte ofereix una experiència lúdica única, on els usuaris no només reben informació sobre punts de recàrrega elèctrica, estacions de Bicing i parades de transport públic, sinó que també es converteixen en protagonistes de la transformació d'una ciutat contaminada en un entorn més saludable i sostenible. Amb una combinació de gamificació, geolocalització i interacció social, aspirem a crear una plataforma que no només entretingui, sinó que també eduqui i motivi els usuaris a adoptar hàbits de vida més respectuosos amb el medi ambient. Així, el nostre projecte no només és una aplicació mòbil, sinó una iniciativa per a la conscienciació i la millora de la sostenibilitat urbana.
+
+## Instruccions per executar el projecte
+
+### Backend
+#### Posar en marxa:
 
 1. Baixarse el repo
 
@@ -22,21 +32,21 @@ Aplicació de mobilitat sostenible
 
 3. Situarse a la carpeta backend
 
-### Run dels dockers corresponents
+#### Run dels dockers corresponents
 
 ```sh
 docker-compose build
 docker compose up
 ```
 
-### Per fer migracions
+#### Per fer migracions
 
 ```sh
 docker compose run backend python manage.py migrate
 ```
 
 
-### Per crear migracions
+#### Per crear migracions
 
 ```sh
 docker compose run backend python manage.py makemigrations
@@ -56,20 +66,19 @@ docker compose run backend python manage.py makemigrations
 >API_TOKEN_AJT=
 >```
 
----
-## Frontend
+### Frontend
 > **Macos:** Descarregar `cocoapod`
 
-### Preparació
+#### Preparació
 1. Instalar extensió flutter a vscode (potser també instalar flutter)
 2. Instalar emulador mobil (Xcode/Android Studio)
 
-### Run app
+#### Run app
 1. A baix a la dreta de vscode seleccionar un dispositiu per executar el front end
 2. Seleccionar l'arxiu `./App/greeny/lib/main.dart`
 3. Donar-li a `Start debugging`.
 
-### Instalar la app
+#### Instalar la app
 ```sh
 flutter run --release
 ```
