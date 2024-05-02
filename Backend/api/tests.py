@@ -382,3 +382,9 @@ class CityViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.level.points_user, 50)
         self.assertEqual(response.data['points_user'], data['points_user'])
+
+    def test_unauthorized_access(self):
+        unauthenticated_client = APIClient()
+        response = unauthenticated_client.get(reverse('city'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
