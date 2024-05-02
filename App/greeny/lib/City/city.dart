@@ -36,6 +36,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   bool first = true;
 
   String userName = '';
+  bool isStaff = false;
 
   ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
@@ -58,6 +59,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         nhoodName = data['neighborhood']['name'];
         nhoodPath = data['neighborhood']['path'];
         userName = data['user_name'];
+        isStaff = data['is_staff'];
       });
     });
   }
@@ -79,7 +81,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> newCityData = jsonDecode(response.body);
+      Map<String, dynamic> newCityData =
+          jsonDecode(utf8.decode(response.bodyBytes));
 
       setState(() {
         // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
@@ -244,22 +247,24 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               onPressed: viewHistory,
               icon: const Icon(Icons.restore),
               color: const Color.fromARGB(255, 1, 167, 164)),
-          actions: [
-            IconButton(
-              onPressed: () {
-                addPoints();
-              },
-              icon: const Icon(Icons.add),
-              color: const Color.fromARGB(255, 1, 167, 164),
-            ),
-            IconButton(
-              onPressed: () {
-                removePoints();
-              },
-              icon: const Icon(Icons.remove),
-              color: const Color.fromARGB(255, 1, 167, 164),
-            ),
-          ],
+          actions: isStaff
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      addPoints();
+                    },
+                    icon: const Icon(Icons.add),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      removePoints();
+                    },
+                    icon: const Icon(Icons.remove),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                ]
+              : [],
         ),
       );
     }

@@ -148,14 +148,18 @@ class NeighborhoodSerializer(serializers.ModelSerializer):
 class LevelSerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
     user_name = serializers.SerializerMethodField()  # new field
+    is_staff = serializers.SerializerMethodField()  # new field
 
     def get_user_name(self, obj):
         return obj.user.first_name
+    
+    def get_is_staff(self, obj):
+        return obj.user.is_staff
 
     class Meta:
         model = Level
         fields = ['number', 'completed', 'current', 'points_user',
-                  'points_total', 'neighborhood', 'user_name']
+                  'points_total', 'neighborhood', 'user_name', 'is_staff']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
