@@ -1,12 +1,11 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
-from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
-from .models import User, Neighborhood, Level
-from .serializers import UserSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from .models import User, Neighborhood, Level
+from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
@@ -17,12 +16,13 @@ class UsersView(ModelViewSet):
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
-        return super(UsersView, self).get_permissions()
+        return super().get_permissions()
 
     def init_neighborhoods(self):
         if Neighborhood.objects.exists():
             return
-        names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi', 'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
+        names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
+                 'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
         neighborhoods_data = [
             {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
         ]
@@ -57,10 +57,10 @@ class UsersView(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return User.objects.filter(id=user.id)
-    
-    def retrieve(self, request, pk=None):
+
+    def retrieve(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(username=pk)
+            user = User.objects.get(username=kwargs.get('pk'))
             serializer = self.get_serializer(user)
             return Response(serializer.data)
         except User.DoesNotExist:

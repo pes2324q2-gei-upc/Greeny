@@ -1,7 +1,3 @@
-# pylint: disable=no-member
-# Standard library imports
-import os
-
 # Third-party imports
 import requests
 from django.views import View
@@ -98,7 +94,7 @@ class FetchPublicTransportStations(View):
 
     def fetch_bicing(self):
         # Fetch Bicing
-        
+
         response = requests.get(url=settings.URL_BICING, headers=headers_AJT, timeout=5)
         response.raise_for_status()
         data = response.json().get("data").get("stations")
@@ -109,7 +105,7 @@ class FetchPublicTransportStations(View):
                 location = Point(float(stop.get("lon")), float(stop.get("lat"))),
                 capacitat = stop.get("capacity")
             )
-    
+
     def fetch_public_stations(self):
         response = requests.get(url=(settings.BASE_URL_AJT
                                     + settings.ID_ESTACIONS_TRANSPORT
@@ -221,7 +217,7 @@ class FetchPublicTransportStations(View):
                     Stop.objects.create(station=station, transport_type=trans_type, lines=[])
 
     def get(self, request):
-        
+
         self.fetch_public_stations()
         self.fetch_buses()
         self.fetch_bicing()
@@ -231,53 +227,61 @@ class FetchPublicTransportStations(View):
         return Response(data)
 
 class StationsView(APIView):
+    def get_station(self, pk, station_type):
+        try:
+            station = station_type.objects.get(pk=pk)
+            return station
+        except station_type.DoesNotExist:
+            return None
+
+    def get_all_stations(self):
+        data = {}
+
+        queryset_pt = PublicTransportStation.objects.all()
+        serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
+        data['publicTransportStations'] = serializer_pt.data
+
+        queryset_bus = BusStation.objects.all()
+        serializer_bus = BusStationSerializer(queryset_bus, many=True)
+        data['busStations'] = serializer_bus.data
+
+        queryset_bicing = BicingStation.objects.all()
+        serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
+        data['bicingStations'] = serializer_bicing.data
+
+        queryset_charging = ChargingStation.objects.all()
+        serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
+        data['chargingStations'] = serializer_charging.data
+
+        return data
+
     def get(self, request, pk=None):
         if pk:
-            try:
-                station = PublicTransportStation.objects.get(pk=pk)
+            station = self.get_station(pk, PublicTransportStation)
+            if station:
                 serializer = PublicTransportStationSerializer(station)
                 return Response(serializer.data)
-            except PublicTransportStation.DoesNotExist:
-                pass
-            try:
-                station = BusStation.objects.get(pk=pk)
+
+            station = self.get_station(pk, BusStation)
+            if station:
                 serializer = BusStationSerializer(station)
                 return Response(serializer.data)
-            except BusStation.DoesNotExist:
-                pass
-            try:
-                station = BicingStation.objects.get(pk=pk)
+
+            station = self.get_station(pk, BicingStation)
+            if station:
                 serializer = BicingStationSerializer(station)
                 return Response(serializer.data)
-            except BicingStation.DoesNotExist:
-                pass
-            try:
-                station = ChargingStation.objects.get(pk=pk)
+
+            station = self.get_station(pk, ChargingStation)
+            if station:
                 serializer = ChargingStationSerializer(station)
                 return Response(serializer.data)
-            except ChargingStation.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
 
+            r = Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            data = {}
-
-            queryset_pt = PublicTransportStation.objects.all()
-            serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
-            data['publicTransportStations'] = serializer_pt.data
-
-            queryset_bus = BusStation.objects.all()
-            serializer_bus = BusStationSerializer(queryset_bus, many=True)
-            data['busStations'] = serializer_bus.data
-
-            queryset_bicing = BicingStation.objects.all()
-            serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
-            data['bicingStations'] = serializer_bicing.data
-
-            queryset_charging = ChargingStation.objects.all()
-            serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
-            data['chargingStations'] = serializer_charging.data
-
-            return Response({'stations': data})
+            data = self.get_all_stations()
+            r = Response({'stations': data})
+        return r
 
     def post(self, request, pk=None):
         if pk:
@@ -295,7 +299,7 @@ class ThirdPartyChargingStationInfoView(APIView):
 
     permission_classes = [AllowAny]
 
-    def get(self, request, fmt=None):
+    def get(self, request):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request, *args, **kwargs):
@@ -307,7 +311,8 @@ class ThirdPartyChargingStationInfoView(APIView):
         if not e == 'true':
             try:
                 # Get the nearest station within a certain radius
-                charging_station = Station.objects.annotate(distance=Distance('location', user_location)).order_by('distance').first()
+                charging_station = Station.objects.annotate(
+                    distance=Distance('location', user_location)).order_by('distance').first()
 
                 if charging_station is None:
                     raise Station.DoesNotExist
@@ -320,8 +325,9 @@ class ThirdPartyChargingStationInfoView(APIView):
                 }}, status=status.HTTP_200_OK)
 
             except Station.DoesNotExist:
-                return Response({"error": "Charging station not found within the specified radius"}, status=status.HTTP_404_NOT_FOUND)
-        
+                return Response({"error": "Charging station not found within the specified radius"},
+                                status=status.HTTP_404_NOT_FOUND)
+
         else:
 
             try:
@@ -333,9 +339,10 @@ class ThirdPartyChargingStationInfoView(APIView):
                     "name" : charging_station.name,
                     "faved_by" : favs
                 }}, status=status.HTTP_200_OK)
-            
-            except:
-                return Response({"error": "Charging station not found in provided coordinates"}, status=status.HTTP_404_NOT_FOUND)
+
+            except ChargingStation.DoesNotExist:
+                return Response({"error": "Charging station not found in provided coordinates"},
+                                status=status.HTTP_404_NOT_FOUND)
 
 
     def put(self, request, *args, **kwargs):
