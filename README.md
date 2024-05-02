@@ -86,27 +86,27 @@ flutter run --release
 .
 ├── App
 │   └── greeny
-│       ├── README.md
 │       ├── analysis_options.yaml
 │       ├── android
-│       ├── assets
+│       ├── assets          #Directori d'assets de l'aplicació
 │       ├── build
 │       ├── greeny.iml
 │       ├── ios
-│       ├── lib
+│       ├── lib             #Directori que conté el codi principal de l'aplicació
 │       ├── linux
 │       ├── macos
 │       ├── pubspec.lock
-│       ├── pubspec.yaml
-│       ├── test
+│       ├── pubspec.yaml    #Arxiu que conte la llista de dependencies i altra informació 
+│       │                   rellevant per el gestor de paquets Dart (pub)
+│       ├── test            #Directori que conté els tests del Frontend
 │       ├── web
 │       └── windows
 ├── Backend
-│   ├── Dockerfile
-│   ├── api
-│   ├── docker-compose.yml
+│   ├── Dockerfile          #Arxiu amb instruccions per construir la imatge del Backend
+│   ├── api                 #Directori amb el codi de la API del Backend
+│   ├── docker-compose.yml  #Arxiu amb la configuració dels contenidors
 │   ├── greeny
 │   ├── manage.py
-│   └── requirements.txt
+│   └── requirements.txt    #Dependencies del Backend
 └── README.md
 ```
