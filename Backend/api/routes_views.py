@@ -38,7 +38,6 @@ class RoutesView(APIView):
             city_view = CityView()
             city_view.add_points(user, points)
 
-
         Route.objects.create(
             user=user,
             distance=total_distance,

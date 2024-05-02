@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friend_profile.dart';
+import 'package:greeny/utils/utils.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -32,7 +33,9 @@ class _FriendsPageState extends State<FriendsPage> {
         userUsername = userData[0]['username'];
       });
     } else {
-      showMessage("Error loading user info");
+      if (mounted) {
+        showMessage(context, translate("Error loading user info"));
+      }
     }
   }
 
@@ -58,7 +61,9 @@ class _FriendsPageState extends State<FriendsPage> {
       friends = friendsData.map((friend) => friend['username']).toList();
     } else {
       final body = jsonDecode(response.body);
-      showMessage(body['message']);
+      if (mounted) {
+        showMessage(context, translate(body['message']));
+      }
     }
 
     //Obtener solicitudes de amistad
@@ -78,7 +83,9 @@ class _FriendsPageState extends State<FriendsPage> {
           .toList();
     } else {
       final bodyReq = jsonDecode(responseRequests.body);
-      showMessage(bodyReq['message']);
+      if (mounted) {
+        showMessage(context, translate(bodyReq['message']));
+      }
     }
 
     // Combinar amigos y solicitudes de amistad
@@ -158,15 +165,15 @@ class _FriendsPageState extends State<FriendsPage> {
 
   void searchFriend(String username) async {
     if (username.isEmpty) {
-      showMessage(translate('Please enter a username'));
+      showMessage(context, translate('Please enter a username'));
       return;
     }
     if (username == userUsername) {
-      showMessage(translate('You cannot add yourself as a friend'));
+      showMessage(context, translate('You cannot add yourself as a friend'));
       return;
     }
     if (userUsername == '') {
-      showMessage(translate('Error, please try again'));
+      showMessage(context, translate('Error, please try again'));
       return;
     }
     Navigator.push(
@@ -264,13 +271,17 @@ class _FriendsPageState extends State<FriendsPage> {
     int id = findIdByUsername(friendUsername);
     final response = await sendAcceptFriendRequest(id);
     if (response.statusCode == 200) {
-      showMessage(translate('Friend Request Accepted'));
+      if (mounted) {
+        showMessage(context, translate('Friend Request Accepted'));
+      }
       // Recargar la pantalla
       setState(() {
         getFriends();
       });
     } else {
-      showMessage(translate('Error, please try again'));
+      if (mounted) {
+        showMessage(context, translate('Error, please try again'));
+      }
     }
   }
 
@@ -279,25 +290,16 @@ class _FriendsPageState extends State<FriendsPage> {
     final response = await sendRejectFriendRequest(id);
     if (response.statusCode == 200) {
       // Recargar la pantalla
-      showMessage(translate('Friend Request Rejected'));
+      if (mounted) {
+        showMessage(context, translate('Friend Request Rejected'));
+      }
       setState(() {
         getFriends();
       });
     } else {
-      showMessage(translate('Error, please try again'));
-    }
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
+      if (mounted) {
+        showMessage(context, translate('Error, please try again'));
+      }
     }
   }
 

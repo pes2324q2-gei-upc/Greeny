@@ -7,7 +7,8 @@ import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Profile/edit_profile.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/Registration/log_in.dart';
-import 'package:greeny/translate.dart' as t;
+import 'package:greeny/utils/translate.dart' as t;
+import 'package:greeny/utils/utils.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,7 +55,9 @@ class _ProfilePageState extends State<ProfilePage> {
         reviews = userData[0]['reviews_number'];
       });
     } else {
-      showMessage("Error loading user info");
+      if (mounted) {
+        showMessage(context, translate("Error loading user info"));
+      }
     }
   }
 
@@ -454,19 +457,6 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       MaterialPageRoute(builder: (context) => const EditProfilePage()),
     );
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 
   void share() {}

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:intl/intl.dart';
+import 'package:greeny/utils/utils.dart';
 
 class FriendProfilePage extends StatefulWidget {
   final String friendUsername;
@@ -54,14 +55,15 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           reviews = userData['reviews_number'];
           friendId = userData['id'];
         });
-      } else if (response.statusCode == 404) {
-        showMessage(translate("User not found"));
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
       } else {
-        showMessage(translate("Error loading user info"));
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
+        if (mounted) {
+          showMessage(
+              context,
+              translate(response.statusCode == 404
+                  ? "User not found"
+                  : "Error loading user info"));
+          Navigator.pop(context);
+        }
       }
     }
   }
@@ -76,7 +78,10 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
       final List<dynamic> friendsData = jsonDecode(response.body);
       userFriends = friendsData.map((friend) => friend['username']).toList();
     } else {
-      showMessage('Failed checking if user is friend');
+      // ignore: use_build_context_synchronously
+      if (mounted) {
+        showMessage(context, translate('Failed checking if user is friend'));
+      }
     }
     isFriend = userFriends.contains(widget.friendUsername);
   }
@@ -419,19 +424,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     }
   }
 
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
-  }
-
   void deleteFriend() async {
     showDialog(
       context: context,
@@ -453,13 +445,19 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                   final response = await httpDelete('/api/friends/$friendId/');
 
                   if (response.statusCode == 200) {
-                    showMessage(translate('Friend deleted'));
+                    if (mounted) {
+                      // ignore: use_build_context_synchronously
+                      showMessage(context, translate('Friend deleted'));
+                    }
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                     // ignore: use_build_context_synchronously
                     Navigator.pop(context);
                   } else {
-                    showMessage(translate('Error deleting friend'));
+                    if (mounted) {
+                      // ignore: use_build_context_synchronously
+                      showMessage(context, translate('Error deleting friend'));
+                    }
                   }
                 }
               },
@@ -477,13 +475,19 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           jsonEncode({'to_user': friendId}), 'application/json');
 
       if (response.statusCode == 200) {
-        showMessage(translate('Friend request sent'));
+        if (mounted) {
+          showMessage(context, translate('Friend request sent'));
+        }
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
-      } else if (response.statusCode == 409) {
-        showMessage(translate('Friend Request Already Sent'));
       } else {
-        showMessage(translate('Error sending friend request'));
+        if (mounted) {
+          showMessage(
+              context,
+              translate(response.statusCode == 409
+                  ? 'Friend Request Already Sent'
+                  : 'Error sending friend request'));
+        }
       }
     }
   }

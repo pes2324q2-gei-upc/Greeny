@@ -10,6 +10,7 @@ the data that will be stored.
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
+import logging
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
@@ -101,16 +102,11 @@ class Route(models.Model):
     car_consumed_co2 = models.FloatField(default=0.0)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField()
-    total_time = models.CharField(max_length=8, default='00:00:00')
+    total_time = models.DurationField()
 
     def save(self, *args, **kwargs):
         # Calculate the difference between ended_at and started_at
-        total_time = self.ended_at - self.started_at
-
-        # Convert totalTime to hours, minutes, and seconds
-        hours, remainder = divmod(total_time.total_seconds(), 3600)
-        minutes, seconds = divmod(remainder, 60)
-        self.total_time = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+        self.total_time = self.ended_at - self.started_at
 
         super().save(*args, **kwargs)
 

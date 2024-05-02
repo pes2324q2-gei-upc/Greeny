@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/main_page.dart';
 import 'log_in.dart';
-import '../translate.dart' as t;
+import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/utils/utils.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -199,21 +200,10 @@ class _SignInPageState extends State<SignInPage> {
           );
         }
       } else {
-        showMessage(translate(res));
+        if (mounted) {
+          showMessage(context, translate(res));
+        }
       }
-    }
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 5),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
     }
   }
 
