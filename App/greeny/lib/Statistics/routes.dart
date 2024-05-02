@@ -72,12 +72,29 @@ class _RoutesPageState extends State<RoutesPage> {
 
   Widget buildListItem(List<Map<String, dynamic>> reversedRoutes, int index) {
     Map<String, dynamic> route = reversedRoutes[index];
+
     String startedAtString = route['started_at'];
     DateTime startedAt = DateTime.parse(startedAtString).toLocal();
     String formattedDateTime =
         DateFormat('dd-MM-yyyy, kk:mm').format(startedAt);
-    String totalTime = route['total_time'];
-    //print(formattedDateTime);
+
+    String totalTimeString = route['total_time'];
+    List<String> parts = totalTimeString.split(':');
+    Duration totalTime = Duration(
+      hours: int.parse(parts[0]),
+      minutes: int.parse(parts[1]),
+      seconds: int.parse(parts[2].split('.')[0]),
+    );
+    String twoDigits(int n) {
+      if (n >= 10) return "$n";
+      return "0$n";
+    }
+
+    int hours = totalTime.inHours;
+    int minutes = totalTime.inMinutes.remainder(60);
+    int seconds = totalTime.inSeconds.remainder(60);
+    String formattedTime =
+        "${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -88,7 +105,7 @@ class _RoutesPageState extends State<RoutesPage> {
           color: Theme.of(context).colorScheme.inversePrimary,
           child: Column(
             children: [
-              buildHeader(formattedDateTime, totalTime),
+              buildHeader(formattedDateTime, formattedTime),
               buildInfoRow(
                   translate('Total distance: '), route['distance'], 'km'),
               buildInfoRow(
