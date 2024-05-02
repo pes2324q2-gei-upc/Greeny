@@ -42,3 +42,13 @@ services:
     command: daemon --docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  pylint:
+    profiles: ["pylint"]
+    build: .
+    command: sh -c 'pip install pylint && pip install pylint-django && pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations api'
+    volumes:
+      - .:/code
+    env_file:
+      - ./.env
+
