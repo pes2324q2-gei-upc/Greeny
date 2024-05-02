@@ -188,12 +188,13 @@ class _FriendsPageState extends State<FriendsPage> {
       onTap: () {
         // Navegar al perfil del amigo
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                FriendProfilePage(friendUsername: friendUsername),
-          ),
-        );
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  FriendProfilePage(friendUsername: friendUsername),
+            )).then((_) {
+          getFriends();
+        });
       },
       child: Card(
         color: const Color.fromARGB(255, 1, 167, 164),
