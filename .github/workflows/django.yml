@@ -20,7 +20,7 @@ jobs:
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
-          --health-timeout 5s
+          --health-timeout 60s
           --health-retries 5
         ports:
           - 5432:5432
@@ -30,6 +30,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Wait for PostgreSQL to start
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }}; do
+            echo "Waiting for PostgreSQL to start..."
+            sleep 2
+          done
 
       - name: Install System Dependencies
         run: |
@@ -45,7 +53,7 @@ jobs:
 
       - name: Install PostgreSQL PostGIS Extension
         run: |
-          psql -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+          psql -h localhost -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
       - name: Install Python Dependencies
         working-directory: Backend
