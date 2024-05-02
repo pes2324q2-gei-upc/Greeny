@@ -1,4 +1,5 @@
 {
     "user with this username already exists.": "User with this username already exists",
-    "user with this email already exists.": "User with this email already exists"
+    "user with this email already exists.": "User with this email already exists",
+    "co2_consumed_combustion_car": "of CO2 consumed if you had\ntravelled by combustion car"
 }

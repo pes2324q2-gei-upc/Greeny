@@ -4,6 +4,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/utils/utils.dart';
+import '../utils/info_dialog.dart';
 
 class RoutesPage extends StatefulWidget {
   const RoutesPage({super.key});
@@ -55,6 +56,12 @@ class _RoutesPageState extends State<RoutesPage> {
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         title: Text(translate('My Routes'),
             style: const TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          TextButton(
+            onPressed: () => showInformationDialog(context),
+            child: const Icon(Icons.info_outline_rounded, size: 35),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20),
