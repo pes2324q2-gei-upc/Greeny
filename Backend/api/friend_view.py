@@ -82,16 +82,20 @@ class FriendViewSet(viewsets.ViewSet):
         try:
             friend = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            r = Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+        if not user.friends.all():
+            return Response(
+                {'message': 'You have no friends to remove.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if friend in user.friends.all():
             user.friends.remove(friend)
             friend.friends.remove(user)
             user.save()
             friend.save()
-            r =  Response({'message': 'Friend removed.'}, status=status.HTTP_200_OK)
-        else:
-            r = Response({'message': 'This user is not your friend.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Friend removed.'}, status=status.HTTP_200_OK)
 
-        return r
+        return Response({'message': 'This user is not your friend.'},
+                        status=status.HTTP_400_BAD_REQUEST
+        )
