@@ -20,7 +20,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from api.transports_views import FetchPublicTransportStations
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                     Stop, TransportType, Statistics, Route, Review)
+                     Stop, TransportType, Statistics, Route, Review, Neighborhood, Level)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 
@@ -307,3 +307,29 @@ class TestReviewsViews(TestCase):
         self.assertEqual(len(response.data), 1)
         self.station.refresh_from_db()
         self.assertEqual(self.station.rating, 5)
+
+class CityViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.neighborhood = Neighborhood.objects.create(name='Test Neighborhood', path='nhood_1.glb')
+        self.level = Level.objects.create(number=1, completed=False, current=True, points_user=0, points_total=100, user=self.user, neighborhood=self.neighborhood)
+        self.client.force_authenticate(user=self.user)
+
+    def test_get(self):
+        response = self.client.get('/api/city/')  
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['number'], self.level.number)
+        self.assertEqual(response.data[0]['completed'], self.level.completed)
+        self.assertEqual(response.data[0]['current'], self.level.current)
+        self.assertEqual(response.data[0]['points_user'], self.level.points_user)
+        self.assertEqual(response.data[0]['points_total'], self.level.points_total)
+
+    def test_put(self):
+        data = {'points_user': 50}
+        response = self.client.put('/api/city/', data, format='json')  
+        self.level.refresh_from_db()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.level.points_user, 50)
+        self.assertEqual(response.data['points_user'], data['points_user'])
