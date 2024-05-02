@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'sign_up.dart';
 import '../main_page.dart';
-import '../translate.dart' as t;
+import '../utils/translate.dart' as t;
 import '../API/user_auth.dart';
+import 'package:greeny/utils/utils.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -175,21 +176,10 @@ class _LogInPageState extends State<LogInPage> {
           );
         }
       } else {
-        showMessage('Could not log in. Please check your credentials');
+        if (mounted) {
+          showMessage(context, translate('Could not log in. Please check your credentials'));
+        }
       }
-    }
-  }
-
-  void showMessage(String m) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 5),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
     }
   }
 

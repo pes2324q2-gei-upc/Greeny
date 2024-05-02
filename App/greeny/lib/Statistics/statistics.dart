@@ -3,6 +3,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -54,7 +55,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         });
       }
     } else {
-      showMessage("Error loading statistics");
+      if (mounted) {
+        showMessage(context, translate("Error loading statistics"));
+      }
     }
   }
 
@@ -157,20 +160,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
       context,
       MaterialPageRoute(builder: (context) => const RoutesPage()),
     );
-  }
-
-  // Method to show a message using a SnackBar
-  void showMessage(String message) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(message)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-    }
   }
 }
 

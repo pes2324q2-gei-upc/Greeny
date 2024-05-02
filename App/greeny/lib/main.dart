@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:greeny/app_state.dart';
-import 'package:greeny/loading_screen.dart';
+import 'package:greeny/utils/app_state.dart';
+import 'package:greeny/utils/loading_screen.dart';
 import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
 import 'Registration/log_in.dart';

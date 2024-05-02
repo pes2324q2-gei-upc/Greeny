@@ -25,9 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-25u8vl1*fk=zt4ql@o-u&o(t9(9#_iz&i*pb4el5)ju(-sxamf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
+DEBUG = not PRODUCTION
 
-ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2','*']
+ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
+ALLOWED_HOSTS = [os.getenv('SERVER_NAME')]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:greeny/Map/add_review.dart';
+import 'package:greeny/utils/utils.dart';
 
 class StationPage extends StatefulWidget {
   const StationPage({super.key, required this.stationId, required this.type});
@@ -456,19 +457,8 @@ class _StationPageState extends State<StationPage> {
         return;
       }
     }
-    showMessage('Error loading station');
-  }
-
-  void showMessage(String m) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(translate(m)),
-          duration: const Duration(seconds: 10),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
+      showMessage(context, translate('Error loading station'));
     }
   }
 }
