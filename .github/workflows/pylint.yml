@@ -45,7 +45,7 @@ jobs:
           python -m pip install pylint-django
 
       - name: Run Pylint
-        run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
+        run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
 
       - name: Run Pylint API
-        run: pylint --load-plugins pylint_django --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/api
+        run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member --ignore=migrations Backend/api
