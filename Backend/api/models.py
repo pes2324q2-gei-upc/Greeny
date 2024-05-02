@@ -7,11 +7,9 @@ BicingStation, ChargingStation, User and Statistics.
 Each model corresponds to a table in the database and defines the fields and behaviors of 
 the data that will be stored.
 """
-from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
@@ -56,7 +54,8 @@ class ChargingStation(Station):
     connexion_type = models.CharField(max_length=100)
 
 class Statistics(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100, related_name='statistics')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, max_length = 100,
+                                related_name='statistics')
     kg_CO2_consumed = models.FloatField(default=0.0)
     kg_CO2_car_consumed = models.FloatField(default=0.0)
     km_Totals = models.FloatField(default=0.0)
@@ -111,7 +110,7 @@ class Route(models.Model):
         # Convert totalTime to hours, minutes, and seconds
         hours, remainder = divmod(total_time.total_seconds(), 3600)
         minutes, seconds = divmod(remainder, 60)
-        self.total_time = "{:02}:{:02}:{:02}".format(int(hours), int(minutes), int(seconds))
+        self.total_time = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
         super().save(*args, **kwargs)
 
@@ -123,8 +122,8 @@ class FavoriteStation(models.Model):
         unique_together = ('user', 'station', )
 
 class Neighborhood(models.Model):
-    name = models.CharField(max_length=50) 
-    path = models.CharField(max_length=100)  
+    name = models.CharField(max_length=50)
+    path = models.CharField(max_length=100)
 
 class Level(models.Model):
     number = models.IntegerField()
@@ -132,8 +131,5 @@ class Level(models.Model):
     current = models.BooleanField(default=False)
     points_user = models.IntegerField(default=0)
     points_total = models.IntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     neighborhood = models.ForeignKey(Neighborhood, on_delete=models.CASCADE, related_name='levels')
-    
-
-

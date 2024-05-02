@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
-                    BicingStation, Statistics, FriendRequest, Review, Route, Neighborhood, Level, FavoriteStation)
+                    BicingStation, Statistics, FriendRequest, Review,
+                     Route, Neighborhood, Level, FavoriteStation)
 
 class StationSerializer(serializers.ModelSerializer):
     latitude = serializers.SerializerMethodField()
@@ -48,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_friends_number(self, obj):
         return obj.friends.count()
-    
+
     def get_routes_number(self, obj):
         return obj.routes.count()
 
@@ -62,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         return user
-    
+
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret.pop('password', None)
@@ -70,8 +71,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'email', 'password', 'date_joined', 'favorite_stations', 'routes_number', 'reviews_number', 'friends_number', 'level']
-        extra_kwargs = {'password': {'write_only': True}} 
+        fields = ['id', 'username', 'first_name', 'email', 'password',
+                  'date_joined', 'favorite_stations', 'routes_number', 'reviews_number',
+                  'friends_number', 'level']
+        extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -151,7 +154,8 @@ class LevelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'current', 'points_user', 'points_total', 'neighborhood', 'user_name']
+        fields = ['number', 'completed', 'current', 'points_user',
+                  'points_total', 'neighborhood', 'user_name']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
