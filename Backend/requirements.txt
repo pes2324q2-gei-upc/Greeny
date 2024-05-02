@@ -6,3 +6,4 @@ django-extensions==3.2.3
 gunicorn==22.0.0
 djangorestframework_simplejwt==5.3.1
 GDAL==3.3.0
+whitenoise==6.6.0
