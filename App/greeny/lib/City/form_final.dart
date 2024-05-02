@@ -3,6 +3,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/main_page.dart';
 import 'dart:convert';
+import '../utils/info_dialog.dart';
 
 class FormFinalPage extends StatefulWidget {
   final double totalDistance;
@@ -52,7 +53,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            onPressed: _showInformationDialog,
+                            onPressed: () => showInformationDialog(context),
                             child: const Icon(Icons.info_outline_rounded,
                                 size: 35),
                           ),
@@ -85,7 +86,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
                                         Border.all(color: Colors.transparent),
                                   ),
                                   child: Icon(
-                                    _getTransportIcon(index),
+                                    getTransportIcon(index),
                                     size: 40,
                                   ),
                                 ),
@@ -117,25 +118,6 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
-  IconData _getTransportIcon(int index) {
-    switch (index) {
-      case 0:
-        return Icons.directions_walk;
-      case 1:
-        return Icons.directions_bike;
-      case 2:
-        return Icons.directions_bus;
-      case 3:
-        return Icons.train;
-      case 4:
-        return Icons.motorcycle;
-      case 5:
-        return Icons.electric_car;
-      default:
-        return Icons.directions_car;
-    }
-  }
-
   void _toggleTransport(int index) {
     setState(() {
       isSelected[index] = !isSelected[index];
@@ -163,59 +145,6 @@ class _FormFinalPageState extends State<FormFinalPage> {
     });
   }
 
-  void _showInformationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          child: ListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              const SizedBox(height: 20),
-              Center(
-                  child: Text(translate("Information"),
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold))),
-              const SizedBox(height: 20),
-              for (int i = 0; i < transportModes.length; i++)
-                _buildRow(translate(transportModes[i]), _getTransportIcon(i)),
-              TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(translate("Exit"))),
-              const SizedBox(height: 10),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildRow(String name, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 5),
-          Container(height: 2, color: const Color.fromARGB(255, 0, 0, 0)),
-          const SizedBox(height: 5),
-          Row(
-            children: <Widget>[
-              const SizedBox(width: 16),
-              Text(name),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                child: Icon(icon),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   void _showExitDialog() {
     showDialog(
       context: context,
@@ -239,6 +168,43 @@ class _FormFinalPageState extends State<FormFinalPage> {
         ],
       ),
     );
+  }
+
+  void _showSliderSumErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translate('Error')),
+          content: Text(
+            translate('The sum of the slider values must be 100%. '
+                'You also have the possibility of not answering the form.'),
+            textAlign: TextAlign.justify,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(translate('Ok')),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _sendData() async {
+    int sum = transportPercentages.values
+        .fold(0, (prev, curr) => prev + curr.round());
+
+    if (transportPercentages.isEmpty) {
+      _showExitDialog();
+    } else if (sum != 100) {
+      _showSliderSumErrorDialog();
+    } else {
+      _sendDataToServer();
+    }
   }
 
   void _sendDataToServer() async {
@@ -278,14 +244,6 @@ class _FormFinalPageState extends State<FormFinalPage> {
     );
   }
 
-  Future<void> _sendData() async {
-    if (transportPercentages.isEmpty) {
-      _showExitDialog();
-    } else {
-      _sendDataToServer();
-    }
-  }
-
   void _updateSliderValue(String mode, double value) {
     setState(() {
       double roundedValue = (value / 5).round() * 5.0;
@@ -300,29 +258,42 @@ class _FormFinalPageState extends State<FormFinalPage> {
   }
 
   List<Widget> _buildSliders() {
-    return transportPercentages.keys.map((mode) {
-      return Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(mode, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text('${transportPercentages[mode]!.round()}%'),
-              ],
+    return [
+      if (transportPercentages.isNotEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            translate(
+                'Indicate the percentage usage of each mode of transport'),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ...transportPercentages.keys.map((mode) {
+        return Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(translate(mode),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('${transportPercentages[mode]!.round()}%'),
+                ],
+              ),
             ),
-          ),
-          Slider(
-            value: transportPercentages[mode]!,
-            min: 0,
-            max: 100,
-            onChanged: (double value) {
-              _updateSliderValue(mode, value);
-            },
-          ),
-        ],
-      );
-    }).toList();
+            Slider(
+              value: transportPercentages[mode]!,
+              min: 0,
+              max: 100,
+              onChanged: (double value) {
+                _updateSliderValue(mode, value);
+              },
+            ),
+          ],
+        );
+      }),
+    ];
   }
 }

@@ -4,6 +4,7 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
 import 'package:greeny/utils/utils.dart';
+import '../utils/info_dialog.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
@@ -30,7 +31,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     getStats();
   }
 
-  // Method to fetch statistics data from the API
   Future<void> getStats() async {
     final response = await httpGet('/api/statistics/');
 
@@ -40,7 +40,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
       if (statsDataList.isNotEmpty) {
         Map<String, dynamic> statsData = statsDataList[0];
 
-        // Update state with fetched statistics data
         setState(() {
           co2Consumed = statsData['kg_CO2_consumed'].toDouble();
           carCO2Consumed = statsData['kg_CO2_car_consumed'].toDouble();
@@ -71,6 +70,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
           translate('Statistics'),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => showInformationDialog(context),
+            child: const Icon(Icons.info_outline_rounded, size: 35),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(30.0),
@@ -79,8 +84,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
             _buildInfoCard(translate('travelled'), kmTotal, 'km', Icons.route),
             _buildInfoCard(
                 translate('of CO2 consumed'), co2Consumed, 'kg', Icons.cloud),
-            _buildInfoCard(translate('of CO2 consumed by car'), carCO2Consumed,
-                'kg', Icons.directions_car),
+            _buildInfoCard((translate('co2_consumed_combustion_car')),
+                carCO2Consumed, 'kg', Icons.directions_car),
             const SizedBox(height: 20),
             _buildRoutesButton(),
             const SizedBox(height: 40),
@@ -118,6 +123,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         Text(
           translate(label),
           style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
       ],
