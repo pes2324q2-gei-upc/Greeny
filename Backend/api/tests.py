@@ -6,22 +6,20 @@ FetchPublicTransportStations methods.
 """
 # Standard library imports
 import json
-import os
-from unittest.mock import patch
 
 # Third-party imports
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
+from django.contrib.gis.geos import Point
 from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
-from django.contrib.gis.geos import Point
 
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from api.transports_views import FetchPublicTransportStations
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                     Stop, TransportType, Statistics, Route, Review, Neighborhood, Level)
+                        TransportType, Statistics, Route, Review, Neighborhood, Level)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
 
 
@@ -192,7 +190,8 @@ class FinalFormTransports(TestCase):
         self.assertAlmostEqual(calculate_co2_consumed({'Bus': 100}, 15), 0.08074 * 15)
         self.assertAlmostEqual(calculate_co2_consumed({'Car': 100}, 25), 0.143 * 25)
         self.assertAlmostEqual(calculate_co2_consumed({'Electric Car': 100}, 30), 0.070 * 30)
-        self.assertAlmostEqual(calculate_co2_consumed({'Metro': 50, 'Tram': 50}, 40), 0.05013 * 20 + 0.08012 * 20)
+        self.assertAlmostEqual(calculate_co2_consumed({'Metro': 50, 'Tram': 50}, 40),
+                               0.05013 * 20 + 0.08012 * 20)
 
     def test_calculate_car_co2_consumed(self):
         self.assertAlmostEqual(calculate_car_co2_consumed(20), 0.143 * 20)
@@ -228,7 +227,7 @@ class FriendRequestViewSetTest(TestCase):
         response = view(request, pk=self.friend_request.id)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['message'], 'Friend request accepted')
-    
+
     def test_deny_friend_request(self):
         data = {'accept': 'false'}
         request = self.factory.delete(f'/friend-requests/{self.friend_request.id}/', data=data)
@@ -375,7 +374,7 @@ class CityViewTest(TestCase):
 
     def test_put(self):
         data = {'points_user': 50}
-        response = self.client.put('/api/city/', data, format='json')  
+        response = self.client.put('/api/city/', data, format='json')
         self.level.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.level.points_user, 50)

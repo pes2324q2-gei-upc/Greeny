@@ -152,7 +152,7 @@ class LevelSerializer(serializers.ModelSerializer):
 
     def get_user_name(self, obj):
         return obj.user.first_name
-    
+
     def get_is_staff(self, obj):
         return obj.user.is_staff
 
