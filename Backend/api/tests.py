@@ -387,4 +387,3 @@ class CityViewTest(TestCase):
         unauthenticated_client = APIClient()
         response = unauthenticated_client.get(reverse('city'))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
