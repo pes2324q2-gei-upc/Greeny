@@ -310,12 +310,26 @@ class TestReviewsViews(TestCase):
         self.user = User.objects.create_user(username='testuser', password='12345')
         point = Point(74.0060, 40.7128)
         self.station = Station.objects.create(name='Test Station', location = point, rating=5.0)
-        self.review = Review.objects.create(author=self.user, station=self.station, body='Great station!', puntuation=5.0)
+        self.review = Review.objects.create(
+            author=self.user,
+            station=self.station,
+            body='Great station!',
+            puntuation=5.0
+        )
         self.station.refresh_from_db()
 
     def test_create_review(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(f'/api/stations/{self.station.id}/reviews/', {'author': self.user.id, 'station': self.station.id, 'body': 'Good station!', 'puntuation': 4}, format='json')
+        response = self.client.post(
+            f'/api/stations/{self.station.id}/reviews/',
+            {
+                'author': self.user.id,
+                'station': self.station.id,
+                'body': 'Good station!',
+                'puntuation': 4
+            },
+            format='json'
+        )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Review.objects.count(), 2)
         self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
@@ -334,12 +348,23 @@ class CityViewTest(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='12345')
-        self.neighborhood = Neighborhood.objects.create(name='Test Neighborhood', path='nhood_1.glb')
-        self.level = Level.objects.create(number=1, completed=False, current=True, points_user=0, points_total=100, user=self.user, neighborhood=self.neighborhood)
+        self.neighborhood = Neighborhood.objects.create(
+            name='Test Neighborhood',
+            path='nhood_1.glb'
+        )
+        self.level = Level.objects.create(
+            number=1,
+            completed=False,
+            current=True,
+            points_user=0,
+            points_total=100,
+            user=self.user,
+            neighborhood=self.neighborhood
+        )
         self.client.force_authenticate(user=self.user)
 
     def test_get(self):
-        response = self.client.get('/api/city/')  
+        response = self.client.get('/api/city/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['number'], self.level.number)
