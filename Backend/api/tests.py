@@ -363,18 +363,21 @@ class CityViewTest(TestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_get(self):
-        response = self.client.get('/api/city/')
+        response = self.client.get(reverse('city'))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['number'], self.level.number)
-        self.assertEqual(response.data[0]['completed'], self.level.completed)
-        self.assertEqual(response.data[0]['current'], self.level.current)
-        self.assertEqual(response.data[0]['points_user'], self.level.points_user)
-        self.assertEqual(response.data[0]['points_total'], self.level.points_total)
+        self.assertEqual(response.data['number'], self.level.number)
+        self.assertEqual(response.data['completed'], self.level.completed)
+        self.assertEqual(response.data['current'], self.level.current)
+        self.assertEqual(response.data['points_user'], self.level.points_user)
+        self.assertEqual(response.data['points_total'], self.level.points_total)
+        self.assertEqual(response.data['user_name'], self.user.first_name)
+        self.assertEqual(response.data['is_staff'], self.user.is_staff)
+        self.assertEqual(response.data['neighborhood']['name'], self.neighborhood.name)
+        self.assertEqual(response.data['neighborhood']['path'], self.neighborhood.path)
 
     def test_put(self):
         data = {'points_user': 50}
-        response = self.client.put('/api/city/', data, format='json')
+        response = self.client.put(reverse('city'), data, format='json')
         self.level.refresh_from_db()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(self.level.points_user, 50)
