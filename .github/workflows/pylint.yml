@@ -36,6 +36,10 @@ jobs:
           pip install -r requirements.txt
           pip install braintree mysqlclient apprise
 
+      - name: Install Pylint
+        run: |
+          pip install pylint
+
       - name: Run Pylint
         run: pylint --load-plugins pylint_django --django-settings-module=greeny.settings --disable=missing-class-docstring,missing-function-docstring,missing-module-docstring,too-many-ancestors,no-member Backend/greeny
 
