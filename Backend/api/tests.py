@@ -15,6 +15,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
+from django.contrib.gis.geos import Point
 
 # Local application/library specific imports
 from api.friend_view import FriendViewSet, FriendRequestViewSet
@@ -287,7 +288,8 @@ class TestReviewsViews(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = User.objects.create_user(username='testuser', password='12345')
-        self.station = Station.objects.create(name='Test Station', latitude=40.7128, longitude=74.0060, rating=5.0)
+        point = Point(74.0060, 40.7128)
+        self.station = Station.objects.create(name='Test Station', location = point, rating=5.0)
         self.review = Review.objects.create(author=self.user, station=self.station, body='Great station!', puntuation=5.0)
         self.station.refresh_from_db()
 
