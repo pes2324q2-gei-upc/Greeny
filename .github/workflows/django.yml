@@ -38,7 +38,7 @@ jobs:
 
       - name: Install GDAL Python Package
         run: |
-          pip install GDAL==3.3.0 --global-option=build_ext --global-option="-I/usr/include/gdal"
+          pip install --no-binary=gdal GDAL==3.3.0
 
       - name: Install Python Dependencies
         working-directory: Backend
