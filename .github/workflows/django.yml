@@ -34,7 +34,7 @@ jobs:
       - name: Wait for PostgreSQL to start
         run: |
           sudo apt-get update && sudo apt-get install -y postgresql-client
-          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -w; do
+          until pg_isready -h localhost -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }}; do
             echo "Waiting for PostgreSQL to start..."
             sleep 2
           done
@@ -53,7 +53,7 @@ jobs:
 
       - name: Install PostgreSQL PostGIS Extension
         run: |
-          psql -h localhost -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -w -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+          PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql -h localhost -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 
       - name: Install Python Dependencies
         working-directory: Backend
