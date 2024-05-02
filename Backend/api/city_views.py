@@ -32,7 +32,7 @@ class CityView(APIView):
         try:
             return Level.objects.get(user=user, current=True)
         except Level.DoesNotExist:
-            print("no ha encontrado el level")
+            print("Next level not found")
 
     def getNeighborhood(self, level):
         return Neighborhood.objects.get(id=level.neighborhood_id)
@@ -80,9 +80,8 @@ class CityView(APIView):
                 next_level = Level.objects.get(user=user, number=next_level_number)
                 next_level.current = True
                 next_level.save()
-                print("next level")
             except Level.DoesNotExist:
-                print("No se encontró el siguiente nivel")
+                print("Next level not found")
 
         return self.getCurrentLevel(user)
     
