@@ -43,6 +43,10 @@ jobs:
         run: |
           pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==3.3.0
 
+      - name: Install PostgreSQL PostGIS Extension
+        run: |
+          psql -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_NAME }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+
       - name: Install Python Dependencies
         working-directory: Backend
         run: |
