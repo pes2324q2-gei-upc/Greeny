@@ -71,9 +71,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
-          TextButton(
-            onPressed: () => showInformationDialog(context),
-            child: const Icon(Icons.info_outline_rounded, size: 35),
+          IconButton(
+            onPressed: () {
+              showInformationDialog(context);
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+            color: const Color.fromARGB(255, 1, 167, 164),
           ),
         ],
       ),
