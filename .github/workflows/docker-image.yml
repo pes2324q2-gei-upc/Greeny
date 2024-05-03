@@ -3,8 +3,12 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main", "develop" ]
+    paths:
+      - '**.py'
   pull_request:
     branches: [ "main", "develop" ]
+    paths:
+      - '**.py'
 
 jobs:
   publish-docker-image:

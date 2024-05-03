@@ -2,7 +2,11 @@ name: Pylint
 
 on:
   push:
+    paths:
+      - '**.py'
   pull_request:
+    paths:
+      - '**.py'
 
 jobs:
   pylint:
