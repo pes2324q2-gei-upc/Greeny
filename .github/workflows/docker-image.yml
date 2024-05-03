@@ -40,6 +40,15 @@ jobs:
         cd Backend
         python manage.py makemigrations
         ls api/migrations/
+
+    - name: Commit and push migrations
+      run: |
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'github-actions@github.com'
+        git add .
+        git commit -m "Add migrations"
+        git push
+      if: github.ref == 'refs/heads/main'
         
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v1
