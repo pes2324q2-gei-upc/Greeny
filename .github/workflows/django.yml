@@ -5,6 +5,7 @@ on:
     branches: ["main", "develop"]
     paths:
       - '**.py'
+      - '**.txt'
   pull_request:
     branches: ["main", "develop"]
     paths:

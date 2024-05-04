@@ -5,6 +5,9 @@ on:
     branches: [ "main", "develop" ]
     paths:
       - '**.py'
+      - '**.Dockerfile'
+      - 'docker-compose.yml'
+      - '**.txt'
   pull_request:
     branches: [ "main", "develop" ]
     paths:
