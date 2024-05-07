@@ -4,10 +4,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .models import User, Neighborhood, Level
-from .serializers import UserSerializer
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
+from .models import User, Neighborhood, Level
+from .serializers import UserSerializer
+
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
@@ -64,7 +65,8 @@ class UsersView(ModelViewSet):
         if current_password and new_password:
             # Check if the current password is correct
             if not check_password(current_password, user.password):
-                return Response({"error": "Current password is not correct"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Current password is not correct"},
+                                status=status.HTTP_400_BAD_REQUEST)
             # Hash the new password and update it
             user.password = make_password(new_password)
             user.save()
@@ -74,7 +76,7 @@ class UsersView(ModelViewSet):
         if getattr(user, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
-            user._prefetched_objects_cache = {}
+            user._prefetched_objects_cache = {} # pylint: disable=protected-access
 
         return Response(serializer.data)
 
