@@ -56,6 +56,11 @@ class UsersView(ModelViewSet):
 
     def patch(self, request):
         user = self.request.user
+
+        # Remove the 'email' field from the request data
+        data = request.data.copy()
+        data.pop('email', None)
+
         serializer = self.get_serializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
