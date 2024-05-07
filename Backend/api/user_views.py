@@ -4,8 +4,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
 from .models import User, Neighborhood, Level
 from .serializers import UserSerializer
+
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
@@ -50,6 +53,38 @@ class UsersView(ModelViewSet):
             user = User.objects.latest('id')
             self.init_levels(user)
         return response
+
+    def patch(self, request):
+        user = self.request.user
+
+        # Remove the 'email' field from the request data
+        data = request.data.copy()
+        data.pop('email', None)
+
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        # Check if the current password and new password are provided
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        if current_password and new_password:
+            # Check if the current password is correct
+            if not check_password(current_password, user.password):
+                return Response({"error": "Current password is not correct"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            # Hash the new password and update it
+            user.password = make_password(new_password)
+            user.save()
+
+        self.perform_update(serializer)
+
+        if getattr(user, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            user._prefetched_objects_cache = {} # pylint: disable=protected-access
+
+        return Response(serializer.data)
+
 
     def get_queryset(self):
         user = self.request.user

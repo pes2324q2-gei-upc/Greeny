@@ -116,5 +116,15 @@
     "Friend Request Already Sent": "Solicitud d'amistat ja enviada",
     "Friend Request Rejected": "Solicitud d'amistat rebutjada",
     "Error": "Error",
-    "The sum of the slider values must be 100%. You also have the possibility of not answering the form.": "La suma dels valors dels sliders ha de ser 100%. També tens la possibilitat de no contestar el formulari."
+    "The sum of the slider values must be 100%. You also have the possibility of not answering the form.": "La suma dels valors dels sliders ha de ser 100%. També tens la possibilitat de no contestar el formulari.",
+    "Profile updated": "Perfil actualitzat",
+    "Error updating profile": "Error actualitzant el perfil",
+    "Edit Profile": "Editar perfil",
+    "Name": "Nom",
+    "To change your password, fill in the following fields:": "Per canviar la contrasenya, omple els següents camps:",
+    "Current Password": "Contrasenya actual",
+    "New Password": "Nova contrasenya",
+    "Update Profile": "Actualitzar perfil",
+    "A user with that username already exists.": "Ja existeix un usuari amb aquest nom d'usuari.",
+    "Current password is not correct": "La contrasenya actual no és correcta"
 }

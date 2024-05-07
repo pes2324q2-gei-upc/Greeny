@@ -78,6 +78,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     final response = await httpPut(
       '/api/city/',
       jsonEncode({'points_user': points}),
+      'application/json'
     );
 
     if (response.statusCode == 200) {

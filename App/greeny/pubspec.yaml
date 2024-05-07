@@ -54,6 +54,8 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   flutter_rating_bar: ^4.0.1
   jwt_decoder: ^2.0.1
+  image_picker: ^1.1.1
+  http_parser: ^4.0.2
 
 
 dev_dependencies:
@@ -88,7 +90,6 @@ flutter:
   - assets/transports/
   - assets/locations/
   - .env
-  - assets/images/
   - assets/neighborhoods/
   #   - images/a_dot_ham.jpeg
 

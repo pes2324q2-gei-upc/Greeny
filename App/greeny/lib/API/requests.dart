@@ -3,6 +3,8 @@ import 'package:greeny/API/secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'package:http_parser/http_parser.dart';
 
 String backendURL = dotenv.env['BACKEND_URL']!;
 
@@ -69,13 +71,13 @@ httpPost(String url, String params, String contentType) async {
   return response;
 }
 
-httpPut(String url, String params) async {
+httpPut(String url, String params, String type) async {
   var token = await getToken();
   var uri = Uri.http(backendURL, url);
   var response = await http.put(
     uri,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': type,
       'Authorization': 'Bearer $token',
     },
     body: params,
@@ -83,13 +85,14 @@ httpPut(String url, String params) async {
   return response;
 }
 
-httpPatch(String url, String params) async {
+httpPatch(String url, String params, String type) async {
   var token = await getToken();
   var uri = Uri.http(backendURL, url);
   var response = await http.patch(
     uri,
     headers: {
       'Authorization': 'Bearer $token',
+      'Content-Type': type,
     },
     body: params,
   );
@@ -153,4 +156,48 @@ sendRejectFriendRequest(int id) async {
     }),
   );
   return response;
+}
+
+httpUpdateAccount({
+  String? firstName,
+  String? username,
+  String? currentPassword,
+  String? newPassword,
+  File? pickedImage,
+}) async {
+  var uri = Uri.http(backendURL, '/api/user/');
+  final request = http.MultipartRequest('PATCH', uri);
+  var token = await getToken();
+
+  request.headers['Authorization'] = 'Bearer $token';
+
+  if (firstName != null && firstName.isNotEmpty) {
+    request.fields['first_name'] = firstName;
+  }
+
+  if (username != null && username.isNotEmpty) {
+    request.fields['username'] = username;
+  }
+
+  if (currentPassword != null &&
+      newPassword != null &&
+      currentPassword.isNotEmpty &&
+      newPassword.isNotEmpty) {
+    request.fields['current_password'] = currentPassword;
+    request.fields['new_password'] = newPassword;
+  }
+
+  if (pickedImage != null) {
+    final bytes = pickedImage.readAsBytesSync();
+    final multipartFile = http.MultipartFile.fromBytes(
+      'image',
+      bytes,
+      filename: 'profile_pic.png',
+      contentType: MediaType('image', 'png'),
+    );
+    request.files.add(multipartFile);
+  }
+
+  final streamedResponse = await request.send();
+  return await http.Response.fromStream(streamedResponse);
 }

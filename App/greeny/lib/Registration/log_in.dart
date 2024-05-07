@@ -74,7 +74,7 @@ class _LogInPageState extends State<LogInPage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Username'),
                             ),
-                            validator: usernameValidator,
+                            validator: (value) => validator(value, 'username'),
                           ),
                           const SizedBox(
                             height: 20,
@@ -86,7 +86,7 @@ class _LogInPageState extends State<LogInPage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Password'),
                             ),
-                            validator: passwordValidator,
+                            validator: (value) => validator(value, 'password'),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -146,20 +146,6 @@ class _LogInPageState extends State<LogInPage> {
         ],
       ),
     );
-  }
-
-  String? usernameValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your username');
-    }
-    return null;
-  }
-
-  String? passwordValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your password');
-    }
-    return null;
   }
 
   Future<void> sendLogIn() async {

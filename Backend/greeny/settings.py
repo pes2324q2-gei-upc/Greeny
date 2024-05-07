@@ -163,3 +163,6 @@ BASE_URL_AJT = ("https://opendata-ajuntament.barcelona.cat/data/api/action/"
 ID_ESTACIONS_TRANSPORT = "e07dec0d-4aeb-40f3-b987-e1f35e088ce2"
 APP_ID = os.environ.get('APP_ID')
 API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads/')
+MEDIA_URL = '/media/'
