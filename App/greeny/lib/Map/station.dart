@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/Friends/friend_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:greeny/Map/add_review.dart';
 import 'package:greeny/utils/utils.dart';
@@ -250,8 +251,20 @@ class _StationPageState extends State<StationPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('@${review['author_username']}',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FriendProfilePage(
+                                    friendUsername: review['author_username']),
+                              ));
+                        },
+                        child: Text(
+                          '@${review['author_username']}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                       const Spacer(),
                       Text(review['puntuation'].toString(),
                           style: const TextStyle(fontWeight: FontWeight.bold)),
