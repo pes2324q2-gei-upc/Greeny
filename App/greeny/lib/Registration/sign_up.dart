@@ -84,6 +84,7 @@ class _SignInPageState extends State<SignInPage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Name'),
                             ),
+                            validator: (value) => validator(value, 'name'),
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
@@ -103,7 +104,7 @@ class _SignInPageState extends State<SignInPage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Username'),
                             ),
-                            validator: usernameValidator,
+                            validator: (value) => validator(value, 'username'),
                           ),
                           const SizedBox(
                             height: 20,
@@ -115,7 +116,7 @@ class _SignInPageState extends State<SignInPage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Password'),
                             ),
-                            validator: passwordValidator,
+                            validator: (value) => validator(value, 'password'),
                           ),
                           const SizedBox(
                             height: 20,
@@ -235,16 +236,9 @@ class _SignInPageState extends State<SignInPage> {
         : null;
   }
 
-  String? usernameValidator(String? value) {
+  String? validator(String? value, String fieldType) {
     if (value == null || value.isEmpty) {
-      return translate('Please enter your username');
-    }
-    return null;
-  }
-
-  String? passwordValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your password');
+      return translate('Please enter your $fieldType');
     }
     return null;
   }
