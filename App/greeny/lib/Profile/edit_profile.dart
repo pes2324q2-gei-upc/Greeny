@@ -61,7 +61,75 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         key: updateProfileForm,
                         child: Column(
                           children: [
-                            Container(
+                            Stack(
+                              children: [
+                                const SizedBox(
+                                  height:
+                                      20, // Espacio entre la imagen y la tarjeta
+                                ),
+                                Container(
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape
+                                        .circle, // Establece la forma como un círculo
+                                    border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 1, 167, 164), // Color del borde
+                                      width: 5, // Ancho del borde
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(
+                                            0.5), // Color de la sombra
+                                        spreadRadius:
+                                            3, // Extensión de la sombra
+                                        blurRadius:
+                                            3, // Desenfoque de la sombra
+                                        offset: const Offset(0,
+                                            2), // Desplazamiento de la sombra
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        60), // Radio de borde igual a la mitad del ancho/alto
+                                    child: _pickedImage != null
+                                        ? Image.file(
+                                            _pickedImage!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.network(
+                                            imagePath,
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 35,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        color: const Color.fromARGB(
+                                            255, 1, 167, 164)),
+                                    child: IconButton(
+                                      onPressed: pickImage,
+                                      icon: const Icon(
+                                        Icons.add_a_photo,
+                                        color: Colors.white,
+                                        size: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            /*Container(
                               width: 120,
                               height: 120,
                               decoration: BoxDecoration(
@@ -105,7 +173,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ),
                                 ),
                               ),
-                            ),
+                            ),*/
                             const SizedBox(height: 30),
                             TextFormField(
                               obscureText: false,
