@@ -117,5 +117,15 @@
     "Friend Request Already Sent": "Solicitud  de amistad ya enviada",
     "Friend Request Rejected": "Solicitud de amistad rechazada",
     "Error": "Error",
-    "The sum of the slider values must be 100%. You also have the possibility of not answering the form.": "La suma de los valores del deslizador debe ser del 100%. También tienes la posibilidad de no responder el formulario."
+    "The sum of the slider values must be 100%. You also have the possibility of not answering the form.": "La suma de los valores del deslizador debe ser del 100%. También tienes la posibilidad de no responder el formulario.",
+    "Profile updated": "Perfil actualizado",
+    "Error updating profile": "Error actualizando el perfil",
+    "Edit Profile": "Editar Perfil",
+    "Name": "Nombre",
+    "To change your password, fill in the following fields:": "Para cambiar tu contraseña, rellena los siguientes campos:",
+    "Current Password": "Contraseña actual",
+    "New Password": "Nueva contraseña",
+    "Update Profile": "Actualizar Perfil",
+    "A user with that username already exists.": "Ya existe un usuario con este nombre de usuario.",
+    "Current password is not correct": "La contraseña actual no es correcta"
 }

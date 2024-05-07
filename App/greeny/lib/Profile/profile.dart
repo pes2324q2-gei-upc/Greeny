@@ -455,10 +455,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void showEdit() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const EditProfilePage()),
-    );
+    Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const EditProfilePage()))
+        .then((_) {
+      getInfoUser();
+    });
   }
 
   void share() {}

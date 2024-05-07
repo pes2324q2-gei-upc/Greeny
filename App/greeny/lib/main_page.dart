@@ -29,7 +29,7 @@ class _MainPageState extends State<MainPage> {
     getFriends();
     super.initState();
     _timer =
-        Timer.periodic(const Duration(seconds: 5), (timer) => getFriends());
+        Timer.periodic(const Duration(seconds: 10), (timer) => getFriends());
   }
 
   @override

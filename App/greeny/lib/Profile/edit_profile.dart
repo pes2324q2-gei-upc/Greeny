@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/user_auth.dart';
@@ -5,6 +7,7 @@ import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/utils/utils.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -14,10 +17,10 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  String userName = '';
-  String userUsername = '';
-  String dateJoined = '';
   String imagePath = '';
+  String oldName = '';
+  String oldUsername = '';
+  File? _pickedImage;
 
   final updateProfileForm = GlobalKey<FormState>();
 
@@ -25,125 +28,170 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final passwordConfirmController = TextEditingController();
-  final nameContoller = TextEditingController();
+  final nameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      appBar: AppBar(
+    if (imagePath == '') {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: Text(translate('Editar Perfil'),
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      body: CustomScrollView(
-        scrollDirection: Axis.vertical,
-        slivers: [
-          SliverFillRemaining(
-              hasScrollBody: false,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(40, 50, 40, 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Form(
-                      key: updateProfileForm,
-                      child: Column(
-                        children: [
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  translate('Edit Profile'),
-                                  style: Theme.of(context).textTheme.titleLarge,
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          title: Text(translate('Edit Profile'),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        body: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          slivers: [
+            SliverFillRemaining(
+                hasScrollBody: false,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Form(
+                        key: updateProfileForm,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color.fromARGB(255, 1, 167, 164),
+                                  width: 5,
                                 ),
-                              ]),
-                          SizedBox(
-                            height: MediaQuery.of(context)
-                                    .devicePixelRatio
-                                    .toInt() *
-                                13,
-                          ),
-                          TextFormField(
-                            obscureText: false,
-                            controller: nameContoller,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translate('Name'),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 3,
+                                    blurRadius: 3,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                clipBehavior: Clip.hardEdge,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: const CircleBorder(),
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  onPressed: pickImage,
+                                  child: _pickedImage != null
+                                      ? Image.file(
+                                          _pickedImage!,
+                                          width: 120.0,
+                                          height: 120.0,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.network(
+                                          imagePath,
+                                          width: 120.0,
+                                          height: 120.0,
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
+                              ),
                             ),
-                            validator: (value) => validator(value, 'name'),
-                            initialValue: userName,
-                          ),
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            obscureText: false,
-                            controller: usernameController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translate('Username'),
+                            const SizedBox(height: 30),
+                            TextFormField(
+                              obscureText: false,
+                              controller: nameController,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translate('Name'),
+                              ),
+                              validator: (value) => validator(value, 'name'),
                             ),
-                            validator: (value) => validator(value, 'username'),
-                            initialValue: userUsername,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            obscureText: true,
-                            controller: currentPasswordController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translate('Current Password'),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              obscureText: false,
+                              controller: usernameController,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translate('Username'),
+                              ),
+                              validator: (value) =>
+                                  validator(value, 'username'),
                             ),
-                            validator: (value) => validator(value, 'password'),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            obscureText: true,
-                            controller: newPasswordController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translate('New Password'),
+                            const SizedBox(
+                              height: 30,
                             ),
-                            validator: (value) => validator(value, 'password'),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            obscureText: true,
-                            controller: passwordConfirmController,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translate('Confirm Password'),
+                            Text(translate(
+                                'To change your password, fill in the following fields:')),
+                            const SizedBox(
+                              height: 20,
                             ),
-                            validator: passwordConfirmValidator,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          ElevatedButton(
-            onPressed: updateAccount,
-            child: Text(translate("Update Profile")),
-          ),
-          const SizedBox(
-                            height: 20,
-                          ),
-                          ElevatedButton(
-            onPressed: deleteAccount,
-            child: Text(translate("Delete Account")),
-          ),
-                        ],
+                            TextFormField(
+                              obscureText: true,
+                              controller: currentPasswordController,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translate('Current Password'),
+                              ),
+                              validator: passwordConfirmValidator,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              obscureText: true,
+                              controller: newPasswordController,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translate('New Password'),
+                              ),
+                              validator: passwordConfirmValidator,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            TextFormField(
+                              obscureText: true,
+                              controller: passwordConfirmController,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translate('Confirm Password'),
+                              ),
+                              validator: passwordConfirmValidator,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: updateAccount,
+                              child: Text(translate("Update Profile")),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: deleteAccount,
+                              child: Text(translate("Delete Account")),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
-        ],
-      ),
-    );
+                    ],
+                  ),
+                )),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -155,12 +203,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    nameContoller.dispose();
+    nameController.dispose();
     usernameController.dispose();
     newPasswordController.dispose();
     passwordConfirmController.dispose();
     currentPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _pickedImage = File(image.path);
+      });
+    } else {
+      if (mounted) showMessage(context, translate('No image selected.'));
+    }
   }
 
   Future<void> getInfoUser() async {
@@ -171,9 +232,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (response.statusCode == 200) {
       setState(() {
         userData = json.decode(response.body);
-        userName = userData[0]['first_name'];
-        userUsername = userData[0]['username'];
         imagePath = userData[0]['image'];
+        oldName = userData[0]['first_name'];
+        oldUsername = userData[0]['username'];
+        nameController.text = oldName;
+        usernameController.text = oldUsername;
       });
     } else {
       if (mounted) {
@@ -183,15 +246,64 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   String? passwordConfirmValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your password');
-    } else if (newPasswordController.text != passwordConfirmController.text) {
-      return translate('Passwords do not match');
+    bool isAnyFieldFilled = newPasswordController.text.isNotEmpty ||
+        passwordConfirmController.text.isNotEmpty ||
+        currentPasswordController.text.isNotEmpty;
+
+    if (isAnyFieldFilled) {
+      if (newPasswordController.text.isEmpty ||
+          passwordConfirmController.text.isEmpty ||
+          currentPasswordController.text.isEmpty) {
+        return translate('All password fields must be filled');
+      } else if (newPasswordController.text != passwordConfirmController.text) {
+        return translate('Passwords do not match');
+      }
     }
+
     return null;
   }
 
-  void updateAccount() async{}
+  void updateAccount() async {
+    if (updateProfileForm.currentState!.validate()) {
+      final response = await httpUpdateAccount(
+        firstName:
+            nameController.text.isNotEmpty && nameController.text != oldName
+                ? nameController.text
+                : null,
+        username: usernameController.text.isNotEmpty &&
+                usernameController.text != oldUsername
+            ? usernameController.text
+            : null,
+        currentPassword: currentPasswordController.text.isNotEmpty &&
+                newPasswordController.text.isNotEmpty
+            ? currentPasswordController.text
+            : null,
+        newPassword: currentPasswordController.text.isNotEmpty &&
+                newPasswordController.text.isNotEmpty
+            ? newPasswordController.text
+            : null,
+        pickedImage: _pickedImage,
+      );
+
+      if (response.statusCode == 200) {
+        if (mounted) {
+          showMessage(context, translate('Profile updated'));
+          Navigator.pop(context);
+        }
+      } else {
+        if (mounted) {
+          Map json = jsonDecode(response.body);
+          if (json.containsKey("username")) {
+            showMessage(context, translate(json["username"][0]));
+          } else if (json.containsKey("error")) {
+            showMessage(context, translate(json["error"]));
+          } else {
+            showMessage(context, translate('Error updating profile'));
+          }
+        }
+      }
+    }
+  }
 
   void deleteAccount() async {
     showDialog(
