@@ -5,6 +5,7 @@
 
 Backend/.env
 .vscode/
+Backend/api/migrations/*
 
 App/greeny/pubspec.lock
 App/greeny/linux/flutter/generated_plugin_registrant.cc
@@ -12,3 +13,6 @@ App/greeny/linux/flutter/generated_plugins.cmake
 App/greeny/macos/Flutter/GeneratedPluginRegistrant.swift
 App/greeny/windows/
 App/greeny/ios/Runner.xcodeproj/project.pbxproj
+
+Backend/uploads/imatges/*
+!Backend/uploads/imatges/Default.png

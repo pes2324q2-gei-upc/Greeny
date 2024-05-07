@@ -26,6 +26,7 @@ class PublicTransportStation(Station):
 
 class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
+    image = models.ImageField(upload_to='imatges/', default='imatges/Default.png')
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
