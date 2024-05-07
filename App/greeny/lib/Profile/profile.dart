@@ -25,6 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String userEmail = '';
   String userUsername = '';
   String dateJoined = '';
+  String imagePath = '';
   int level = 0;
   int friends = 0;
   int trips = 0;
@@ -53,6 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
         friends = userData[0]['friends_number'];
         trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
+        imagePath = userData[0]['image'];
       });
     } else {
       if (mounted) {
@@ -129,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(
                               60), // Radio de borde igual a la mitad del ancho/alto
-                          child: Image.asset(
-                            'assets/images/perfil.jpeg',
+                          child: Image.network(
+                            imagePath,
                             fit: BoxFit.cover,
                           ),
                         ),

@@ -88,7 +88,6 @@ flutter:
   - assets/transports/
   - assets/locations/
   - .env
-  - assets/images/
   - assets/neighborhoods/
   #   - images/a_dot_ham.jpeg
 

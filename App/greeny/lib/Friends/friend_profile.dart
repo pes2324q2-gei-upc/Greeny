@@ -21,6 +21,7 @@ class FriendProfilePage extends StatefulWidget {
 class _FriendProfilePageState extends State<FriendProfilePage> {
   String friendName = '';
   String dateJoined = '';
+  String imagePath = '';
   int level = 0;
   int friends = 0;
   int trips = 0;
@@ -54,6 +55,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           trips = userData['routes_number'];
           reviews = userData['reviews_number'];
           friendId = userData['id'];
+          imagePath = userData['image'];
         });
       } else {
         if (mounted) {
@@ -155,8 +157,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(
                               60), // Radio de borde igual a la mitad del ancho/alto
-                          child: Image.asset(
-                            'assets/images/blank-profile.jpg',
+                          child: Image.network(
+                            imagePath,
                             fit: BoxFit.cover,
                           ),
                         ),
