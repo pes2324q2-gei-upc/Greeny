@@ -3,6 +3,8 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/API/requests.dart';
+import 'dart:convert';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -16,6 +18,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String userUsername = '';
   String dateJoined = '';
   String imagePath = '';
+
+  final updateProfileForm = GlobalKey<FormState>();
 
   final usernameController = TextEditingController();
   final currentPasswordController = TextEditingController();
@@ -43,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Form(
-                      key: signUpForm,
+                      key: updateProfileForm,
                       child: Column(
                         children: [
                           Row(
@@ -67,8 +71,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Name'),
                             ),
-                            validator: nameValidator,
-                            initialValue = userName,
+                            validator: (value) => validator(value, 'name'),
+                            initialValue: userName,
                           ),
                           const SizedBox(height: 20),
                           TextFormField(
@@ -78,8 +82,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Username'),
                             ),
-                            validator: usernameValidator,
-                            initialValue = userName,
+                            validator: (value) => validator(value, 'username'),
+                            initialValue: userUsername,
                           ),
                           const SizedBox(
                             height: 20,
@@ -91,7 +95,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('Current Password'),
                             ),
-                            validator: passwordValidator,
+                            validator: (value) => validator(value, 'password'),
                           ),
                           const SizedBox(
                             height: 20,
@@ -103,7 +107,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               border: const OutlineInputBorder(),
                               labelText: translate('New Password'),
                             ),
-                            validator: passwordValidator,
+                            validator: (value) => validator(value, 'password'),
                           ),
                           const SizedBox(
                             height: 20,
@@ -148,6 +152,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    nameContoller.dispose();
+    usernameController.dispose();
+    newPasswordController.dispose();
+    passwordConfirmController.dispose();
+    currentPasswordController.dispose();
+    super.dispose();
+  }
+
   Future<void> getInfoUser() async {
     List<dynamic> userData = [];
 
@@ -167,23 +182,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  String? namealidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your name');
-    }
-    return null;
-  }
-
-  String? usernameValidator(String? value) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your username');
-    }
-    return null;
-  }
-
-  String? passwordValidator(String? value) {
+  String? passwordConfirmValidator(String? value) {
     if (value == null || value.isEmpty) {
       return translate('Please enter your password');
+    } else if (newPasswordController.text != passwordConfirmController.text) {
+      return translate('Passwords do not match');
     }
     return null;
   }

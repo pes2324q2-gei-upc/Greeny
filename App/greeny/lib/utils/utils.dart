@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 void showMessage(BuildContext context, String m) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -9,4 +10,11 @@ void showMessage(BuildContext context, String m) {
       backgroundColor: Theme.of(context).colorScheme.primary,
     ),
   );
+}
+
+String? validator(String? value, String fieldType) {
+    if (value == null || value.isEmpty) {
+      return translate('Please enter your $fieldType');
+    }
+    return null;
 }

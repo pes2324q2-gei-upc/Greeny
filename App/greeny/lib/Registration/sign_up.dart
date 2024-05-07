@@ -236,13 +236,6 @@ class _SignInPageState extends State<SignInPage> {
         : null;
   }
 
-  String? validator(String? value, String fieldType) {
-    if (value == null || value.isEmpty) {
-      return translate('Please enter your $fieldType');
-    }
-    return null;
-  }
-
   String? passwordConfirmValidator(String? value) {
     if (value == null || value.isEmpty) {
       return translate('Please enter your password');
