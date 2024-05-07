@@ -220,7 +220,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _pickedImage = File(image.path);
       });
     } else {
-      if (mounted) showMessage(context, translate('No image selected.'));
+      //if (mounted) showMessage(context, translate('No image selected.'));
     }
   }
 
