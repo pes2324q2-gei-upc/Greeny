@@ -216,8 +216,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: SizedBox(
+          title: Text(translate('Select an image')),
+          content: Container(
             width: double.maxFinite,
+            padding: const EdgeInsets.fromLTRB(5,10,5,10),
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 3,
