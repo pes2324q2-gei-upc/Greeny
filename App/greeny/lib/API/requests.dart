@@ -8,6 +8,10 @@ import 'package:http_parser/http_parser.dart';
 
 String backendURL = dotenv.env['BACKEND_URL']!;
 
+getBackendURL() {
+  return backendURL;
+}
+
 Future<String> getToken() async {
   String? access = await SecureStorage().readSecureData('access_token');
   if (access == null) return '';
@@ -164,6 +168,7 @@ httpUpdateAccount({
   String? currentPassword,
   String? newPassword,
   File? pickedImage,
+  String? defaultImage,
 }) async {
   var uri = Uri.http(backendURL, '/api/user/');
   final request = http.MultipartRequest('PATCH', uri);
@@ -196,6 +201,10 @@ httpUpdateAccount({
       contentType: MediaType('image', 'png'),
     );
     request.files.add(multipartFile);
+  }
+
+  if (defaultImage != null && defaultImage.isNotEmpty) {
+    request.fields['default_image'] = defaultImage;
   }
 
   final streamedResponse = await request.send();

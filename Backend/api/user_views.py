@@ -1,3 +1,5 @@
+import os
+from django.core.files.images import ImageFile
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -61,9 +63,6 @@ class UsersView(ModelViewSet):
         data = request.data.copy()
         data.pop('email', None)
 
-        serializer = self.get_serializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
         # Check if the current password and new password are provided
         current_password = request.data.get('current_password')
         new_password = request.data.get('new_password')
@@ -76,6 +75,14 @@ class UsersView(ModelViewSet):
             user.password = make_password(new_password)
             user.save()
 
+        # Check if a default image is provided
+        default_image = request.data.get('default_image')
+        if default_image:
+            default_image_path = os.path.join('uploads/imatges/', default_image)
+            user.image.save(default_image_path, ImageFile(open(default_image_path, 'rb')))
+
+        serializer = self.get_serializer(user, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
         if getattr(user, '_prefetched_objects_cache', None):
