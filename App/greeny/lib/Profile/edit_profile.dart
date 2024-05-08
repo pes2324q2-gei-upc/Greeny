@@ -21,6 +21,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String oldName = '';
   String oldUsername = '';
   File? _pickedImage;
+  String defaultImage = '';
 
   final updateProfileForm = GlobalKey<FormState>();
 
@@ -73,11 +74,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape
                                         .circle, // Establece la forma como un círculo
-                                    border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 1, 167, 164), // Color del borde
-                                      width: 5, // Ancho del borde
-                                    ),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.grey.withOpacity(
@@ -91,19 +87,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ),
                                     ],
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(
-                                        60), // Radio de borde igual a la mitad del ancho/alto
-                                    child: _pickedImage != null
-                                        ? Image.file(
-                                            _pickedImage!,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.network(
-                                            imagePath,
-                                            fit: BoxFit.cover,
-                                          ),
-                                  ),
+                                  child: 
+                                      CircleAvatar(
+                                          backgroundImage: imageProvider),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -117,7 +103,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         color: const Color.fromARGB(
                                             255, 1, 167, 164)),
                                     child: IconButton(
-                                      onPressed: pickImage,
+                                      onPressed: showImagePickerDialog,
                                       icon: const Icon(
                                         Icons.add_a_photo,
                                         color: Colors.white,
@@ -128,52 +114,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                               ],
                             ),
-
-                            /*Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color.fromARGB(255, 1, 167, 164),
-                                  width: 5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 3,
-                                    blurRadius: 3,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                clipBehavior: Clip.hardEdge,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: const CircleBorder(),
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  onPressed: pickImage,
-                                  child: _pickedImage != null
-                                      ? Image.file(
-                                          _pickedImage!,
-                                          width: 120.0,
-                                          height: 120.0,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.network(
-                                          imagePath,
-                                          width: 120.0,
-                                          height: 120.0,
-                                          fit: BoxFit.cover,
-                                        ),
-                                ),
-                              ),
-                            ),*/
                             const SizedBox(height: 30),
                             TextFormField(
                               obscureText: false,
@@ -262,6 +202,55 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  ImageProvider<Object> get imageProvider {
+    if (_pickedImage != null) {
+      return FileImage(_pickedImage!);
+    } else {
+      return NetworkImage(imagePath);
+    }
+  }
+
+  void showImagePickerDialog() {
+    backendURL = getBackendURL();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 3,
+              crossAxisSpacing: 20, // Add horizontal spacing
+              mainAxisSpacing: 20,
+              children: <Widget>[
+                for (int i = 1; i <= 5; i++)
+                  GestureDetector(
+                    onTap: () => setState(() {
+                      _pickedImage = null;
+                      defaultImage = 'Default$i.png';
+                      imagePath =
+                          'http://$backendURL/media/imatges/Default$i.png';
+                      Navigator.pop(context);
+                    }),
+                    child: Image.network(
+                        'http://$backendURL/media/imatges/Default$i.png'),
+                  ),
+                ElevatedButton(
+                  onPressed: pickImage,
+                  child: const Icon(
+                    Icons.add_a_photo,
+                    color: Color.fromARGB(255, 1, 167, 164),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     getInfoUser();
@@ -284,6 +273,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
+      if (mounted) Navigator.pop(context);
       setState(() {
         _pickedImage = File(image.path);
       });
@@ -351,6 +341,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ? newPasswordController.text
             : null,
         pickedImage: _pickedImage,
+        defaultImage: defaultImage,
       );
 
       if (response.statusCode == 200) {

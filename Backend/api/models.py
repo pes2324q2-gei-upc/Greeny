@@ -10,6 +10,7 @@ the data that will be stored.
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
+import random
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
@@ -24,9 +25,13 @@ class Station(models.Model):
 class PublicTransportStation(Station):
     pass
 
+def get_default_image():
+    image_number = random.randint(1, 5)
+    return f'imatges/Default{image_number}.png'
+
 class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
-    image = models.ImageField(upload_to='imatges/', default='imatges/Default.jpg')
+    image = models.ImageField(upload_to='imatges/', default=get_default_image)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
