@@ -15,4 +15,4 @@ App/greeny/windows/
 App/greeny/ios/Runner.xcodeproj/project.pbxproj
 
 Backend/uploads/imatges/*
-!Backend/uploads/imatges/Default.png
+!Backend/uploads/imatges/Default*
