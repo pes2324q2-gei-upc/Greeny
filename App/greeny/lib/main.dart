@@ -9,6 +9,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 final ValueNotifier<bool> startAnimationNotifier = ValueNotifier<bool>(false);
 

@@ -5,6 +5,7 @@ import '../main_page.dart';
 import '../utils/translate.dart' as t;
 import '../API/user_auth.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/Registration/google.dart' as google;
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -119,7 +120,7 @@ class _LogInPageState extends State<LogInPage> {
                           ),
                           iconSize: 30,
                           tooltip: translate('Sign in with Google'),
-                          onPressed: googleSignIn,
+                          onPressed: google.googleSign,
                         ),
                       ],
                     ),
@@ -168,8 +169,6 @@ class _LogInPageState extends State<LogInPage> {
       }
     }
   }
-
-  Future<void> googleSignIn() async {}
 
   Future<void> forgotPassword() async {}
 
