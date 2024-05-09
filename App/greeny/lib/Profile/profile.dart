@@ -166,6 +166,17 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Row(children: [
+                        const Icon(Icons.emoji_events_outlined,
+                            color: ProfilePage.titolColor),
+                        const SizedBox(width: 5),
+                        buildBadge(1),
+                      ])),
+                  const SizedBox(
                     height: 20,
                   ),
                   Container(
@@ -452,4 +463,28 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void share() {}
+
+  void clickBadge(String badge) {
+    showMessage(context, 'Badge: $badge');
+  }
+
+  Widget buildBadge(int badge) {
+    return GestureDetector(
+      onTap: () {
+        // Llama a la función que desees cuando se hace clic en la imagen
+        clickBadge("nombadge");
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(60),
+        child: SizedBox(
+          width: 50, // Ancho deseado
+          height: 50, // Alto deseado
+          child: Image.asset(
+            'assets/badges/nou-barris-bronze.png',
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
 }
