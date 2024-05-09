@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
+import 'package:greeny/Profile/badges.dart';
 import 'package:greeny/Profile/edit_profile.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/Registration/log_in.dart';
@@ -469,8 +470,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void share() {}
 
-  void clickBadge(String badge) {
-    showMessage(context, 'Badge: $badge');
+  void clickBadge(int level) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => BadgesPage(level: level)));
   }
 
   Widget buildBadges(int level) {
@@ -484,7 +486,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: GestureDetector(
             onTap: () {
               // Llama a la función que desees cuando se hace clic en la medalla
-              clickBadge("$i");
+              clickBadge(i);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
