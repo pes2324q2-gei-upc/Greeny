@@ -108,6 +108,7 @@ class _MapPageState extends State<MapPage> {
         icons,
         stations,
         visible,
+        fav,
         newposition.target,
         // ignore: use_build_context_synchronously
         context);
@@ -329,7 +330,7 @@ class _MapPageState extends State<MapPage> {
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: FloatingActionButton(
-                          onPressed: _ShowHideFav,
+                          onPressed: _showHideFav,
                           backgroundColor: Colors.white,
                           child: fav ? const Icon(Icons.favorite, color: Colors.pink) : 
                                        const Icon(Icons.favorite_border, color: Colors.pink),
@@ -402,10 +403,11 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  void _ShowHideFav() {
+  void _showHideFav() {
     setState(() {
       fav = !fav;
     });
+    _updateMarkers(camposition, false, true);
   }
 
   void showAlert(String message) {
