@@ -128,5 +128,6 @@
     "Update Profile": "Actualizar Perfil",
     "A user with that username already exists.": "Ya existe un usuario con este nombre de usuario.",
     "Current password is not correct": "La contraseña actual no es correcta",
-    "Select an image": "Selecciona una imagen"
+    "Select an image": "Selecciona una imagen",
+    "Could not log in. Please try it later": "No se pudo iniciar sesión. Por favor, inténtalo más tarde"
 }
