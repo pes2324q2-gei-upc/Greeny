@@ -1,14 +1,14 @@
 import os
 from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.hashers import make_password
 from .models import User, Neighborhood, Level
 from .serializers import UserSerializer
 
@@ -92,7 +92,8 @@ class UsersView(ModelViewSet):
         default_image = request.data.get('default_image')
         if default_image:
             default_image_path = os.path.join('uploads/imatges/', default_image)
-            user.image.save(default_image_path, ImageFile(open(default_image_path, 'rb')))
+            with open(default_image_path, 'rb') as f:
+                user.image.save(default_image_path, ImageFile(f))
 
         serializer = self.get_serializer(user, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
