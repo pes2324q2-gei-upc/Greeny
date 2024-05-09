@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
@@ -21,11 +22,10 @@ class UserAuth {
     }
   }
 
-  Future<bool> userGoogleAuth() async {
+  /*Future<bool> userGoogleAuth() async {
     final GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: <String>[
         'email',
-        'https://www.googleapis.com/auth/contacts.readonly',
       ],
     );
 
@@ -34,10 +34,24 @@ class UserAuth {
       if (result != null) {
         final GoogleSignInAuthentication googleKey =
             await result.authentication;
+        print('access');
+        print(googleKey.idToken);
         return await backendGoogleAuth(googleKey.idToken!);
       }
     } catch (err) {
+      print(err.toString());
       return false;
+    }
+    return false;
+  }*/
+
+  Future<bool> userGoogleAuth() async {
+    final googleAccount = await GoogleSignIn().signIn();
+
+    final googleAuth = await googleAccount?.authentication;
+
+    if (googleAuth != null && googleAuth.idToken != null) {
+      return await backendGoogleAuth(googleAuth.idToken!);
     }
     return false;
   }

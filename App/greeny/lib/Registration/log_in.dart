@@ -187,6 +187,9 @@ class _LogInPageState extends State<LogInPage> {
     } else {
       if (mounted) {
         showMessage(context, translate(m));
+        setState(() {
+          _loading = false;
+        });
       }
     }
   }
