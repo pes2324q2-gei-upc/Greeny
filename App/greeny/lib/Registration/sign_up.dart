@@ -5,7 +5,6 @@ import 'log_in.dart';
 import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/utils/utils.dart';
-import 'package:greeny/Registration/google.dart' as google;
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -158,7 +157,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           iconSize: 30,
                           tooltip: translate('Sign in with Google'),
-                          onPressed: google.googleSign,
+                          onPressed: googleLogIn,
                         ),
                       ],
                     ),
@@ -209,6 +208,10 @@ class _SignInPageState extends State<SignInPage> {
         }
       }
     }
+  }
+
+  void googleLogIn() {
+    UserAuth().userGoogleAuth();
   }
 
   Future<void> logInHere() async {

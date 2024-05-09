@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class UserAuth {
   Future userAuth(String username, String password) async {
@@ -13,8 +14,41 @@ class UserAuth {
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      await SecureStorage().writeSecureData('access_token', json['access']);
-      await SecureStorage().writeSecureData('refresh_token', json['refresh']);
+      await userSaveTokens(json['access'], json['refresh']);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future userGoogleAuth() async {
+    final GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: <String>[
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
+
+    var idToken = '';
+
+    _googleSignIn.signIn().then((result) {
+      result?.authentication.then((googleKey) {
+        idToken = googleKey.idToken;
+      }).catchError((err) {
+        return false;
+      });
+    }).catchError((err) {
+      return false;
+    });
+
+    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/oauth2/');
+    var response = await http.post(
+      backendURL,
+      body: {'token': idToken},
+    );
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      await userSaveTokens(json['access'], json['refresh']);
       return true;
     } else {
       return false;
@@ -46,6 +80,11 @@ class UserAuth {
       }
       return 'ko';
     }
+  }
+
+  Future userSaveTokens(String accessToken, String refreshToken) async {
+    await SecureStorage().writeSecureData('access_token', accessToken);
+    await SecureStorage().writeSecureData('refresh_token', refreshToken);
   }
 
   Future userLogout() async {

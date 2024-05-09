@@ -1,9 +1,9 @@
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-import jwt
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+import jwt
 from .models import User
 from .serializers import UserSerializer
 
@@ -41,5 +41,3 @@ class GoogleAuth(APIView):
         }
 
         return Response(token, status=status.HTTP_200_OK)
-        
-    
