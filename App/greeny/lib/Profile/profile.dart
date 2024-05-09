@@ -169,13 +169,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 5,
                   ),
                   Container(
-                      padding: EdgeInsets.only(left: 10),
-                      child: Row(children: [
+                    padding: EdgeInsets.only(left: 10),
+                    child: Row(
+                      children: [
                         const Icon(Icons.emoji_events_outlined,
                             color: ProfilePage.titolColor),
                         const SizedBox(width: 5),
-                        buildBadge(1),
-                      ])),
+                        Expanded(
+                          child: buildBadges(10),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -468,22 +473,37 @@ class _ProfilePageState extends State<ProfilePage> {
     showMessage(context, 'Badge: $badge');
   }
 
-  Widget buildBadge(int badge) {
-    return GestureDetector(
-      onTap: () {
-        // Llama a la función que desees cuando se hace clic en la imagen
-        clickBadge("nombadge");
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(60),
-        child: SizedBox(
-          width: 50, // Ancho deseado
-          height: 50, // Alto deseado
-          child: Image.asset(
-            'assets/badges/nou-barris-bronze.png',
-            fit: BoxFit.cover,
+  Widget buildBadges(int level) {
+    List<Widget> badges = []; // Lista para almacenar las medallas
+
+    // Bucle para generar medallas basadas en el nivel
+    for (int i = 0; i < level; i++) {
+      badges.add(
+        Positioned(
+          left: i * 25.0, // Espacio horizontal entre las medallas
+          child: GestureDetector(
+            onTap: () {
+              // Llama a la función que desees cuando se hace clic en la medalla
+              clickBadge("$i");
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: Image.asset(
+                'assets/badges/nou-barris-bronze.png', // Cambia la imagen según corresponda
+                width: 40, // Ancho deseado
+                height: 40, // Alto deseado
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ),
+      );
+    }
+
+    return SizedBox(
+      height: 40, // Establece la altura deseada
+      child: Stack(
+        children: badges,
       ),
     );
   }
