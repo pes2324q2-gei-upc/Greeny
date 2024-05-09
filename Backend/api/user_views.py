@@ -1,5 +1,6 @@
 import os
 from django.core.files.images import ImageFile
+from django.core.files.base import ContentFile
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -59,9 +60,21 @@ class UsersView(ModelViewSet):
     def patch(self, request):
         user = self.request.user
 
+        # Check if an image is provided
+        image = request.data.get('image')
+
         # Remove the 'email' field from the request data
         data = request.data.copy()
         data.pop('email', None)
+        data.pop('image', None)
+
+        if image:
+            # Create a new instance of the image file
+            image_copy = ContentFile(image.read())
+            # Reset the file pointer of the original image
+            image.seek(0)
+            # Save the copy of the image to the user's image field
+            user.image.save(image.name, image_copy)
 
         # Check if the current password and new password are provided
         current_password = request.data.get('current_password')
