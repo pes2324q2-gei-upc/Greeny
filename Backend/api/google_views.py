@@ -28,7 +28,7 @@ class GoogleAuth(APIView):
         username = email.split('@')[0]
 
         # Check if a user with this email exists
-        user = User.objects.filter(username=username).first()
+        user = User.objects.filter(email=email).first()
 
         if user is None:
             # If the user doesn't exist, create a new user
