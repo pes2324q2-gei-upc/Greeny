@@ -22,6 +22,8 @@ class _SignInPageState extends State<SignInPage> {
 
   final signUpForm = GlobalKey<FormState>();
 
+  bool _loading = false;
+
   ValueNotifier userCredential = ValueNotifier('');
 
   @override
@@ -51,7 +53,14 @@ class _SignInPageState extends State<SignInPage> {
           )
         ],
       ),
-      body: CustomScrollView(
+      body: _loading == false
+          ? buildSignInForm()
+          : const Center(child: CircularProgressIndicator()
+    ));
+  }
+
+  Widget buildSignInForm() {
+    return CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: [
           SliverFillRemaining(
@@ -182,8 +191,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               )),
         ],
-      ),
-    );
+      );
   }
 
   Future<void> sendSignUp() async {
@@ -192,6 +200,9 @@ class _SignInPageState extends State<SignInPage> {
       final password = passwordController.text;
       final email = emailController.text;
       final name = nameContoller.text;
+      setState(() {
+        _loading = true;
+      });
       String res =
           await UserAuth().userRegister(name, username, email, password);
       checkSuccess(res);
@@ -199,6 +210,9 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> googleLogIn() async {
+    setState(() {
+        _loading = true;
+      });
     bool ok = await UserAuth().userGoogleAuth();
     checkSuccess(ok ? 'ok' : 'Could not log in. Please try it later');
   }

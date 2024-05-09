@@ -21,26 +21,28 @@ class UserAuth {
     }
   }
 
-  Future userGoogleAuth() async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn(
+  Future<bool> userGoogleAuth() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: <String>[
         'email',
         'https://www.googleapis.com/auth/contacts.readonly',
       ],
     );
 
-    var idToken = '';
-
-    _googleSignIn.signIn().then((result) {
-      result?.authentication.then((googleKey) {
-        idToken = googleKey.idToken;
-      }).catchError((err) {
-        return false;
-      });
-    }).catchError((err) {
+    try {
+      final GoogleSignInAccount? result = await googleSignIn.signIn();
+      if (result != null) {
+        final GoogleSignInAuthentication googleKey =
+            await result.authentication;
+        return await backendGoogleAuth(googleKey.idToken!);
+      }
+    } catch (err) {
       return false;
-    });
+    }
+    return false;
+  }
 
+  Future<bool> backendGoogleAuth(String idToken) async {
     var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/oauth2/');
     var response = await http.post(
       backendURL,

@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from .models import User
 from .serializers import UserSerializer
+from .user_views import UsersView
 
 class GoogleAuth(APIView):
     serializer_class = UserSerializer
@@ -32,6 +33,9 @@ class GoogleAuth(APIView):
         if user is None:
             # If the user doesn't exist, create a new user
             user = User.objects.create(email=email, first_name=name, username=username)
+            view = UsersView()
+            view.init_neighborhoods()
+            view.init_levels(user)
 
         # Generate a JWT token for the user
         refresh = RefreshToken.for_user(user)
