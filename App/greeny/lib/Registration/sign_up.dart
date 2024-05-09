@@ -194,7 +194,17 @@ class _SignInPageState extends State<SignInPage> {
       final name = nameContoller.text;
       String res =
           await UserAuth().userRegister(name, username, email, password);
-      if (res == 'ok') {
+      checkSuccess(res);
+    }
+  }
+
+  Future<void> googleLogIn() async {
+    bool ok = await UserAuth().userGoogleAuth();
+    checkSuccess(ok ? 'ok' : 'Could not log in. Please try it later');
+  }
+
+  void checkSuccess(String res) {
+    if (res == 'ok') {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
@@ -207,11 +217,6 @@ class _SignInPageState extends State<SignInPage> {
           showMessage(context, translate(res));
         }
       }
-    }
-  }
-
-  void googleLogIn() {
-    UserAuth().userGoogleAuth();
   }
 
   Future<void> logInHere() async {

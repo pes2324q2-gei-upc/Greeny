@@ -148,8 +148,9 @@ class _LogInPageState extends State<LogInPage> {
     );
   }
 
-  void googleLogIn() {
-    UserAuth().userGoogleAuth();
+  Future<void> googleLogIn() async {
+    bool ok = await UserAuth().userGoogleAuth();
+    checkSuccess(ok, 'Could not log in. Please try it later');
   }
 
   Future<void> sendLogIn() async {
@@ -157,7 +158,12 @@ class _LogInPageState extends State<LogInPage> {
       final username = usernameController.text;
       final password = passwordController.text;
       bool ok = await UserAuth().userAuth(username, password);
-      if (ok) {
+      checkSuccess(ok, 'Could not log in. Please check your credentials');
+    }
+  }
+
+  void checkSuccess(bool ok, String m) {
+    if (ok) {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
@@ -167,10 +173,9 @@ class _LogInPageState extends State<LogInPage> {
         }
       } else {
         if (mounted) {
-          showMessage(context, translate('Could not log in. Please check your credentials'));
+          showMessage(context, translate(m));
         }
       }
-    }
   }
 
   Future<void> forgotPassword() async {}
