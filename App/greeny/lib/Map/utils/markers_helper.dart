@@ -89,8 +89,10 @@ BitmapDescriptor chooseIcon(station, icons) {
 }
 
 List<MapMarker> getMarkers(Map<String, bool> transports, icons, stations,
-    LatLngBounds bounds, LatLng? position, BuildContext context) {
+    LatLngBounds bounds, bool fav, LatLng? position, BuildContext context) {
   final List<MapMarker> markers = [];
+
+  print(fav);
 
   if (position == null) {
     return markers;
