@@ -14,7 +14,7 @@ class UserAuth {
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      await userSaveTokens(json['access'], json['refresh']);
+      await userSaveInfo(json['access'], json['refresh'], username);
       return true;
     } else {
       return false;
@@ -40,7 +40,7 @@ class UserAuth {
     );
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
-      await userSaveTokens(json['access'], json['refresh']);
+      await userSaveInfo(json['access'], json['refresh'], json['username']);
       return true;
     } else {
       return false;
@@ -74,14 +74,21 @@ class UserAuth {
     }
   }
 
-  Future userSaveTokens(String accessToken, String refreshToken) async {
+  Future getUserInfo(String key) {
+    return SecureStorage().readSecureData(key);
+  }
+
+  Future userSaveInfo(
+      String accessToken, String refreshToken, String username) async {
     await SecureStorage().writeSecureData('access_token', accessToken);
     await SecureStorage().writeSecureData('refresh_token', refreshToken);
+    await SecureStorage().writeSecureData('username', username);
   }
 
   Future userLogout() async {
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
+    await SecureStorage().deleteSecureData('username');
   }
 
   Future userDelete() async {
