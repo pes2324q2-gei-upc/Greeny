@@ -56,6 +56,10 @@ dependencies:
   jwt_decoder: ^2.0.1
   image_picker: ^1.1.1
   http_parser: ^4.0.2
+  google_sign_in: ^6.2.1
+  firebase_auth: ^4.19.5
+  firebase_core: ^2.31.0
+  firebase_ui_auth: ^1.14.0
 
 
 dev_dependencies:

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1083622676199",
+    "project_id": "greeny-89bd0",
+    "storage_bucket": "greeny-89bd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083622676199:android:0580b6367e043f74d9b442",
+        "android_client_info": {
+          "package_name": "com.example.greeny"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4EFivyPVuhpfgf8D5p5SHNRrOT8SU-B0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
