@@ -3,7 +3,6 @@ from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
@@ -15,7 +14,6 @@ from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
-    authentication_classes = [JWTAuthentication]
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -69,6 +67,10 @@ class UsersView(ModelViewSet):
         data.pop('image', None)
 
         if image:
+            # Delete the old image file
+            if user.image:
+                if os.path.isfile(user.image.path):
+                    os.remove(user.image.path)
             # Create a new instance of the image file
             image_copy = ContentFile(image.read())
             # Reset the file pointer of the original image
@@ -91,6 +93,10 @@ class UsersView(ModelViewSet):
         # Check if a default image is provided
         default_image = request.data.get('default_image')
         if default_image:
+            # Delete the old image file
+            if user.image:
+                if os.path.isfile(user.image.path):
+                    os.remove(user.image.path)
             default_image_path = os.path.join('uploads/imatges/', default_image)
             with open(default_image_path, 'rb') as f:
                 user.image.save(default_image_path, ImageFile(f))

@@ -21,29 +21,6 @@ class UserAuth {
     }
   }
 
-  /*Future<bool> userGoogleAuth() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: <String>[
-        'email',
-      ],
-    );
-
-    try {
-      final GoogleSignInAccount? result = await googleSignIn.signIn();
-      if (result != null) {
-        final GoogleSignInAuthentication googleKey =
-            await result.authentication;
-        print('access');
-        print(googleKey.idToken);
-        return await backendGoogleAuth(googleKey.idToken!);
-      }
-    } catch (err) {
-      print(err.toString());
-      return false;
-    }
-    return false;
-  }*/
-
   Future<bool> userGoogleAuth() async {
     final googleAccount = await GoogleSignIn().signIn();
 
