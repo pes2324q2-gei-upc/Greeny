@@ -30,7 +30,7 @@ class _MapPageState extends State<MapPage> {
   Map<String, bool> get transports =>
       Provider.of<AppState>(context, listen: false).transports;
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
-  bool fav = false;
+  bool get fav => Provider.of<AppState>(context, listen: false).fav;
   // ignore: prefer_typing_uninitialized_variables
   Map icons = {};
   // ignore: prefer_typing_uninitialized_variables
@@ -404,8 +404,9 @@ class _MapPageState extends State<MapPage> {
   }
 
   void _showHideFav() {
+    final appState = Provider.of<AppState>(context, listen: false);
     setState(() {
-      fav = !fav;
+      appState.setFav(!appState.fav);
     });
     _updateMarkers(camposition, false, true);
   }
