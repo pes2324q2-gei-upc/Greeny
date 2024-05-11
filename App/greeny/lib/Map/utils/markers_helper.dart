@@ -78,16 +78,12 @@ Future<Set<String>> getFavoriteStations() async {
     if (response.statusCode == 200) {
         userData = json.decode(response.body);
 
-        print(userData[0]['favorite_stations']);
-
         var favoriteStations = userData[0]['favorite_stations'];
 
         for (var station in favoriteStations) {
           var id = station['station']['id'].toString();
           fav_stations.add(id);
         }
-
-        print(fav_stations);
 
     }
 
@@ -119,10 +115,6 @@ Future<List<MapMarker>> getMarkers(Map<String, bool> transports, icons, stations
     LatLngBounds bounds, bool fav, LatLng? position, BuildContext context) async {
   final List<MapMarker> markers = [];
   final Set<String> favStations = await getFavoriteStations();
-
-  print(favStations);
-
-  print(fav);
 
   if (position == null) {
     return markers;
