@@ -102,7 +102,7 @@ class _MapPageState extends State<MapPage> {
 
     var visible = await mapController!.getVisibleRegion();
 
-    final List<MapMarker> markers = markersHelper.getMarkers(
+    final List<MapMarker> markers = await markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
         transports,
         icons,
