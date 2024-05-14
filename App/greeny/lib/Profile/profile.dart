@@ -177,7 +177,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: ProfilePage.titolColor),
                         const SizedBox(width: 5),
                         Expanded(
-                          child: buildBadges(10),
+                          child: buildBadges(level - 1),
                         ),
                       ],
                     ),
