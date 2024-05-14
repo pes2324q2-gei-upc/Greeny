@@ -491,7 +491,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
               child: Image.asset(
-                'assets/badges/nou-barris-bronze.png', // Cambia la imagen según corresponda
+                'assets/badges/${i}0.png', // Cambia la imagen según corresponda
                 width: 40, // Ancho deseado
                 height: 40, // Alto deseado
                 fit: BoxFit.cover,

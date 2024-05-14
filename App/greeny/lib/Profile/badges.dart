@@ -11,7 +11,13 @@ class BadgesPage extends StatefulWidget {
 }
 
 class _BadgesPageState extends State<BadgesPage> {
-  int level = 0;
+  late int level;
+
+  @override
+  void initState() {
+    super.initState();
+    level = widget.level; // Aquí es donde accedes al valor de level
+  }
 
   void incrementLevel() {
     setState(() {
@@ -45,7 +51,7 @@ class _BadgesPageState extends State<BadgesPage> {
           children: [
             const SizedBox(height: 100),
             Image.asset(
-              'assets/badges/nou-barris-bronze.png',
+              'assets/badges/${level}0.png',
               width: 300,
               height: 300,
               fit: BoxFit.cover,
