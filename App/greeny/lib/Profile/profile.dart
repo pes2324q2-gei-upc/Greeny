@@ -470,9 +470,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void share() {}
 
-  void clickBadge(int level) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => BadgesPage(level: level)));
+  void clickBadge(List<Widget> badges, int level, int maxLevel) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                BadgesPage(badges: badges, level: level, maxLevel: maxLevel)));
   }
 
   Widget buildBadges(int level) {
@@ -485,8 +488,7 @@ class _ProfilePageState extends State<ProfilePage> {
           left: i * 25.0, // Espacio horizontal entre las medallas
           child: GestureDetector(
             onTap: () {
-              // Llama a la función que desees cuando se hace clic en la medalla
-              clickBadge(i);
+              clickBadge(badges, i, level);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
