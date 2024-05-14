@@ -87,9 +87,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ),
                                     ],
                                   ),
-                                  child: 
-                                      CircleAvatar(
-                                          backgroundImage: imageProvider),
+                                  child: CircleAvatar(
+                                      backgroundImage: imageProvider),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -219,7 +218,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           title: Text(translate('Select an image')),
           content: Container(
             width: double.maxFinite,
-            padding: const EdgeInsets.fromLTRB(5,10,5,10),
+            padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 3,
@@ -291,7 +290,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (response.statusCode == 200) {
       setState(() {
-        userData = json.decode(response.body);
+        userData = jsonDecode(utf8.decode(response.bodyBytes));
         imagePath = userData[0]['image'];
         oldName = userData[0]['first_name'];
         oldUsername = userData[0]['username'];

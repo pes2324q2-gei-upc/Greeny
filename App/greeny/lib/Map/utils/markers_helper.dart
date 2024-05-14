@@ -70,24 +70,23 @@ Future<Uint8List> getBytesFromAsset(
 }
 
 Future<Set<String>> getFavoriteStations() async {
-    List<dynamic> userData = [];
-    Set<String> fav_stations = {};
+  List<dynamic> userData = [];
+  Set<String> favStations = {};
 
-    final response = await httpGet('/api/user/');
+  final response = await httpGet('/api/user/');
 
-    if (response.statusCode == 200) {
-        userData = json.decode(response.body);
+  if (response.statusCode == 200) {
+    userData = json.decode(response.body);
 
-        var favoriteStations = userData[0]['favorite_stations'];
+    var favoriteStations = userData[0]['favorite_stations'];
 
-        for (var station in favoriteStations) {
-          var id = station['station']['id'].toString();
-          fav_stations.add(id);
-        }
-
+    for (var station in favoriteStations) {
+      var id = station['station']['id'].toString();
+      favStations.add(id);
     }
+  }
 
-    return fav_stations;
+  return favStations;
 }
 
 double distanceBetweenTwoCoords(LatLng ll1, LatLng ll2) {
@@ -111,10 +110,16 @@ BitmapDescriptor chooseIcon(station, icons) {
   }
 }
 
-Future<List<MapMarker>> getMarkers(Map<String, bool> transports, icons, stations,
-    LatLngBounds bounds, bool fav, LatLng? position, BuildContext context) async {
+Future<List<MapMarker>> getMarkers(
+    Map<String, bool> transports,
+    icons,
+    stations,
+    LatLngBounds bounds,
+    bool fav,
+    LatLng? position,
+    BuildContext context,
+    Set<String> favStations) async {
   final List<MapMarker> markers = [];
-  final Set<String> favStations = await getFavoriteStations();
 
   if (position == null) {
     return markers;

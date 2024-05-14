@@ -82,6 +82,7 @@ class _MapPageState extends State<MapPage> {
   var t;
   CameraPosition camposition =
       const CameraPosition(target: LatLng(0, 0), zoom: 16);
+  Set<String> favStations = {};
 
   Future<void> _updateMarkers(
       CameraPosition newposition, bool moving, bool forceupdate) async {
@@ -111,7 +112,8 @@ class _MapPageState extends State<MapPage> {
         fav,
         newposition.target,
         // ignore: use_build_context_synchronously
-        context);
+        context,
+        favStations);
 
     _clusterManager = await MapHelper.initClusterManager(
       markers,
@@ -156,6 +158,7 @@ class _MapPageState extends State<MapPage> {
     stations = Provider.of<AppState>(context, listen: false).stations;
     if (stations.stations.publicTransportStations.isEmpty) {
       stations = await locations.getStations();
+      favStations = await markersHelper.getFavoriteStations();
       if (mounted) {
         Provider.of<AppState>(context, listen: false).setStations(stations);
       }
@@ -332,8 +335,10 @@ class _MapPageState extends State<MapPage> {
                         child: FloatingActionButton(
                           onPressed: _showHideFav,
                           backgroundColor: Colors.white,
-                          child: fav ? const Icon(Icons.favorite, color: Colors.pink) : 
-                                       const Icon(Icons.favorite_border, color: Colors.pink),
+                          child: fav
+                              ? const Icon(Icons.favorite, color: Colors.pink)
+                              : const Icon(Icons.favorite_border,
+                                  color: Colors.pink),
                         ),
                       ),
                     ],
@@ -403,7 +408,8 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  void _showHideFav() {
+  void _showHideFav() async {
+    favStations = await markersHelper.getFavoriteStations();
     final appState = Provider.of<AppState>(context, listen: false);
     setState(() {
       appState.setFav(!appState.fav);
