@@ -166,7 +166,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        exclude = ['id', 'station', 'author']
+        exclude = ['station', 'author']
 
     def get_author_username(self, obj):
         return obj.author.username

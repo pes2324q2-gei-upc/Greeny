@@ -1,8 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+
 from rest_framework import status
-from .models import Review, Station
+from .models import Review, Station, User
 from .serializers import ReviewSerializer
+from profanity_check import predict_prob
+from .utils import check_for_ban
 
 
 class ReviewsViews(ModelViewSet):
@@ -33,3 +37,23 @@ class ReviewsViews(ModelViewSet):
         station = Station.objects.get(id=station_id)
         reviews = Review.objects.filter(station=station).order_by('-creation_date')
         return reviews
+
+@api_view(['POST'])
+def profanity_filter(request, station_id, review_id):
+    review = Review.objects.get(id=review_id)
+    body = review.body
+    if predict_prob([body]) >= 0.75:
+        # Añadimos report al user
+        user = request.user
+        user.reports = user.reports + 1
+        user.save()
+
+        # Eliminamos la review
+        review.delete()
+
+        if check_for_ban(user):
+            # redirect to BAN Screen
+            return Response({'message': 'User has been banned'}, status=status.HTTP_423_LOCKED)
+
+        return Response({'message': 'Review has been deleted due to profanity'}, status=status.HTTP_200_OK)
+    return Response({'message': 'No profanity detected'})

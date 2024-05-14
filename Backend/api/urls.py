@@ -7,7 +7,7 @@ from rest_framework.routers import DefaultRouter
 # Local application/library specific imports
 from api.user_views import UsersView
 from api.statistics_views import StatisticsView
-from api.review_views import ReviewsViews
+from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
     FetchPublicTransportStations,
     StationsView,
@@ -38,4 +38,5 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
+    path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', profanity_filter, name='profanity-filter')
 ]
