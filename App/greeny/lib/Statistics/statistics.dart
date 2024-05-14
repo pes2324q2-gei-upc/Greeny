@@ -1,3 +1,6 @@
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
@@ -87,6 +90,15 @@ class _StatisticsPageState extends State<StatisticsPage> {
             _buildInfoCard(translate('travelled'), kmTotal, 'km', Icons.route),
             _buildInfoCard(
                 translate('of CO2 consumed'), co2Consumed, 'kg', Icons.cloud),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                __buildInfoCardVertical(
+                    'for 1 year to absorve your CO2', 2.5*co2Consumed, 'trees', Icons.nature_rounded),
+                __buildInfoCardVertical(
+                    'km_biked', kmBiked, 'km', Icons.tv_rounded),
+              ],
+            ),
             _buildInfoCard((translate('co2_consumed_combustion_car')),
                 carCO2Consumed, 'kg', Icons.directions_car),
             const SizedBox(height: 20),
@@ -107,6 +119,33 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   // Widget to display statistical information
   Widget _buildInfoCard(
+      String label, double value, String unit, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon),
+            const SizedBox(width: 10),
+            Text(
+              '${value.toStringAsFixed(2)} $unit',
+              style:
+                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Text(
+          translate(label),
+          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget __buildInfoCardVertical(
       String label, double value, String unit, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
