@@ -51,7 +51,6 @@ class UserAuth {
     var data = jsonEncode({
       'token': idToken,
     });
-    print(idToken);
     var response =
         await httpPostNoToken('api/oauth2/', data, 'application/json');
     if (response.statusCode == 200) {
