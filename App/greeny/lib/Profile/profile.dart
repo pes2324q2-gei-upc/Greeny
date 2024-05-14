@@ -31,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int friends = 0;
   int trips = 0;
   int reviews = 0;
+  int mastery = 1;
 
   @override
   void initState() {
@@ -177,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: ProfilePage.titolColor),
                         const SizedBox(width: 5),
                         Expanded(
-                          child: buildBadges(level - 1),
+                          child: buildBadges(level - 1, mastery),
                         ),
                       ],
                     ),
@@ -478,7 +479,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 BadgesPage(badges: badges, level: level, maxLevel: maxLevel)));
   }
 
-  Widget buildBadges(int level) {
+  Widget buildBadges(int level, int mastery) {
     List<Widget> badges = []; // Lista para almacenar las medallas
 
     // Bucle para generar medallas basadas en el nivel
@@ -493,7 +494,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
               child: Image.asset(
-                'assets/badges/${i}0.png', // Cambia la imagen según corresponda
+                'assets/badges/${i}${mastery}.png', // Cambia la imagen según corresponda
                 width: 40, // Ancho deseado
                 height: 40, // Alto deseado
                 fit: BoxFit.cover,
@@ -502,6 +503,29 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       );
+    }
+    if (mastery > 0) {
+      for (int i = level; i < 10; i++) {
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, i, level);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/${i}${mastery - 1}.png', // Cambia la imagen según corresponda
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
     }
 
     return SizedBox(
