@@ -26,7 +26,7 @@ class GoogleAuth(APIView):
 
         # Get the user's data from the token payload
         email = payload.get('email')
-        name = payload.get('given_name')
+        name = payload.get('name')
         username = email.split('@')[0]
         picture = payload.get('picture')
 

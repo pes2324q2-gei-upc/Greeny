@@ -75,6 +75,19 @@ httpPost(String url, String params, String contentType) async {
   return response;
 }
 
+httpPostNoToken(String url, String params, String contentType) async {
+  var uri = Uri.http(backendURL, url);
+  var response = await http.post(
+    uri,
+    headers: {
+      'Content-Type': contentType,
+    },
+    body: params,
+  );
+
+  return response;
+}
+
 httpPut(String url, String params, String type) async {
   var token = await getToken();
   var uri = Uri.http(backendURL, url);
