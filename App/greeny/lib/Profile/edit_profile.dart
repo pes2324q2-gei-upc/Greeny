@@ -22,6 +22,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String oldUsername = '';
   File? _pickedImage;
   String defaultImage = '';
+  bool isGoogle = false;
 
   final updateProfileForm = GlobalKey<FormState>();
 
@@ -113,7 +114,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 40),
                             TextFormField(
                               obscureText: false,
                               controller: nameController,
@@ -137,44 +138,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             const SizedBox(
                               height: 30,
                             ),
-                            Text(translate(
-                                'To change your password, fill in the following fields:')),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: currentPasswordController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('Current Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: newPasswordController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('New Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: passwordConfirmController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('Confirm Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
+                            renderPassword(),
                             const SizedBox(
                               height: 20,
                             ),
@@ -197,6 +161,55 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 )),
           ],
         ),
+      );
+    }
+  }
+
+  Widget renderPassword() {
+    if (isGoogle) {
+      return const SizedBox();
+    } else {
+      return Column(
+        children: [
+          Text(translate(
+              'To change your password, fill in the following fields:')),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: currentPasswordController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('Current Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: newPasswordController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('New Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: passwordConfirmController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('Confirm Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+        ],
       );
     }
   }
@@ -296,6 +309,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         oldUsername = userData[0]['username'];
         nameController.text = oldName;
         usernameController.text = oldUsername;
+        isGoogle = userData[0]['is_google'];
       });
     } else {
       if (mounted) {

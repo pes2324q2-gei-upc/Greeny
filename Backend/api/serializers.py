@@ -37,6 +37,10 @@ class UserSerializer(serializers.ModelSerializer):
     routes_number = serializers.SerializerMethodField()
     friends_number = serializers.SerializerMethodField()
     level = serializers.SerializerMethodField()
+    is_google = serializers.SerializerMethodField()
+
+    def get_is_google(self, obj):
+        return obj.password == ''
 
     def get_level(self, obj):
         try:
@@ -73,7 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'email', 'password',
                   'date_joined', 'favorite_stations', 'routes_number', 'reviews_number',
-                  'friends_number', 'level', 'image']
+                  'friends_number', 'level', 'image', 'is_google']
         extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
