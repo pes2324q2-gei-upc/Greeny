@@ -511,7 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
             left: i * 25.0, // Espacio horizontal entre las medallas
             child: GestureDetector(
               onTap: () {
-                clickBadge(badges, i, level);
+                clickBadge(badges, i, 9);
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(60),
