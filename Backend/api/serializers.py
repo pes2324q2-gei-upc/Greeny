@@ -161,6 +161,13 @@ class LevelSerializer(serializers.ModelSerializer):
         fields = ['number', 'completed', 'current', 'points_user',
                   'points_total', 'neighborhood', 'user_name', 'is_staff']
 
+class HistorySerializer(serializers.ModelSerializer):
+    neighborhood = NeighborhoodSerializer()
+
+    class Meta:
+        model = Level
+        fields = ['number', 'completed', 'neighborhood']
+
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
 

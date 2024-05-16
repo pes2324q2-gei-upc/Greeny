@@ -35,7 +35,7 @@ class UsersView(ModelViewSet):
 
     def init_levels(self, user):
         points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
-        for i in range(1, 9):
+        for i in range(1, 11):
             neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
             Level.objects.create(
                 number=i,

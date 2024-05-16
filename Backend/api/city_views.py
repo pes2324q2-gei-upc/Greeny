@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Neighborhood, Level
-from .serializers import LevelSerializer
+from .serializers import LevelSerializer, HistorySerializer
 
 class CityView(APIView):
 
@@ -20,6 +20,7 @@ class CityView(APIView):
         level = self.get_current_level(user)
         level_data = LevelSerializer(level).data
         return Response(level_data)
+
 
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
@@ -75,3 +76,11 @@ class CityView(APIView):
             r = Response({'error': 'no se proporcionaron nuevos puntos.'},
                             status=status.HTTP_400_BAD_REQUEST)
         return r
+
+class NeighborhoodsView(APIView):
+
+    def get(self, request):
+        #neighborhoods = Neighborhood.objects.all()
+        levels = Level.objects.filter(user=self.request.user).order_by('number')
+        serializer = HistorySerializer(levels, many=True)
+        return Response(serializer.data)
