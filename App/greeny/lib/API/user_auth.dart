@@ -97,6 +97,8 @@ class UserAuth {
   }
 
   Future userLogout() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
     await SecureStorage().deleteSecureData('username');
