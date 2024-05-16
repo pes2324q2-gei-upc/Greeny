@@ -6,7 +6,9 @@ from rest_framework import status
 from .models import Review, Station, User
 from .serializers import ReviewSerializer
 from profanity_check import predict_prob
-from .utils import check_for_ban
+from .utils import check_for_ban, translate
+from ftlangdetect import detect
+
 
 
 class ReviewsViews(ModelViewSet):
@@ -42,6 +44,12 @@ class ReviewsViews(ModelViewSet):
 def profanity_filter(request, station_id, review_id):
     review = Review.objects.get(id=review_id)
     body = review.body
+
+    lang = detect(text=body, low_memory=False)['lang']
+
+    if lang != 'en':
+        body = translate(body, lang)
+
     if predict_prob([body]) >= 0.75:
         # Añadimos report al user
         user = request.user
