@@ -34,31 +34,29 @@ class _FormFinalPageState extends State<FormFinalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.info_outline_rounded,
+              color: Color.fromARGB(255, 1, 167, 164),
+            ),
+            onPressed: () => showInformationDialog(context),
+          ),
+        ],
+      ),
       body: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: [
           SliverFillRemaining(
             hasScrollBody: false,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 40, 0, 40),
+              padding: const EdgeInsets.fromLTRB(10, 40, 10, 40),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     children: [
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () => showInformationDialog(context),
-                            child: const Icon(Icons.info_outline_rounded,
-                                size: 35),
-                          ),
-                        ],
-                      ),
                       Text(
                         translate("Which transports have \nyou used?"),
                         textAlign: TextAlign.center,

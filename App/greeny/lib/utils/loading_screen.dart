@@ -30,7 +30,7 @@ class _LoadingPageState extends State<LoadingPage>
       }
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 6), () {
     if (mounted) {
       showMessage(context, translate('Connection to the server is not working'));
     }

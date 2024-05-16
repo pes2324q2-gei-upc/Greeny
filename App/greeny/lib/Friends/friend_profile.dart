@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/API/user_auth.dart';
 
 class FriendProfilePage extends StatefulWidget {
   final String friendUsername;
@@ -28,6 +29,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int reviews = 0;
   int friendId = 0;
   bool isFriend = false;
+  String currentUsername = '';
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   //Obtener información del usuario a visitar
   Future<void> getInfoUser() async {
     Map<String, dynamic> userData = {};
+    currentUsername = await UserAuth().getUserInfo('username');
 
     final String endpoint = '/api/user/${widget.friendUsername}/';
     if (mounted) {
@@ -138,11 +141,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                         decoration: BoxDecoration(
                           shape: BoxShape
                               .circle, // Establece la forma como un círculo
-                          border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 1, 167, 164), // Color del borde
-                            width: 5, // Ancho del borde
-                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
@@ -154,14 +152,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                             ),
                           ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              60), // Radio de borde igual a la mitad del ancho/alto
-                          child: Image.network(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        child: CircleAvatar(
+                            backgroundImage: NetworkImage(imagePath)),
                       ),
                     ],
                   ),
@@ -403,20 +395,21 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  if (!isFriend) // Verifica si no es amigo
-                    ElevatedButton(
-                      onPressed: () {
-                        sendFriendRequest(friendId);
-                      },
-                      child: Text(translate('Send Friend Request')),
-                    )
-                  else // Si es amigo
-                    ElevatedButton(
-                      onPressed: () {
-                        deleteFriend();
-                      },
-                      child: Text(translate('Delete Friend')),
-                    ),
+                  if (currentUsername != widget.friendUsername)
+                    if (!isFriend) // Verifica si no es amigo
+                      ElevatedButton(
+                        onPressed: () {
+                          sendFriendRequest(friendId);
+                        },
+                        child: Text(translate('Send Friend Request')),
+                      )
+                    else // Si es amigo
+                      ElevatedButton(
+                        onPressed: () {
+                          deleteFriend();
+                        },
+                        child: Text(translate('Delete Friend')),
+                      ),
                 ],
               ),
             ),

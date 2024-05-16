@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response.statusCode == 200) {
       setState(() {
-        userData = json.decode(response.body);
+        userData = jsonDecode(utf8.decode(response.bodyBytes));
         userName = userData[0]['first_name'];
         userEmail = userData[0]['email'];
         userUsername = userData[0]['username'];
@@ -112,11 +112,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         decoration: BoxDecoration(
                           shape: BoxShape
                               .circle, // Establece la forma como un círculo
-                          border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 1, 167, 164), // Color del borde
-                            width: 5, // Ancho del borde
-                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
@@ -128,14 +123,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              60), // Radio de borde igual a la mitad del ancho/alto
-                          child: Image.network(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        child: CircleAvatar(
+                            backgroundImage: NetworkImage(imagePath)),
                       ),
                       Positioned(
                         bottom: 0,

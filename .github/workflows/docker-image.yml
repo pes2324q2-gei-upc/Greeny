@@ -3,11 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main", "develop" ]
-    paths:
-      - '**.py'
-      - '**.Dockerfile'
-      - 'docker-compose.yml'
-      - '**.txt'
 
 jobs:
   publish-docker-image:

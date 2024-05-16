@@ -126,5 +126,8 @@
     "New Password": "Nova contrasenya",
     "Update Profile": "Actualitzar perfil",
     "A user with that username already exists.": "Ja existeix un usuari amb aquest nom d'usuari.",
-    "Current password is not correct": "La contrasenya actual no és correcta"
+    "Current password is not correct": "La contrasenya actual no és correcta",
+    "Select an image": "Selecciona una imatge",
+    "Could not log in. Please try it later": "No s'ha pogut iniciar la sessió. Si us plau, intenta-ho més tard",
+    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport"
 }
