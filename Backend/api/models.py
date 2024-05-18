@@ -7,10 +7,10 @@ BicingStation, ChargingStation, User and Statistics.
 Each model corresponds to a table in the database and defines the fields and behaviors of 
 the data that will be stored.
 """
+import random
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
-import random
 
 class Station(models.Model):
     name = models.CharField(max_length=100)

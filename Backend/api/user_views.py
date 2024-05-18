@@ -1,21 +1,21 @@
 import os
-from django.core.files.images import ImageFile
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import AllowAny
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+import random
+import string
+from django.conf import settings
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
-from .models import User, Neighborhood, Level, VerificationCode
-from .serializers import UserSerializer
+from django.core.files.images import ImageFile
 from django.core.mail import send_mail
-from django.conf import settings
-import random, string
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .models import User, Neighborhood, Level, VerificationCode
+from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
