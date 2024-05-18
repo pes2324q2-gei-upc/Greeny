@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/API/user_auth.dart';
-import 'package:greeny/main_page.dart';
+import 'package:greeny/Registration/verification.dart';
 import 'log_in.dart';
 import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
@@ -190,14 +190,20 @@ class _SignInPageState extends State<SignInPage> {
       final password = passwordController.text;
       final email = emailController.text;
       final name = nameContoller.text;
+
       String res =
           await UserAuth().userRegister(name, username, email, password);
       if (res == 'ok') {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const MainPage()),
-            (Route<dynamic> route) => false,
+            MaterialPageRoute(
+                builder: (context) => VerificationPage(
+                      username: usernameController.text,
+                      password: passwordController.text,
+                      email: emailController.text,
+                    )),
+            ModalRoute.withName('/'),
           );
         }
       } else {

@@ -166,3 +166,10 @@ API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads/')
 MEDIA_URL = '/media/'
+
+EMAIL_BACKEND = 'custom_email_backend.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'greenyPES@gmail.com'
+EMAIL_HOST_PASSWORD = 'znfv ddyd fqxm bgbt'

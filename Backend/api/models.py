@@ -33,6 +33,10 @@ class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
     image = models.ImageField(upload_to='imatges/', default=get_default_image)
 
+class VerificationCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
         METRO = "METRO", "metro"

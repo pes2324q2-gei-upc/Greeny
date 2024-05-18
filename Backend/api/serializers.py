@@ -60,10 +60,6 @@ class UserSerializer(serializers.ModelSerializer):
         favorite_stations = FavoriteStation.objects.filter(user=obj)
         return FavoriteStationSerializer(favorite_stations, many=True).data
 
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
-
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret.pop('password', None)

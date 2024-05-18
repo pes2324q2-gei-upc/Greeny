@@ -8,9 +8,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
-from .models import User, Neighborhood, Level
+from .models import User, Neighborhood, Level, VerificationCode
 from .serializers import UserSerializer
-
+from django.core.mail import send_mail
+from django.conf import settings
+import random, string
+from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
@@ -23,38 +28,28 @@ class UsersView(ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
-    def init_neighborhoods(self):
-        if Neighborhood.objects.exists():
-            return
-        names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
-                 'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
-        neighborhoods_data = [
-            {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
-        ]
-        for neighborhood_data in neighborhoods_data:
-            Neighborhood.objects.get_or_create(**neighborhood_data)
-
-    def init_levels(self, user):
-        points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
-        for i in range(1, 9):
-            neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
-            Level.objects.create(
-                number=i,
-                completed=False,
-                current=(i == 1),
-                points_user=0,
-                points_total = points_total[i-1],
-                user=user,
-                neighborhood=neighborhood
-            )
-
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        self.init_neighborhoods()
-        if response.status_code == 201:  # HTTP 201 Created
-            user = User.objects.latest('id')
-            self.init_levels(user)
-        return response
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.validated_data
+
+        validated_data['is_active'] = False
+        user = User.objects.create_user(**validated_data)
+
+        # Generate the verification code and send the email
+        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        VerificationCode.objects.create(user=user, code=code)
+
+        send_mail(
+            'Código de verificación',
+            f'Tu código de verificación es {code}',
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            fail_silently=False,
+        )
+
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def patch(self, request):
         user = self.request.user
@@ -116,3 +111,62 @@ class UsersView(ModelViewSet):
             },
             status=status.HTTP_200_OK
         )
+
+def init_neighborhoods():
+    if Neighborhood.objects.exists():
+        return
+    names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
+             'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
+    neighborhoods_data = [
+        {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
+    ]
+    for neighborhood_data in neighborhoods_data:
+        Neighborhood.objects.get_or_create(**neighborhood_data)
+
+def init_levels(user):
+    points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
+    for i in range(1, 9):
+        neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
+        Level.objects.create (
+            number=i,
+            completed=False,
+            current=(i == 1),
+            points_user=0,
+            points_total = points_total[i-1],
+            user=user,
+            neighborhood=neighborhood
+        )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify(request):
+    code = request.data.get('verificationCode')
+    username = request.data.get('username')
+    user = User.objects.get(username=username)
+
+    try:
+        verification_code = VerificationCode.objects.get(user=user, code=code)
+    except VerificationCode.DoesNotExist:
+        return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.is_active = True
+    user.save()
+
+    verification_code.delete()
+
+    init_neighborhoods()
+    init_levels(user)
+
+    return Response({"message": "Account successfully verified."}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([AllowAny])
+def delete_inactive_user(request):
+    username = request.data.get('username')
+    try:
+        user = User.objects.get(username=username)
+        user.delete()
+        return Response({"message": f"User {username} deleted successfully."}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)

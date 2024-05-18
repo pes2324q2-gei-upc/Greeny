@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:greeny/API/secure_storage.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserAuth {
   Future userAuth(String username, String password) async {
@@ -35,7 +36,6 @@ class UserAuth {
       }),
     );
     if (response.statusCode == 201) {
-      await userAuth(username, password);
       return 'ok';
     } else {
       Map json = jsonDecode(response.body);
