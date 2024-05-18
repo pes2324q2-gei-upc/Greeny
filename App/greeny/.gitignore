@@ -46,3 +46,5 @@ app.*.map.json
 ./greeny/linux/flutter
 ./greeny/macos/Flutter
 ./greeny/windows/flutter
+
+windows/flutter/ephemeral/*
