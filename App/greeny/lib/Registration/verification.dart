@@ -59,9 +59,7 @@ class VerificationPageState extends State<VerificationPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
                 child: Text(
-                  translate(
-                    'Introduce the verification code we\'ve sent you to the email: ${widget.email}',
-                  ),
+                  '${translate('Introduce the verification code we have sent you to the email:')} ${widget.email}',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -115,18 +113,12 @@ class VerificationPageState extends State<VerificationPage> {
   }
 
   Future<void> _deleteUser(String username) async {
-    final response = await httpDeleteNoToken(
+    await httpDeleteNoToken(
         'api/delete_inactive_user/',
         jsonEncode({
           'username': username,
         }),
         'application/json');
-
-    if (response.statusCode == 200) {
-      print('User deleted successfully');
-    } else {
-      throw Exception('Failed to delete user');
-    }
 
     if (!mounted) return;
 
@@ -163,20 +155,21 @@ class VerificationPageState extends State<VerificationPage> {
       } else {
         if (mounted) {
           showMessage(context,
-              translate('Could not log in. Please check your credentials'));
+              translate('Could not sign up. Please check your credentials'));
         }
       }
     } else {
+      if (!mounted) return;
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
-            content:
-                Text('Failed to verify. The code is incorrect, try again.'),
+            title: Text(translate('Error')),
+            content: Text(translate(
+                'Failed to verify. The code is incorrect, try again.')),
             actions: <Widget>[
               TextButton(
-                child: Text('Ok'),
+                child: Text(translate('Ok')),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
