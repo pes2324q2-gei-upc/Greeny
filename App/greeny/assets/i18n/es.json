@@ -1,6 +1,6 @@
 {
     "City": "Ciudad",
-    "Welcome to Greeny!": "Bienvenido a Greeny!",
+    "Welcome to Greeny!": "Bienvenidos a Greeny!",
     "Log In": "Iniciar sesión",
     "Username": "Nombre de usuario",
     "Password": "Contraseña",
@@ -130,5 +130,11 @@
     "Current password is not correct": "La contraseña actual no es correcta",
     "Select an image": "Selecciona una imagen",
     "Could not log in. Please try it later": "No se pudo iniciar sesión. Por favor, inténtalo más tarde",
-    "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte"
+    "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte",
+    "Could not sign up. Please check your credentials": "No se pudo hacer el registro. Por favor, comprueba tus credenciales",
+    "Enter your verification code": "Introduce tu código de verificación",
+    "Cancel registration": "Cancelar registro",
+    "You will be redirected to the login page and your account will be deleted. Are you sure you want to cancel the registration?": "Serás redirigido a la página de inicio de sesión y tu cuenta será eliminada. ¿Estás seguro de que quieres cancelar el registro?",
+    "Failed to verify. The code is incorrect, try again.": "No se pudo verificar. El código es incorrecto, inténtalo de nuevo.",
+    "Introduce the verification code we have sent you to the email:": "Introduce el código de verificación que te hemos enviado al correo electrónico:"
 }

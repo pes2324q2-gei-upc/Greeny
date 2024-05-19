@@ -72,7 +72,6 @@ class UserAuth {
     });
     var response = await httpPostNoToken('api/user/', data, 'application/json');
     if (response.statusCode == 201) {
-      await userAuth(username, password);
       return 'ok';
     } else {
       Map json = jsonDecode(response.body);

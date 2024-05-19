@@ -128,6 +128,19 @@ httpDelete(String url) async {
   return response;
 }
 
+httpDeleteNoToken(String url, String params, String contentType) async {
+  var uri = Uri.http(backendURL, url);
+  var response = await http.delete(
+    uri,
+    headers: {
+      'Content-Type': contentType,
+    },
+    body: params,
+  );
+
+  return response;
+}
+
 Future<bool> checkConnection() async {
   var uri = Uri.http(backendURL, 'api/ping');
   try {

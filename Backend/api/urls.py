@@ -5,7 +5,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UsersView
+from api.user_views import UsersView, verify, cancel_registration
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews
 from api.transports_views import (
@@ -39,4 +39,6 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
+    path('verify/', verify, name='verify'),
+    path('cancel_registration/', cancel_registration, name='cancel_registration'),
 ]
