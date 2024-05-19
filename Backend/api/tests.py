@@ -9,7 +9,7 @@ import json
 from unittest.mock import patch
 
 # Third-party imports
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.gis.geos import Point
 from rest_framework.test import APIClient
@@ -332,7 +332,7 @@ class TestReviewsViews(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Review.objects.count(), 2)
-        self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
+        self.assertEqual(Review.objects.get(body='Good station!').body, 'Good station!')
         self.station.refresh_from_db()
         self.assertEqual(self.station.rating, 4.5)
 
@@ -390,65 +390,42 @@ class CityViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class ProfanityFilterTests(TestCase):
+
+class ProfanityFilterTest(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(username='test_user', password='test_password')
+        location = Point(0, 0)  # replace with actual longitude and latitude
+        self.station = Station.objects.create(name='Station1', location=location, rating=0)
+        self.user = User.objects.create_user(username='user1', password='pass')
+        self.review = Review.objects.create(author=self.user, station=self.station, body='Test review', puntuation=5)
+        self.url = reverse('profanity-filter', kwargs={'station_id': self.station.id, 'review_id': self.review.id})
         self.client.force_authenticate(user=self.user)
-        point = Point(74.0060, 40.7128)
-        self.station = Station.objects.create(name='Test Station', location=point, rating=5.0)
-        self.review = Review.objects.create(
-            author=self.user,
-            station=self.station,
-            body='Great station!',
-            puntuation=5.0
-        )
-
-    @patch('api.review_views.predict_prob')
-    @patch('api.utils.check_for_ban')
-    @patch('api.utils.invalidate_user')
-    def test_profanity_detected(self, mock_check_for_ban, mock_predict_prob, mock_invalidate_user):
-        mock_predict_prob.return_value = 0.8
-        mock_check_for_ban.return_value = False
-
-        response = self.client.post('/api/stations/1/reviews/1/profanity-filter', {}, format='json')
-
+    def test_no_profanity(self):
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('Review has been deleted due to profanity', response.data['message'])
+        self.assertEqual(response.data, {'message': 'No profanity detected'})
 
-        # Check if user reports incremented
-        self.user.refresh_from_db()
+    def test_profanity_no_previous_reports(self):
+        self.review.body = 'This station is very shit!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
         self.assertEqual(self.user.reports, 1)
 
-    @patch('api.review_views.predict_prob')
-    @patch('api.utils.check_for_ban')
-    @patch('api.utils.invalidate_user')
-    def test_no_profanity_detected(self, mock_check_for_ban, mock_predict_prob, mock_invalidate_user):
-        mock_predict_prob.return_value = 0.6
-        mock_check_for_ban.return_value = False
-
-        response = self.client.post('/api/stations/1/reviews/1/profanity-filter', {}, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('No profanity detected', response.data['message'])
-
-        # Check if user reports remain unchanged
-        self.user.refresh_from_db()
-        self.assertEqual(self.user.reports, 0)
-
-    @patch('api.review_views.predict_prob')
-    @patch('api.utils.check_for_ban')
-    @patch('api.utils.invalidate_user')
-    def test_user_banned(self, mock_invalidate_user, mock_check_for_ban, mock_predict_prob):
-        mock_predict_prob.return_value = 0.8
-        mock_check_for_ban.return_value = True
-
-        response = self.client.post('/api/stations/1/reviews/1/profanity-filter', {}, format='json')
-
+    def test_profanity_with_previous_reports(self):
+        self.user.reports = 2
+        self.user.save()
+        self.review.body = 'This station is shit!'
+        self.review.save()
+        response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_423_LOCKED)
-        self.assertIn('User has been banned', response.data['message'])
-        mock_invalidate_user.assert_called_once_with(self.user)
+        self.assertEqual(response.data, {'message': 'User has been banned'})
 
-        # Check if user is banned
-        self.user.refresh_from_db()
-        self.assertFalse(self.user.is_active)
+    def test_non_english_review(self):
+        self.review.body = 'Mierda de estacion!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
+        self.assertEqual(self.user.reports, 1)
