@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:greeny/API/secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:greeny/utils/banned.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http_parser/http_parser.dart';
@@ -29,6 +30,8 @@ Future<String> getToken() async {
       Map json = jsonDecode(response.body);
       await SecureStorage().writeSecureData('access_token', json['access']);
       return json['access'];
+    } else if (response.statusCode == 401) {
+      return 'banned';
     } else {
       return '';
     }
@@ -57,6 +60,10 @@ httpGet(String url) async {
       'Authorization': 'Bearer $token',
     },
   );
+  if (response.statusCode == 401) {
+    return BannedScreen();
+  }
+
   return response;
 }
 
@@ -72,6 +79,10 @@ httpPost(String url, String params, String contentType) async {
     body: params,
   );
 
+  if (response.statusCode == 401) {
+    return BannedScreen();
+  }
+
   return response;
 }
 
@@ -86,6 +97,11 @@ httpPut(String url, String params, String type) async {
     },
     body: params,
   );
+
+  if (response.statusCode == 401) {
+    return BannedScreen();
+  }
+
   return response;
 }
 
@@ -100,6 +116,11 @@ httpPatch(String url, String params, String type) async {
     },
     body: params,
   );
+
+  if (response.statusCode == 401) {
+    return BannedScreen();
+  }
+
   return response;
 }
 
@@ -112,6 +133,11 @@ httpDelete(String url) async {
       'Authorization': 'Bearer $token',
     },
   );
+
+  if (response.statusCode == 401) {
+    return BannedScreen();
+  }
+
   return response;
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/utils/app_state.dart';
+import 'package:greeny/utils/banned.dart';
 import 'package:greeny/utils/loading_screen.dart';
 import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
@@ -111,6 +112,8 @@ Future<Widget> mainScreenIfUser() async {
   String token = await getToken();
   if (token != '' && await checkTokenFirstTime(token)) {
     return const MainPage();
+  } else if (token == 'banned') {
+    return BannedScreen();
   } else {
     return const LogInPage();
   }
