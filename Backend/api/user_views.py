@@ -162,7 +162,7 @@ def verify(request):
 
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
-def delete_inactive_user(request):
+def cancel_registration(request):
     username = request.data.get('username')
     try:
         user = User.objects.get(username=username)

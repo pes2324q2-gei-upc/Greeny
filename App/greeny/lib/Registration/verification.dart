@@ -65,7 +65,7 @@ class VerificationPageState extends State<VerificationPage> {
               ),
               TextFormField(
                 controller: verificationController,
-                keyboardType: TextInputType.number,
+                keyboardType: TextInputType.text,
                 maxLength: 6,
                 decoration: InputDecoration(
                   labelText: translate('Enter your verification code'),
@@ -76,6 +76,7 @@ class VerificationPageState extends State<VerificationPage> {
                 onPressed: submit,
                 child: Text(translate('Submit')),
               ),
+              const SizedBox(height: 20),
               TextButton(
                 onPressed: _showExitDialog,
                 child: Text(translate("Cancel registration")),
@@ -114,7 +115,7 @@ class VerificationPageState extends State<VerificationPage> {
 
   Future<void> _deleteUser(String username) async {
     await httpDeleteNoToken(
-        'api/delete_inactive_user/',
+        'api/cancel_registration/',
         jsonEncode({
           'username': username,
         }),
