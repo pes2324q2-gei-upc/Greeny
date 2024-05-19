@@ -8,8 +8,9 @@ from .serializers import ReviewSerializer
 from profanity_check import predict_prob
 from .utils import check_for_ban, translate
 from ftlangdetect import detect
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 class ReviewsViews(ModelViewSet):
     serializer_class = ReviewSerializer
@@ -46,9 +47,13 @@ def profanity_filter(request, station_id, review_id):
     body = review.body
 
     lang = detect(text=body, low_memory=False)['lang']
-
     if lang != 'en':
-        body = translate(body, lang)
+        try:
+            body = translate(body, lang)
+        except Exception as e:
+            logger.error(f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it')
+            return Response({'message':'Review pending of evaluation'})
+
 
     if predict_prob([body]) >= 0.75:
         # Añadimos report al user
@@ -64,4 +69,4 @@ def profanity_filter(request, station_id, review_id):
             return Response({'message': 'User has been banned'}, status=status.HTTP_423_LOCKED)
 
         return Response({'message': 'Review has been deleted due to profanity'}, status=status.HTTP_200_OK)
-    return Response({'message': 'No profanity detected'})
+    return Response({'message': 'No profanity detected'}, status=status.HTTP_200_OK)
