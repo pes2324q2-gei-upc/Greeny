@@ -77,9 +77,15 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url)
+
     class Meta:
         model = User
-        fields = ['username', 'first_name']
+        fields = ['username', 'first_name', 'image']
 
 class FriendSerializer(serializers.ModelSerializer):
     friends = serializers.SerializerMethodField()
@@ -181,10 +187,16 @@ class ReviewSerializer(serializers.ModelSerializer):
 class FriendRequestSerializer(serializers.ModelSerializer):
     from_user_username = serializers.ReadOnlyField(source='from_user.username')
     to_user_username = serializers.ReadOnlyField(source='to_user.username')
+    from_user_image = serializers.SerializerMethodField()
+
+    def get_from_user_image(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.from_user.image.url)
 
     class Meta:
         model = FriendRequest
-        fields = ['id', 'from_user', 'to_user', 'from_user_username', 'to_user_username']
+        fields = ['id', 'from_user', 'to_user', 'from_user_username',
+                  'to_user_username', 'from_user_image']
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:

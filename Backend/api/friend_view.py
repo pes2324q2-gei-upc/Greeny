@@ -40,7 +40,8 @@ class FriendRequestViewSet(viewsets.ViewSet):
         user = self.request.user
 
         friend_requests = FriendRequest.objects.filter(to_user=user)
-        serializer = FriendRequestSerializer(friend_requests, many=True)
+        serializer = FriendRequestSerializer(friend_requests, many=True,
+                                             context={'request': request})
         return Response(serializer.data)
 
     def destroy(self, request, pk=None):
@@ -74,7 +75,7 @@ class FriendViewSet(viewsets.ViewSet):
 
         user= self.request.user
         friends = user.friends.all()
-        serializer = FriendUserSerializer(friends, many=True)
+        serializer = FriendUserSerializer(friends, many=True, context={'request': request})
         return Response(serializer.data)
 
     def destroy(self, request, pk=None):
