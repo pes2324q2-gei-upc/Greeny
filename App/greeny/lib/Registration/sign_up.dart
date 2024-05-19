@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/API/user_auth.dart';
-import 'package:greeny/main_page.dart';
+import 'package:greeny/Registration/verification.dart';
 import 'log_in.dart';
 import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
@@ -21,6 +21,10 @@ class _SignInPageState extends State<SignInPage> {
   final nameContoller = TextEditingController();
 
   final signUpForm = GlobalKey<FormState>();
+
+  bool _loading = false;
+
+  ValueNotifier userCredential = ValueNotifier('');
 
   @override
   void dispose() {
@@ -49,7 +53,14 @@ class _SignInPageState extends State<SignInPage> {
           )
         ],
       ),
-      body: CustomScrollView(
+      body: _loading == false
+          ? buildSignInForm()
+          : const Center(child: CircularProgressIndicator()
+    ));
+  }
+
+  Widget buildSignInForm() {
+    return CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: [
           SliverFillRemaining(
@@ -155,7 +166,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                           iconSize: 30,
                           tooltip: translate('Sign in with Google'),
-                          onPressed: googleSignIn,
+                          onPressed: googleLogIn,
                         ),
                       ],
                     ),
@@ -180,8 +191,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               )),
         ],
-      ),
-    );
+      );
   }
 
   Future<void> sendSignUp() async {
@@ -190,14 +200,36 @@ class _SignInPageState extends State<SignInPage> {
       final password = passwordController.text;
       final email = emailController.text;
       final name = nameContoller.text;
+      setState(() {
+        _loading = true;
+      });
+
       String res =
           await UserAuth().userRegister(name, username, email, password);
-      if (res == 'ok') {
+      checkSuccess(res);
+    }
+  }
+
+  Future<void> googleLogIn() async {
+    setState(() {
+        _loading = true;
+      });
+    bool ok = await UserAuth().userGoogleAuth();
+    checkSuccess(ok ? 'ok' : 'Could not log in. Please try it later');
+  }
+
+  void checkSuccess(String res) {
+    if (res == 'ok') {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const MainPage()),
-            (Route<dynamic> route) => false,
+            MaterialPageRoute(
+                builder: (context) => VerificationPage(
+                      username: usernameController.text,
+                      password: passwordController.text,
+                      email: emailController.text,
+                    )),
+            ModalRoute.withName('/'),
           );
         }
       } else {
@@ -205,10 +237,7 @@ class _SignInPageState extends State<SignInPage> {
           showMessage(context, translate(res));
         }
       }
-    }
   }
-
-  Future<void> googleSignIn() async {}
 
   Future<void> logInHere() async {
     Navigator.push(

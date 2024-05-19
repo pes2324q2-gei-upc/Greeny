@@ -127,5 +127,14 @@
     "Update Profile": "Actualitzar perfil",
     "A user with that username already exists.": "Ja existeix un usuari amb aquest nom d'usuari.",
     "Current password is not correct": "La contrasenya actual no és correcta",
-    "Select an image": "Selecciona una imatge"
+    "Select an image": "Selecciona una imatge",
+    "Could not log in. Please try it later": "No s'ha pogut iniciar la sessió. Si us plau, intenta-ho més tard",
+    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport"
+    "Could not sign up. Please check your credentials": "No s'ha pogut fer el registre. Comprova les teves credencials",
+    "Welcome to Greeny!": "Benvinguts a Greeny!",
+    "Enter your verification code": "Introdueix el teu codi de verificació",
+    "Cancel registration": "Cancel·lar el registre",
+    "You will be redirected to the login page and your account will be deleted. Are you sure you want to cancel the registration?": "Seràs redirigit a la pàgina d'inici de sessió i el teu compte s'eliminarà. Estàs segur que vols cancel·lar el registre?",
+    "Failed to verify. The code is incorrect, try again.": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho.",
+    "Introduce the verification code we have sent you to the email:": "Introdueix el codi de verificació que t'hem enviat al correu electrònic:"
 }

@@ -3,7 +3,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
 
-
 class Station(models.Model):
     name = models.CharField(max_length=100)
     location = models.PointField()
@@ -28,6 +27,10 @@ class User(AbstractUser):
 
 class Blacklist(models.Model):
     email = models.CharField(max_length=100)
+
+class VerificationCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):

@@ -5,7 +5,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UsersView
+from api.user_views import UsersView, verify, cancel_registration, google_auth
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
@@ -15,7 +15,7 @@ from api.transports_views import (
 )
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from api.routes_views import RoutesView
-from api.city_views import CityView
+from api.city_views import CityView, NeighborhoodsView
 from api.ping_view import ping
 
 router = DefaultRouter()
@@ -34,9 +34,13 @@ urlpatterns = [
     path('stations/<int:pk>', StationsView.as_view(), name='stations'),
     path('stations/', StationsView.as_view(), name='stations_list'),
     path('city/', CityView.as_view(), name='city'),
+    path('neighborhoods/', NeighborhoodsView.as_view(), name='neighborhoods'),
     path('charging-station-info', ThirdPartyChargingStationInfoView.as_view(),
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
     path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', profanity_filter, name='profanity-filter')
+    path('verify/', verify, name='verify'),
+    path('cancel_registration/', cancel_registration, name='cancel_registration'),
+    path('oauth2/', google_auth, name='google_oauth'),
 ]

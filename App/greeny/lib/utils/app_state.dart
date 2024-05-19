@@ -21,6 +21,7 @@ class AppState with ChangeNotifier {
     'car': false,
     'metro': false
   };
+  bool fav = false;
   CameraPosition cameraPosition =
       const CameraPosition(target: LatLng(0, 0), zoom: 16);
 
@@ -76,6 +77,11 @@ class AppState with ChangeNotifier {
 
   void setTransports(Map<String, bool> newTransports) {
     transports = newTransports;
+    notifyListeners();
+  }
+
+  void setFav(bool newFav) {
+    fav = newFav;
     notifyListeners();
   }
 
