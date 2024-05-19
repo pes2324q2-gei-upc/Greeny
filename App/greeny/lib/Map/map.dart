@@ -30,6 +30,7 @@ class _MapPageState extends State<MapPage> {
   Map<String, bool> get transports =>
       Provider.of<AppState>(context, listen: false).transports;
   Color disabledColor = const Color.fromARGB(97, 0, 0, 0);
+  bool get fav => Provider.of<AppState>(context, listen: false).fav;
   // ignore: prefer_typing_uninitialized_variables
   Map icons = {};
   // ignore: prefer_typing_uninitialized_variables
@@ -81,6 +82,7 @@ class _MapPageState extends State<MapPage> {
   var t;
   CameraPosition camposition =
       const CameraPosition(target: LatLng(0, 0), zoom: 16);
+  Set<String> favStations = {};
 
   Future<void> _updateMarkers(
       CameraPosition newposition, bool moving, bool forceupdate) async {
@@ -101,15 +103,17 @@ class _MapPageState extends State<MapPage> {
 
     var visible = await mapController!.getVisibleRegion();
 
-    final List<MapMarker> markers = markersHelper.getMarkers(
+    final List<MapMarker> markers = await markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
         transports,
         icons,
         stations,
         visible,
+        fav,
         newposition.target,
         // ignore: use_build_context_synchronously
-        context);
+        context,
+        favStations);
 
     _clusterManager = await MapHelper.initClusterManager(
       markers,
@@ -154,6 +158,7 @@ class _MapPageState extends State<MapPage> {
     stations = Provider.of<AppState>(context, listen: false).stations;
     if (stations.stations.publicTransportStations.isEmpty) {
       stations = await locations.getStations();
+      favStations = await markersHelper.getFavoriteStations();
       if (mounted) {
         Provider.of<AppState>(context, listen: false).setStations(stations);
       }
@@ -314,14 +319,30 @@ class _MapPageState extends State<MapPage> {
                           _updateMarkers(position, true, false),
                         }),
                 Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: FloatingActionButton(
-                      onPressed: _mapType,
-                      backgroundColor: Colors.white,
-                      child: const Icon(Icons.map),
-                    ),
-                  )
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: FloatingActionButton(
+                          onPressed: _mapType,
+                          backgroundColor: Colors.white,
+                          child: const Icon(Icons.map),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: FloatingActionButton(
+                          onPressed: _showHideFav,
+                          backgroundColor: Colors.white,
+                          child: fav
+                              ? const Icon(Icons.favorite, color: Colors.pink)
+                              : const Icon(Icons.favorite_border,
+                                  color: Colors.pink),
+                        ),
+                      ),
+                    ],
+                  ),
                 ]),
               ],
             ),
@@ -385,6 +406,15 @@ class _MapPageState extends State<MapPage> {
           break;
       }
     });
+  }
+
+  void _showHideFav() async {
+    favStations = await markersHelper.getFavoriteStations();
+    final appState = Provider.of<AppState>(context, listen: false);
+    setState(() {
+      appState.setFav(!appState.fav);
+    });
+    _updateMarkers(camposition, false, true);
   }
 
   void showAlert(String message) {

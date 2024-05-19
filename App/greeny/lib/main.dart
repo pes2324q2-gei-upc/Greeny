@@ -1,4 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:greeny/firebase_options.dart';
 import 'package:greeny/utils/app_state.dart';
 import 'package:greeny/utils/loading_screen.dart';
 import 'package:greeny/main_page.dart';
@@ -35,6 +37,8 @@ class TranslatePreferences implements ITranslatePreferences {
 }
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   var delegate = await LocalizationDelegate.create(
       preferences: TranslatePreferences(),
       fallbackLocale: 'en_US',

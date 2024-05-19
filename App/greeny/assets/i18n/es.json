@@ -129,6 +129,8 @@
     "A user with that username already exists.": "Ya existe un usuario con este nombre de usuario.",
     "Current password is not correct": "La contraseña actual no es correcta",
     "Select an image": "Selecciona una imagen",
+    "Could not log in. Please try it later": "No se pudo iniciar sesión. Por favor, inténtalo más tarde",
+    "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte",
     "Could not sign up. Please check your credentials": "No se pudo hacer el registro. Por favor, comprueba tus credenciales",
     "Enter your verification code": "Introduce tu código de verificación",
     "Cancel registration": "Cancelar registro",

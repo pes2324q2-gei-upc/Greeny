@@ -124,7 +124,7 @@ class FetchPublicTransportStations(View):
             elif "RENFE" in full_name:
                 self.process_renfe(item, full_name)
             elif "FGC" in full_name:
-                self.process_renfe(item, full_name)
+                self.process_fgc(item, full_name)
 
     def process_metro(self, item, full_name):
         station_name = full_name.split(" - ")[1].replace("-","")

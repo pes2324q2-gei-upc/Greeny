@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from django.core.files.images import ImageFile
+from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -13,13 +14,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import User, Neighborhood, Level, VerificationCode
 from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
-    authentication_classes = [JWTAuthentication]
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -54,9 +53,25 @@ class UsersView(ModelViewSet):
     def patch(self, request):
         user = self.request.user
 
+        # Check if an image is provided
+        image = request.data.get('image')
+
         # Remove the 'email' field from the request data
         data = request.data.copy()
         data.pop('email', None)
+        data.pop('image', None)
+
+        if image:
+            # Delete the old image file
+            if user.image:
+                if os.path.isfile(user.image.path):
+                    os.remove(user.image.path)
+            # Create a new instance of the image file
+            image_copy = ContentFile(image.read())
+            # Reset the file pointer of the original image
+            image.seek(0)
+            # Save the copy of the image to the user's image field
+            user.image.save(image.name, image_copy)
 
         # Check if the current password and new password are provided
         current_password = request.data.get('current_password')
@@ -73,8 +88,13 @@ class UsersView(ModelViewSet):
         # Check if a default image is provided
         default_image = request.data.get('default_image')
         if default_image:
+            # Delete the old image file
+            if user.image:
+                if os.path.isfile(user.image.path):
+                    os.remove(user.image.path)
             default_image_path = os.path.join('uploads/imatges/', default_image)
-            user.image.save(default_image_path, ImageFile(open(default_image_path, 'rb')))
+            with open(default_image_path, 'rb') as f:
+                user.image.save(default_image_path, ImageFile(f))
 
         serializer = self.get_serializer(user, data=data, partial=True)
         serializer.is_valid(raise_exception=True)

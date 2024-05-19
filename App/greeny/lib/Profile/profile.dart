@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (response.statusCode == 200) {
       setState(() {
-        userData = json.decode(response.body);
+        userData = jsonDecode(utf8.decode(response.bodyBytes));
         userName = userData[0]['first_name'];
         userEmail = userData[0]['email'];
         userUsername = userData[0]['username'];

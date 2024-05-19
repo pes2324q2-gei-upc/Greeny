@@ -22,7 +22,7 @@ class _MainPageState extends State<MainPage> {
   int currentPageIndex = 0;
   int friendRequestsCount = 0;
 
-  Timer _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
+  Timer _timer = Timer.periodic(const Duration(seconds: 60), (timer) {});
 
   @override
   void initState() {
@@ -41,20 +41,23 @@ class _MainPageState extends State<MainPage> {
   Future<void> getFriends() async {
     friendRequestsCount = 0;
 
-    const String endpointRequests = '/api/friend-requests/';
-    final responseRequests = await httpGet(endpointRequests);
+    try {
+      const String endpointRequests = '/api/friend-requests/';
+      final responseRequests = await httpGet(endpointRequests);
 
-    if (responseRequests.statusCode == 200) {
-      final List<dynamic> friendRequestsData =
-          jsonDecode(responseRequests.body);
-      setState(() {
-        friendRequestsCount = friendRequestsData.length;
-      });
-    } else {
-      final bodyReq = jsonDecode(responseRequests.body);
-      // ignore: use_build_context_synchronously
-      showMessage(context, translate(bodyReq['message']));
-    }
+      if (responseRequests.statusCode == 200) {
+        final List<dynamic> friendRequestsData =
+            jsonDecode(responseRequests.body);
+        setState(() {
+          friendRequestsCount = friendRequestsData.length;
+        });
+      } else {
+        final bodyReq = jsonDecode(responseRequests.body);
+        // ignore: use_build_context_synchronously
+        showMessage(context, translate(bodyReq['message']));
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   @override
