@@ -139,11 +139,12 @@
     "Enter the email you used to sign up": "Introdueix el correu electrònic amb el que t'has registrat",
     "Enter your email": "Introdueix el teu correu electrònic",
     "You will be redirected to the login page. Are you sure you want to cancel the password reset?": "Seràs redirigit a la pàgina d'inici de sessió. Estàs segur que vols cancel·lar la recuperació de la contrasenya?",
-    "The email you entered is not associated with any account. Please try again or create a new account.": "El correu electrònic que has introduït no està associat a cap compte. Si us plau, torna a intentar-ho o crea un compte nou.",
+    "The email you entered is not associated with any account. Please try again or create a new account": "El correu electrònic que has introduït no està associat a cap compte. Si us plau, torna a intentar-ho o crea un compte nou",
     "Enter your new password and confirm it": "Introdueix la teva nova contrasenya i confirma-la",
     "Enter your new password": "Introdueix la teva nova contrasenya",
     "Confirm your new password": "Confirma la teva nova contrasenya",
     "Password successfully changed": "Contrasenya canviada amb èxit",
     "Failed to reset password. Try again": "No s'ha pogut restablir la contrasenya. Torna a intentar-ho",
-    "Passwords do not match. Try again": "Les contrasenyes no coincideixen. Torna a intentar-ho"
+    "Passwords do not match. Try again": "Les contrasenyes no coincideixen. Torna a intentar-ho",
+    "Failed to verify. The code is incorrect, try again": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho"
 }

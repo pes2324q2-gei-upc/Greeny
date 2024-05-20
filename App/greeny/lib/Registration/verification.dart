@@ -40,6 +40,7 @@ class VerificationPageState extends State<VerificationPage> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   bool showPasswordResetFields = false;
+  final newPasswordForm = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,12 +70,11 @@ class VerificationPageState extends State<VerificationPage> {
                   '${translate('Introduce the verification code we have sent you to the email')} ${widget.email}',
                   style: const TextStyle(fontSize: 16),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 40),
                 TextFormField(
                   controller: verificationController,
-                  keyboardType: TextInputType.text,
-                  maxLength: 6,
                   decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
                     labelText: translate('Enter your verification code'),
                   ),
                 ),
@@ -85,34 +85,47 @@ class VerificationPageState extends State<VerificationPage> {
                 ),
               ],
               if (showPasswordResetFields) ...[
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Enter your new password and confirm it',
-                    style: TextStyle(fontSize: 16),
+                Form(
+                  key: newPasswordForm,
+                  child: Column(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          translate('Enter your new password and confirm it'),
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      TextFormField(
+                        obscureText: true,
+                        controller: newPasswordController,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Enter your new password'),
+                        ),
+                        validator: (value) => validator(value, 'password'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        obscureText: true,
+                        controller: confirmPasswordController,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translate('Confirm your new password'),
+                        ),
+                        validator: passwordConfirmValidator,
+                      ),
+                      const SizedBox(height: 60),
+                      ElevatedButton(
+                        onPressed: _submitNewPassword,
+                        child: Text(translate('Submit')),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: newPasswordController,
-                  decoration: InputDecoration(
-                    labelText: translate('Enter your new password'),
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: confirmPasswordController,
-                  decoration: InputDecoration(
-                    labelText: translate('Confirm your new password'),
-                  ),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 60),
-                ElevatedButton(
-                  onPressed: _submitNewPassword,
-                  child: Text(translate('Submit')),
-                ),
+                )
               ],
               const SizedBox(height: 20),
               TextButton(
@@ -185,34 +198,30 @@ class VerificationPageState extends State<VerificationPage> {
   }
 
   void _submitNewPassword() async {
-    String newPassword = newPasswordController.text;
-    String confirmPassword = confirmPasswordController.text;
+    if (newPasswordForm.currentState!.validate()) {
+      String newPassword = newPasswordController.text;
 
-    if (newPassword != confirmPassword) {
-      showMessage(context, translate('Passwords do not match. Try again'));
-      return;
-    }
+      var response = await httpPostNoToken(
+          'api/reset_password/',
+          jsonEncode({
+            'email': widget.email,
+            'new_password': newPassword,
+          }),
+          'application/json');
 
-    var response = await httpPostNoToken(
-        'api/reset_password/',
-        jsonEncode({
-          'email': widget.email,
-          'new_password': newPassword,
-        }),
-        'application/json');
-
-    if (response.statusCode == 200) {
-      if (mounted) {
-        showMessage(context, translate('Password successfully changed'));
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LogInPage()),
-          (Route<dynamic> route) => false,
-        );
+      if (response.statusCode == 200) {
+        if (mounted) {
+          showMessage(context, translate('Password successfully changed'));
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LogInPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
+      } else {
+        if (!mounted) return;
+        showMessage(context, translate('Failed to reset password. Try again'));
       }
-    } else {
-      if (!mounted) return;
-      showMessage(context, translate('Failed to reset password. Try again'));
     }
   }
 
@@ -242,8 +251,8 @@ class VerificationPageState extends State<VerificationPage> {
       }
     } else {
       if (!mounted) return;
-      showMessage(
-          context, translate('Failed to verify. The code is incorrect'));
+      showMessage(context,
+          translate('Failed to verify. The code is incorrect, try again'));
     }
   }
 
@@ -297,5 +306,14 @@ class VerificationPageState extends State<VerificationPage> {
         },
       );
     }
+  }
+
+  String? passwordConfirmValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return translate('Please enter your password');
+    } else if (newPasswordController.text != confirmPasswordController.text) {
+      return translate('Passwords do not match');
+    }
+    return null;
   }
 }

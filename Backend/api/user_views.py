@@ -161,7 +161,7 @@ def send_verification_email(user):
     send_mail(
         'Código de verificación',
         f'Tu código de verificación es {code}',
-        settings.EMAIL_HOST_USER,
+        'Greeny <greenyPES@gmail.com>',
         [user.email],
         fail_silently=False,
     )

@@ -198,9 +198,6 @@ class _SignInPageState extends State<SignInPage> {
       final password = passwordController.text;
       final email = emailController.text;
       final name = nameContoller.text;
-      setState(() {
-        _loading = true;
-      });
 
       String res =
           await UserAuth().userRegister(name, username, email, password);

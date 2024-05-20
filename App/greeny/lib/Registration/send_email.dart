@@ -46,11 +46,11 @@ class SendEmailPageState extends State<SendEmailPage> {
                 style: const TextStyle(fontSize: 16),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
             TextFormField(
               controller: emailController,
-              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
+                border: const OutlineInputBorder(),
                 labelText: translate('Enter your email'),
               ),
             ),
@@ -90,8 +90,10 @@ class SendEmailPageState extends State<SendEmailPage> {
       );
     } else {
       if (!mounted) return;
-      showMessage(context,
-          'The email you entered is not associated with any account. Please try again or create a new account.');
+      showMessage(
+          context,
+          translate(
+              'The email you entered is not associated with any account. Please try again or create a new account'));
     }
   }
 
