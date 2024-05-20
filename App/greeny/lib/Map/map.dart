@@ -410,6 +410,7 @@ class _MapPageState extends State<MapPage> {
 
   void _showHideFav() async {
     favStations = await markersHelper.getFavoriteStations();
+    // ignore: use_build_context_synchronously
     final appState = Provider.of<AppState>(context, listen: false);
     setState(() {
       appState.setFav(!appState.fav);
