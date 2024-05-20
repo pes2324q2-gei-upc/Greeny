@@ -152,8 +152,6 @@ def init_levels(user):
             neighborhood=neighborhood
         )
 
-from rest_framework.exceptions import NotFound
-
 #Method to generate and send the verification code for signing up or for password reset
 def send_verification_email(user):
     # Generate the verification code
