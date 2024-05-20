@@ -5,7 +5,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UsersView, verify, cancel_registration, google_auth
+from api.user_views import (UsersView, verify_registration, cancel_registration, google_auth,
+                            forgot_password, verify_forgotten_password, reset_password)
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews
 from api.transports_views import (
@@ -39,7 +40,10 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
-    path('verify/', verify, name='verify'),
+    path('verify_registration/', verify_registration, name='verify_registration'),
     path('cancel_registration/', cancel_registration, name='cancel_registration'),
     path('oauth2/', google_auth, name='google_oauth'),
+    path('forgot_password/', forgot_password, name='forgot_password'),
+    path('verify_forgotten_password/', verify_forgotten_password, name='verify_forgotten_password'),
+    path('reset_password/', reset_password, name='reset_password')
 ]
