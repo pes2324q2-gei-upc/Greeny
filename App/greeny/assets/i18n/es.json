@@ -133,8 +133,17 @@
     "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte",
     "Could not sign up. Please check your credentials": "No se pudo hacer el registro. Por favor, comprueba tus credenciales",
     "Enter your verification code": "Introduce tu código de verificación",
-    "Cancel registration": "Cancelar registro",
     "You will be redirected to the login page and your account will be deleted. Are you sure you want to cancel the registration?": "Serás redirigido a la página de inicio de sesión y tu cuenta será eliminada. ¿Estás seguro de que quieres cancelar el registro?",
     "Failed to verify. The code is incorrect, try again.": "No se pudo verificar. El código es incorrecto, inténtalo de nuevo.",
-    "Introduce the verification code we have sent you to the email:": "Introduce el código de verificación que te hemos enviado al correo electrónico:"
+    "Introduce the verification code we have sent you to the email": "Introduce el código de verificación que te hemos enviado al correo electrónico:",
+    "Enter the email you used to sign up": "Introduce el correo electrónico que utilizaste para registrarte",
+    "Enter your email": "Introduce tu correo electrónico",
+    "You will be redirected to the login page. Are you sure you want to cancel the password reset?": "Serás redirigido a la página de inicio de sesión. ¿Estás seguro de que quieres cancelar el restablecimiento de la contraseña?",
+    "The email you entered is not associated with any account. Please try again or create a new account.": "El correo electrónico que has introducido no está asociado a ninguna cuenta. Por favor, inténtalo de nuevo o crea una nueva cuenta.",
+    "Enter your new password and confirm it": "Introduce tu nueva contraseña y confírmala",
+    "Enter your new password": "Introduce tu nueva contraseña",
+    "Confirm your new password": "Confirma tu nueva contraseña",
+    "Password successfully changed": "Contraseña cambiada con éxito",
+    "Failed to reset password. Try again": "No se pudo restablecer la contraseña. Inténtalo de nuevo",
+    "Passwords do not match. Try again": "Las contraseñas no coinciden. Inténtalo de nuevo"
 }

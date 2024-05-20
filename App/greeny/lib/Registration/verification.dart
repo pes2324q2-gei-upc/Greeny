@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/Registration/sign_up.dart';
 import 'package:greeny/main_page.dart';
 import 'package:greeny/utils/utils.dart';
@@ -17,15 +18,17 @@ getBackendURL() {
 }
 
 class VerificationPage extends StatefulWidget {
-  final String username;
-  final String password;
+  final String? username;
+  final String? password;
   final String email;
+  final bool resetPassword;
 
   const VerificationPage(
       {super.key,
-      required this.username,
-      required this.password,
-      required this.email});
+      this.username,
+      this.password,
+      required this.email,
+      required this.resetPassword});
 
   @override
   VerificationPageState createState() => VerificationPageState();
@@ -33,6 +36,10 @@ class VerificationPage extends StatefulWidget {
 
 class VerificationPageState extends State<VerificationPage> {
   final TextEditingController verificationController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  bool showPasswordResetFields = false;
 
   @override
   Widget build(BuildContext context) {
@@ -56,30 +63,61 @@ class VerificationPageState extends State<VerificationPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-                child: Text(
-                  '${translate('Introduce the verification code we have sent you to the email:')} ${widget.email}',
+              const SizedBox(height: 20),
+              if (!showPasswordResetFields) ...[
+                Text(
+                  '${translate('Introduce the verification code we have sent you to the email')} ${widget.email}',
                   style: const TextStyle(fontSize: 16),
                 ),
-              ),
-              TextFormField(
-                controller: verificationController,
-                keyboardType: TextInputType.text,
-                maxLength: 6,
-                decoration: InputDecoration(
-                  labelText: translate('Enter your verification code'),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: verificationController,
+                  keyboardType: TextInputType.text,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    labelText: translate('Enter your verification code'),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: submit,
-                child: Text(translate('Submit')),
-              ),
+                const SizedBox(height: 60),
+                ElevatedButton(
+                  onPressed: _submitCode,
+                  child: Text(translate('Submit')),
+                ),
+              ],
+              if (showPasswordResetFields) ...[
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Enter your new password and confirm it',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: newPasswordController,
+                  decoration: InputDecoration(
+                    labelText: translate('Enter your new password'),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: InputDecoration(
+                    labelText: translate('Confirm your new password'),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 60),
+                ElevatedButton(
+                  onPressed: _submitNewPassword,
+                  child: Text(translate('Submit')),
+                ),
+              ],
               const SizedBox(height: 20),
               TextButton(
                 onPressed: _showExitDialog,
-                child: Text(translate("Cancel registration")),
+                child: Text(translate("Cancel")),
               ),
             ],
           ),
@@ -94,14 +132,30 @@ class VerificationPageState extends State<VerificationPage> {
       builder: (context) => AlertDialog(
         title: Text(translate("Are you sure?")),
         content: Text(
-            translate(
-              "You will be redirected to the login page and your account will be deleted. "
-              "Are you sure you want to cancel the registration?",
-            ),
-            textAlign: TextAlign.justify),
+          widget.resetPassword
+              ? translate(
+                  'You will be redirected to the login page. Are you sure you want to cancel the password reset?')
+              : translate(
+                  "You will be redirected to the login page and your account will be deleted. "
+                  "Are you sure you want to cancel the registration?",
+                ),
+          textAlign: TextAlign.justify,
+        ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => _deleteUser(widget.username),
+            onPressed: () {
+              if (widget.resetPassword) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LogInPage()),
+                  (Route<dynamic> route) => false,
+                );
+              } else {
+                if (widget.username != null) {
+                  _deleteUser(widget.username!);
+                }
+              }
+            },
             child: Text(translate("Ok")),
           ),
           TextButton(
@@ -130,12 +184,75 @@ class VerificationPageState extends State<VerificationPage> {
     );
   }
 
-  void submit() async {
-    String username = widget.username;
-    String password = widget.password;
+  void _submitNewPassword() async {
+    String newPassword = newPasswordController.text;
+    String confirmPassword = confirmPasswordController.text;
+
+    if (newPassword != confirmPassword) {
+      showMessage(context, translate('Passwords do not match. Try again'));
+      return;
+    }
+
+    var response = await httpPostNoToken(
+        'api/reset_password/',
+        jsonEncode({
+          'email': widget.email,
+          'new_password': newPassword,
+        }),
+        'application/json');
+
+    if (response.statusCode == 200) {
+      if (mounted) {
+        showMessage(context, translate('Password successfully changed'));
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LogInPage()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } else {
+      if (!mounted) return;
+      showMessage(context, translate('Failed to reset password. Try again'));
+    }
+  }
+
+  void _submitCode() async {
+    if (widget.resetPassword) {
+      _submitResetPassword();
+    } else {
+      _submitRegistration();
+    }
+  }
+
+  void _submitResetPassword() async {
     String verificationCode = verificationController.text;
     var response = await httpPostNoToken(
-        'api/verify/',
+        'api/verify_forgotten_password/',
+        jsonEncode({
+          'email': widget.email,
+          'verificationCode': verificationCode,
+        }),
+        'application/json');
+
+    if (response.statusCode == 200) {
+      if (mounted) {
+        setState(() {
+          showPasswordResetFields = true;
+        });
+      }
+    } else {
+      if (!mounted) return;
+      showMessage(
+          context, translate('Failed to verify. The code is incorrect'));
+    }
+  }
+
+  void _submitRegistration() async {
+    String username = widget.username!;
+    String password = widget.password!;
+    String verificationCode = verificationController.text;
+    var response = await httpPostNoToken(
+        'api/verify_registration/',
         jsonEncode({
           'username': username,
           'verificationCode': verificationCode,
