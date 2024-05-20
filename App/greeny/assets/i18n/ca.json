@@ -46,8 +46,8 @@
     "Friends": "Amics",
     "Km travelled: ": "Km recorreguts: ",
     "Previous travel: ": "Recorregut anterior: ",
-    "of CO2 saved": "de CO2 estalviat",
-    "traveled": "recorreguts",
+    "CO2 saved": "CO2 estalviat",
+    "Distance traveled": "Distància recorreguda",
     "PERCENTAGE OF USE": "PERCENTATGE D'ÚS",
     "Settings": "Configuració",
     "Log Out": "Tanca la sessió",
@@ -90,8 +90,8 @@
     "Trips:": "Viatges:",
     "Reviews:": "Resenyes:",
     "travelled": "recorreguts",
-    "of CO2 consumed": "de CO2 consumits",
-    "co2_consumed_combustion_car": "de CO2 consumits si haguessis\nanat en cotxe de combustió",
+    "CO2 consumed": "CO2 consumit",
+    "(using combustion car)": "(utilitzant cotxe de combustió)",
     "My Routes": "Les meves rutes",
     "Error loading routes": "Error en carregar les rutes",
     "Total distance: ": "Distància total: ",
@@ -129,5 +129,7 @@
     "Current password is not correct": "La contrasenya actual no és correcta",
     "Select an image": "Selecciona una imatge",
     "Could not log in. Please try it later": "No s'ha pogut iniciar la sessió. Si us plau, intenta-ho més tard",
-    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport"
+    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport",
+    "Unfelled trees": "Arbres no talats",
+    "trees": "arbres"
 }

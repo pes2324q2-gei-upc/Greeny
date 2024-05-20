@@ -84,26 +84,71 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(10.0),
         child: ListView(
           children: [
-            _buildInfoCard(translate('travelled'), kmTotal, 'km', Icons.route),
-            _buildInfoCard(
-                translate('of CO2 consumed'), co2Consumed, 'kg', Icons.cloud),
+            InfoBox(
+              icon: Icons.route,
+              title: translate('Distance traveled'),
+              subtitle: '',
+              value: kmTotal.toStringAsFixed(2),
+              unit: 'km',
+            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                __buildInfoCardVertical(
-                    'for 1 year to absorve your CO2', 2.5*co2Consumed, 'trees', Icons.nature_rounded),
-                __buildInfoCardVertical(
-                    'km_biked', kmBiked, 'km', Icons.tv_rounded),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.cloud,
+                    title: translate('CO2 consumed'),
+                    subtitle: translate('(using combustion car)'),
+                    value: 100.toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.cloud,
+                    title: translate('CO2 consumed'),
+                    subtitle: '',
+                    value: co2Consumed.toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
               ],
             ),
-            _buildInfoCard((translate('co2_consumed_combustion_car')),
-                carCO2Consumed, 'kg', Icons.directions_car),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.eco_rounded,
+                    title: translate('CO2 saved'),
+                    subtitle: '',
+                    value: (carCO2Consumed - co2Consumed).toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.nature_rounded,
+                    title: translate('Unfelled trees'),
+                    subtitle: '',
+                    value: 1.toStringAsFixed(2),
+                    unit: translate('trees'),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             _buildRoutesButton(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             _buildProgressBar(Icons.directions_walk, kmWalked),
             _buildProgressBar(Icons.directions_bike, kmBiked),
             _buildProgressBar(Icons.electric_car, kmElectricCar),
@@ -114,61 +159,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ],
         ),
       ),
-    );
-  }
-
-  // Widget to display statistical information
-  Widget _buildInfoCard(
-      String label, double value, String unit, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon),
-            const SizedBox(width: 10),
-            Text(
-              '${value.toStringAsFixed(2)} $unit',
-              style:
-                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Text(
-          translate(label),
-          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 20),
-      ],
-    );
-  }
-
-  Widget __buildInfoCardVertical(
-      String label, double value, String unit, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon),
-            const SizedBox(width: 10),
-            Text(
-              '${value.toStringAsFixed(2)} $unit',
-              style:
-                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Text(
-          translate(label),
-          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 20),
-      ],
     );
   }
 
@@ -241,6 +231,79 @@ class ProgressBar extends StatelessWidget {
           Text(
             '${(percentage * 100).toStringAsFixed(2)}%',
             style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfoBox extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String value;
+  final String unit;
+
+  InfoBox({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (subtitle.isNotEmpty) 
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 7,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              SizedBox(height: 8),
+              Text(
+                '$value $unit',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
         ],
       ),
