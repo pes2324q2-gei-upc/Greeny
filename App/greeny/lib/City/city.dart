@@ -34,6 +34,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   String nhoodName = '';
   String nhoodPath = '';
   bool first = true;
+  bool allCompleted = false;
 
   String userName = '';
   bool isStaff = false;
@@ -50,25 +51,32 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData().then((data) {
-      setState(() {
-        cityDataNotifier.value = data;
-        userPoints = data['points_user'];
-        levelPoints = data['points_total'];
-        levelNumber = data['number'];
-        nhoodName = data['neighborhood']['name'];
-        nhoodPath = data['neighborhood']['path'];
-        userName = data['user_name'];
-        isStaff = data['is_staff'];
-      });
-    });
+    getCityData();
   }
 
-  Future<Map<String, dynamic>> getCityData() async {
+  Future<void> getCityData() async {
     final response = await httpGet('/api/city/');
 
     if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      var cityData = utf8.decode(response.bodyBytes);
+      print(cityData);
+      Map<String, dynamic> newCityData = jsonDecode(cityData);
+      if (newCityData.containsKey('message') &&
+          newCityData['message'] == 'All levels are completed') {
+        setState(() {
+          allCompleted = true;
+        });
+      } else {
+        print("get levels y no ha completado el 10");
+        setState(() {
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+        });
+      }
     } else {
       throw Exception('Failed to load city data');
     }
@@ -79,20 +87,27 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       '/api/city/',
       jsonEncode({'points_user': points}),
     );
-
+    print("put ejecutado");
     if (response.statusCode == 200) {
-      Map<String, dynamic> newCityData =
-          jsonDecode(utf8.decode(response.bodyBytes));
-
-      setState(() {
-        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
-        cityDataNotifier.value = newCityData;
-        userPoints = newCityData['points_user'];
-        levelPoints = newCityData['points_total'];
-        levelNumber = newCityData['number'];
-        nhoodName = newCityData['neighborhood']['name'];
-        nhoodPath = newCityData['neighborhood']['path'];
-      });
+      var responseBody = utf8.decode(response.bodyBytes);
+      Map<String, dynamic> newCityData = jsonDecode(responseBody);
+      print(responseBody);
+      if (newCityData.containsKey('status') &&
+          newCityData['status'] == 'all_completed') {
+        setState(() {
+          allCompleted = true;
+          userPoints = points;
+        });
+      } else {
+        setState(() {
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+        });
+      }
     } else {
       throw Exception('Failed to update city data');
     }
@@ -105,11 +120,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void updateProgress(int points) {
-    updateCityData(points);
-    setState(() {
-      userPoints = points;
-    });
+  void updateProgress(int points) async {
+    await updateCityData(points);
   }
 
   @override
@@ -169,18 +181,26 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                       ),
                                     ),
                                   );
+                                } else if (allCompleted) {
+                                  // Todos los niveles están completados, muestra un botón de reinicio.
+                                  return Center(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Aquí puedes poner la lógica para reiniciar los niveles.
+                                      },
+                                      child: const Text('Restart'),
+                                    ),
+                                  );
                                 } else {
-                                  if (first) {
-                                    // Los datos están disponibles, construye el ModelViewer.
-                                    userPoints = cityData['points_user'];
-                                    levelPoints = cityData['points_total'];
-                                    levelNumber = cityData['number'];
-                                    nhoodName =
-                                        cityData['neighborhood']['name'];
-                                    nhoodPath =
-                                        cityData['neighborhood']['path'];
-                                    first = false;
-                                  }
+                                  //if (first) {
+                                  // Los datos están disponibles, construye el ModelViewer.
+                                  userPoints = cityData['points_user'];
+                                  levelPoints = cityData['points_total'];
+                                  levelNumber = cityData['number'];
+                                  nhoodName = cityData['neighborhood']['name'];
+                                  nhoodPath = cityData['neighborhood']['path'];
+                                  first = false;
+                                  //}
 
                                   return ModelViewer(
                                     debugLogging: false,
@@ -353,16 +373,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void addPoints() {
-    setState(() {
-      userPoints += 10;
-    });
-    updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+    updateProgress(userPoints +
+        50); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
     setState(() {
-      userPoints -= 10;
+      userPoints -= 50;
     });
     updateProgress(
         userPoints); // Llama a la función para actualizar la barra de progreso
