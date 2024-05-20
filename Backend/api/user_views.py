@@ -3,12 +3,13 @@ import random
 import string
 import jwt
 import requests
-from django.conf import settings
+
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
@@ -17,6 +18,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import User, Neighborhood, Level, VerificationCode
 from .serializers import UserSerializer
 
@@ -211,8 +213,8 @@ def cancel_registration(request):
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-# Methods for sending the email to an existent user who has forgotten his password, for verifying the code and
-# updating the password [FORGOT PASSWORD SITUATION]
+# Methods for sending the email to an existent user who has forgotten his password,
+# for verifying the code and updating the password [FORGOT PASSWORD SITUATION]
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def forgot_password(request):

@@ -5,8 +5,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import (UsersView, verify_registration, cancel_registration, google_auth, forgot_password,
-                            verify_forgotten_password, reset_password)
+from api.user_views import (UsersView, verify_registration, cancel_registration, google_auth,
+                            forgot_password, verify_forgotten_password, reset_password)
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews
 from api.transports_views import (
