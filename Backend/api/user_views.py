@@ -52,7 +52,7 @@ class UsersView(ModelViewSet):
         image = request.data.get('image')
 
         # Remove the 'email' field from the request data
-        data = request.data.copy()
+        data = request.data.dict()
         data.pop('email', None)
         data.pop('image', None)
 

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Registration/log_in.dart';
@@ -10,12 +9,6 @@ import 'package:greeny/main_page.dart';
 import 'package:greeny/utils/utils.dart';
 import '../utils/translate.dart' as t;
 import 'package:greeny/API/user_auth.dart';
-
-String backendURL = dotenv.env['BACKEND_URL']!;
-
-getBackendURL() {
-  return backendURL;
-}
 
 class VerificationPage extends StatefulWidget {
   final String? username;
