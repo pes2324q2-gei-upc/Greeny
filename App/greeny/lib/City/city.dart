@@ -69,7 +69,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   Future<Map<String, dynamic>> getCityData() async {
     final response = await httpGet('/api/city/');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.statusCode != 401) {
       return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load city data');
@@ -78,10 +78,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   Future<void> updateCityData(int points) async {
     final response = await httpPut(
-      '/api/city/',
-      jsonEncode({'points_user': points}),
-      'application/json'
-    );
+        '/api/city/', jsonEncode({'points_user': points}), 'application/json');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
@@ -305,8 +302,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
 
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HistoryPage(level: levelNumber))
-    ).then((_) {
+        context,
+        MaterialPageRoute(
+            builder: (context) => HistoryPage(level: levelNumber))).then((_) {
       setState(() {
         _showModelViewer = true;
       });

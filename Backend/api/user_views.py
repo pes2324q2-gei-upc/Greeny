@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, Neighborhood, Level, VerificationCode
+from .models import User, Neighborhood, Level, VerificationCode, Blacklist
 from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
@@ -36,7 +36,12 @@ class UsersView(ModelViewSet):
         validated_data = serializer.validated_data
 
         validated_data['is_active'] = False
-        user = User.objects.create_user(**validated_data)
+        banned = Blacklist.objects.filter(email=validated_data['email']).exists()
+        if not banned:
+            user = User.objects.create_user(**validated_data)
+        else:
+            return Response({'message':'You are banned from this application for violating our guidelines'},
+                            status=status.HTTP_403_FORBIDDEN)
 
         # Generate the verification code and send the email
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
