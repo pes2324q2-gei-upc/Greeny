@@ -103,8 +103,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   child: InfoBox(
                     icon: Icons.cloud,
                     title: translate('CO2 consumed'),
-                    subtitle: translate('(using combustion car)'),
-                    value: 100.toStringAsFixed(2),
+                    subtitle: translate('If travelled by combustion car'),
+                    value: carCO2Consumed.toStringAsFixed(2),
                     unit: 'kg',
                   ),
                 ),
@@ -143,6 +143,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     subtitle: '',
                     value: 1.toStringAsFixed(2),
                     unit: translate('trees'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.eco_rounded,
+                    title: translate('Energy saved'),
+                    subtitle: '',
+                    value: 0.toStringAsFixed(2),
+                    unit: 'kWh',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.nature_rounded,
+                    title: translate('Families supplied'),
+                    subtitle: '',
+                    value: 1.toStringAsFixed(2),
+                    unit: translate('families'),
                   ),
                 ),
               ],
@@ -257,8 +283,9 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      height: 90,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),

@@ -92,7 +92,7 @@
     "Reviews:": "Reseñas:",
     "Distance traveled": "Distancia recorrida",
     "CO2 consumed": "CO2 consumido",
-    "(using combustion car)": "(usando coche de combustión)",
+    "If travelled by combustion car": "Si viajara en coche de combustión",
     "My Routes": "Mis Rutas",
     "Error loading routes": "Error cargando las rutas",
     "Total distance: ": "Distancia total: ",
@@ -132,5 +132,8 @@
     "Could not log in. Please try it later": "No se pudo iniciar sesión. Por favor, inténtalo más tarde",
     "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte",
     "Unfelled trees": "Árboles no talados",
-    "trees": "árboles"
+    "trees": "árboles",
+    "Energy saved": "Energía ahorrada",
+    "Families supplied": "Familias abastecidas",
+    "families": "familias"
 }

@@ -91,7 +91,7 @@
     "Reviews:": "Resenyes:",
     "travelled": "recorreguts",
     "CO2 consumed": "CO2 consumit",
-    "(using combustion car)": "(utilitzant cotxe de combustió)",
+    "If travelled by combustion car": "Si viatgés en cotxe de combustió",
     "My Routes": "Les meves rutes",
     "Error loading routes": "Error en carregar les rutes",
     "Total distance: ": "Distància total: ",
@@ -131,5 +131,8 @@
     "Could not log in. Please try it later": "No s'ha pogut iniciar la sessió. Si us plau, intenta-ho més tard",
     "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport",
     "Unfelled trees": "Arbres no talats",
-    "trees": "arbres"
+    "trees": "arbres",
+    "Energy saved": "Energia estalviada",
+    "Families supplied": "Famílies subministrades",
+    "families": "famílies"
 }
