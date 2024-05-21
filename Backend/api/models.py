@@ -12,7 +12,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.gis.db import models
 from django.contrib.auth.models import AbstractUser
 
-
 class Station(models.Model):
     name = models.CharField(max_length=100)
     location = models.PointField()
@@ -33,6 +32,11 @@ def get_default_image():
 class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
     image = models.ImageField(upload_to='imatges/', default=get_default_image)
+    email = models.EmailField(unique=True)
+
+class VerificationCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
 
 class TransportType(models.Model):
     class TTransport(models.TextChoices):

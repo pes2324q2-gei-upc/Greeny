@@ -49,7 +49,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          userData = json.decode(response.body);
+          userData = json.decode(utf8.decode(response.bodyBytes));
           friendName = userData['first_name'];
           dateJoined = DateFormat('dd-MM-yyyy')
               .format(DateTime.parse(userData['date_joined']));
@@ -80,7 +80,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     final response = await httpGet(endpoint);
 
     if (response.statusCode == 200) {
-      final List<dynamic> friendsData = jsonDecode(response.body);
+      final List<dynamic> friendsData =
+          jsonDecode(utf8.decode(response.bodyBytes));
       userFriends = friendsData.map((friend) => friend['username']).toList();
     } else {
       // ignore: use_build_context_synchronously

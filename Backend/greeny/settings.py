@@ -28,8 +28,8 @@ SECRET_KEY = 'django-insecure-25u8vl1*fk=zt4ql@o-u&o(t9(9#_iz&i*pb4el5)ju(-sxamf
 PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
 DEBUG = not PRODUCTION
 
-ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
-ALLOWED_HOSTS = [os.getenv('SERVER_NAME')]
+#ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
+ALLOWED_HOSTS = [os.getenv('SERVER_NAME'), 'localhost']
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -166,3 +166,10 @@ API_TOKEN_AJT = os.environ.get('API_TOKEN_AJT')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads/')
 MEDIA_URL = '/media/'
+
+EMAIL_BACKEND = 'custom_email_backend.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'greenyPES@gmail.com'
+EMAIL_HOST_PASSWORD = 'znfv ddyd fqxm bgbt'

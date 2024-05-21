@@ -38,6 +38,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   String userName = '';
   bool isStaff = false;
 
+  bool _showModelViewer = true;
+
   ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
   void initState() {
@@ -159,7 +161,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               builder: (BuildContext context,
                                   Map<String, dynamic>? cityData,
                                   Widget? child) {
-                                if (cityData == null) {
+                                if (cityData == null || !_showModelViewer) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
                                     child: SizedBox(
@@ -298,8 +300,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
+    setState(() {
+      _showModelViewer = false;
+    });
+
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
+        context, MaterialPageRoute(builder: (context) => HistoryPage())
+    ).then((_) {
+      setState(() {
+        _showModelViewer = true;
+      });
+    });
   }
 
   void finalForm() {

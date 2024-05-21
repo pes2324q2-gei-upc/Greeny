@@ -1,17 +1,19 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:greeny/API/secure_storage.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class UserAuth {
+  //Function to authenticate the user with username and password and get the access token
   Future userAuth(String username, String password) async {
-    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/token/');
-    var response = await http.post(
-      backendURL,
-      body: {'username': username, 'password': password},
-    );
+    var data = jsonEncode({
+      'username': username,
+      'password': password,
+    });
+    var response =
+        await httpPostNoToken('api/token/', data, 'application/json');
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
       await userSaveInfo(json['access'], json['refresh'], username);
@@ -22,22 +24,35 @@ class UserAuth {
   }
 
   Future<bool> userGoogleAuth() async {
-    final googleAccount = await GoogleSignIn().signIn();
+    try {
+      await InternetAddress.lookup('google.com');
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-    final googleAuth = await googleAccount?.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-    if (googleAuth != null && googleAuth.idToken != null) {
-      return await backendGoogleAuth(googleAuth.idToken!);
+      var res = await FirebaseAuth.instance.signInWithCredential(credential);
+      var idToken = await res.user?.getIdToken();
+
+      if (idToken != null) {
+        return await backendGoogleAuth(idToken);
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   Future<bool> backendGoogleAuth(String idToken) async {
-    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/oauth2/');
-    var response = await http.post(
-      backendURL,
-      body: {'token': idToken},
-    );
+    var data = jsonEncode({
+      'token': idToken,
+    });
+    var response =
+        await httpPostNoToken('api/oauth2/', data, 'application/json');
     if (response.statusCode == 200) {
       Map json = jsonDecode(response.body);
       await userSaveInfo(json['access'], json['refresh'], json['username']);
@@ -49,19 +64,14 @@ class UserAuth {
 
   Future<String> userRegister(
       String name, String username, String email, String password) async {
-    var backendURL = Uri.http(dotenv.env['BACKEND_URL']!, 'api/user/');
-    var response = await http.post(
-      backendURL,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        'first_name': name,
-        'username': username,
-        'email': email,
-        'password': password
-      }),
-    );
+    var data = jsonEncode({
+      'first_name': name,
+      'username': username,
+      'email': email,
+      'password': password
+    });
+    var response = await httpPostNoToken('api/user/', data, 'application/json');
     if (response.statusCode == 201) {
-      await userAuth(username, password);
       return 'ok';
     } else {
       Map json = jsonDecode(response.body);
@@ -86,6 +96,8 @@ class UserAuth {
   }
 
   Future userLogout() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
     await SecureStorage().deleteSecureData('username');

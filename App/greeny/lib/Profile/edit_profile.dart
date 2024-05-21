@@ -22,6 +22,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String oldUsername = '';
   File? _pickedImage;
   String defaultImage = '';
+  bool isGoogle = false;
 
   final updateProfileForm = GlobalKey<FormState>();
 
@@ -87,9 +88,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       ),
                                     ],
                                   ),
-                                  child: 
-                                      CircleAvatar(
-                                          backgroundImage: imageProvider),
+                                  child: CircleAvatar(
+                                      backgroundImage: imageProvider),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -114,7 +114,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 40),
                             TextFormField(
                               obscureText: false,
                               controller: nameController,
@@ -138,44 +138,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             const SizedBox(
                               height: 30,
                             ),
-                            Text(translate(
-                                'To change your password, fill in the following fields:')),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: currentPasswordController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('Current Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: newPasswordController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('New Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              obscureText: true,
-                              controller: passwordConfirmController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translate('Confirm Password'),
-                              ),
-                              validator: passwordConfirmValidator,
-                            ),
+                            renderPassword(),
                             const SizedBox(
                               height: 20,
                             ),
@@ -202,6 +165,55 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
+  Widget renderPassword() {
+    if (isGoogle) {
+      return const SizedBox();
+    } else {
+      return Column(
+        children: [
+          Text(translate(
+              'To change your password, fill in the following fields:')),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: currentPasswordController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('Current Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: newPasswordController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('New Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextFormField(
+            obscureText: true,
+            controller: passwordConfirmController,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: translate('Confirm Password'),
+            ),
+            validator: passwordConfirmValidator,
+          ),
+        ],
+      );
+    }
+  }
+
   ImageProvider<Object> get imageProvider {
     if (_pickedImage != null) {
       return FileImage(_pickedImage!);
@@ -219,7 +231,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           title: Text(translate('Select an image')),
           content: Container(
             width: double.maxFinite,
-            padding: const EdgeInsets.fromLTRB(5,10,5,10),
+            padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 3,
@@ -291,12 +303,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (response.statusCode == 200) {
       setState(() {
-        userData = json.decode(response.body);
+        userData = jsonDecode(utf8.decode(response.bodyBytes));
         imagePath = userData[0]['image'];
         oldName = userData[0]['first_name'];
         oldUsername = userData[0]['username'];
         nameController.text = oldName;
         usernameController.text = oldUsername;
+        isGoogle = userData[0]['is_google'];
       });
     } else {
       if (mounted) {

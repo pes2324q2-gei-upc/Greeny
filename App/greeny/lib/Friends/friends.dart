@@ -57,8 +57,14 @@ class _FriendsPageState extends State<FriendsPage> {
     final response = await httpGet(endpoint);
 
     if (response.statusCode == 200) {
-      final List<dynamic> friendsData = jsonDecode(response.body);
-      friends = friendsData.map((friend) => friend['username']).toList();
+      final List<dynamic> friendsData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      friends = friendsData
+          .map((friend) => {
+                'username': friend['username'],
+                'image': friend['image'],
+              })
+          .toList();
     } else {
       final body = jsonDecode(response.body);
       if (mounted) {
@@ -72,14 +78,17 @@ class _FriendsPageState extends State<FriendsPage> {
 
     if (responseRequests.statusCode == 200) {
       final List<dynamic> friendRequestsData =
-          jsonDecode(responseRequests.body);
+          jsonDecode(utf8.decode(responseRequests.bodyBytes));
       friendRequests = friendRequestsData.map((request) {
         final int solId = request['id'];
         final String fromUserName = request['from_user_username'];
         return {'id': solId, 'username': fromUserName};
       }).toList();
       friendRequestsUsers = friendRequestsData
-          .map((request) => request['from_user_username'])
+          .map((request) => {
+                'username': request['from_user_username'],
+                'image': request['from_user_image'],
+              })
           .toList();
     } else {
       final bodyReq = jsonDecode(responseRequests.body);
@@ -150,10 +159,11 @@ class _FriendsPageState extends State<FriendsPage> {
                 itemCount:
                     friendsTotal.length, // Usar la longitud de friendsTotal
                 itemBuilder: (BuildContext context, int index) {
-                  final String friendUsername = friendsTotal[index];
-                  final bool hasSentRequest =
-                      friendRequestsUsers.contains(friendUsername);
-                  return buildFriendCard(friendUsername, hasSentRequest);
+                  final String friendUsername = friendsTotal[index]['username'];
+                  final String image = friendsTotal[index]['image'];
+                  final bool hasSentRequest = friendRequestsUsers
+                      .any((request) => request['username'] == friendUsername);
+                  return buildFriendCard(friendUsername, hasSentRequest, image);
                 },
               ),
             ),
@@ -183,7 +193,7 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  Widget buildFriendCard(String friendUsername, hasSentRequest) {
+  Widget buildFriendCard(String friendUsername, hasSentRequest, String image) {
     return GestureDetector(
       onTap: () {
         // Navegar al perfil del amigo
@@ -212,11 +222,6 @@ class _FriendsPageState extends State<FriendsPage> {
                 height: hasSentRequest ? 60 : 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle, // Establece la forma como un círculo
-                  border: Border.all(
-                    color:
-                        const Color.fromARGB(255, 0, 92, 90), // Color del borde
-                    width: 5, // Ancho del borde
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5), // Color de la sombra
@@ -226,14 +231,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     ),
                   ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      60), // Radio de borde igual a la mitad del ancho/alto
-                  child: Image.asset(
-                    'assets/images/blank-profile.jpg',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: CircleAvatar(backgroundImage: NetworkImage(image)),
               ),
               const SizedBox(height: 9),
               Text(
