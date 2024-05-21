@@ -72,7 +72,6 @@ class UserAuth {
     });
     var response = await httpPostNoToken('api/user/', data, 'application/json');
     if (response.statusCode == 201) {
-      await userAuth(username, password);
       return 'ok';
     } else {
       Map json = jsonDecode(response.body);
@@ -97,6 +96,8 @@ class UserAuth {
   }
 
   Future userLogout() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
     await SecureStorage().deleteSecureData('access_token');
     await SecureStorage().deleteSecureData('refresh_token');
     await SecureStorage().deleteSecureData('username');

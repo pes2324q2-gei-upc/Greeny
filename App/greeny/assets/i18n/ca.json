@@ -141,4 +141,21 @@
     "Compete with your friends and other users to climb positions in the ranking": "Competeix amb els teus amics i altres usuaris per pujar posicions al rànquing",
     "View your statistics and check how you are doing": "Visualitza les teves estadístiques i comprova com et mous",
     "Share your achievements and statistics with your acquaintances": "Comparteix els teus èxits i estadístiques amb els teus coneguts"
+    "Could not sign up. Please check your credentials": "No s'ha pogut fer el registre. Comprova les teves credencials",
+    "Welcome to Greeny!": "Benvinguts a Greeny!",
+    "Enter your verification code": "Introdueix el teu codi de verificació",
+    "You will be redirected to the login page and your account will be deleted. Are you sure you want to cancel the registration?": "Seràs redirigit a la pàgina d'inici de sessió i el teu compte s'eliminarà. Estàs segur que vols cancel·lar el registre?",
+    "Failed to verify. The code is incorrect, try again.": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho.",
+    "Introduce the verification code we have sent you to the email": "Introdueix el codi de verificació que t'hem enviat al correu electrònic:",
+    "Enter the email you used to sign up": "Introdueix el correu electrònic amb el que t'has registrat",
+    "Enter your email": "Introdueix el teu correu electrònic",
+    "You will be redirected to the login page. Are you sure you want to cancel the password reset?": "Seràs redirigit a la pàgina d'inici de sessió. Estàs segur que vols cancel·lar la recuperació de la contrasenya?",
+    "The email you entered is not associated with any account. Please try again or create a new account": "El correu electrònic que has introduït no està associat a cap compte. Si us plau, torna a intentar-ho o crea un compte nou",
+    "Enter your new password and confirm it": "Introdueix la teva nova contrasenya i confirma-la",
+    "Enter your new password": "Introdueix la teva nova contrasenya",
+    "Confirm your new password": "Confirma la teva nova contrasenya",
+    "Password successfully changed": "Contrasenya canviada amb èxit",
+    "Failed to reset password. Try again": "No s'ha pogut restablir la contrasenya. Torna a intentar-ho",
+    "Passwords do not match. Try again": "Les contrasenyes no coincideixen. Torna a intentar-ho",
+    "Failed to verify. The code is incorrect, try again": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho"
 }
