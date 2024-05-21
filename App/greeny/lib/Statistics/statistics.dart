@@ -1,6 +1,10 @@
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
 import 'package:greeny/utils/utils.dart';
@@ -81,17 +85,97 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(10.0),
         child: ListView(
           children: [
-            _buildInfoCard(translate('travelled'), kmTotal, 'km', Icons.route),
-            _buildInfoCard(
-                translate('of CO2 consumed'), co2Consumed, 'kg', Icons.cloud),
-            _buildInfoCard((translate('co2_consumed_combustion_car')),
-                carCO2Consumed, 'kg', Icons.directions_car),
+            InfoBox(
+              icon: Icons.route,
+              title: translate('Distance traveled'),
+              subtitle: '',
+              value: kmTotal.toStringAsFixed(2),
+              unit: 'km',
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.cloud,
+                    title: translate('CO2 consumed'),
+                    subtitle: translate('If travelled by combustion car'),
+                    value: carCO2Consumed.toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.cloud,
+                    title: translate('CO2 consumed'),
+                    subtitle: '',
+                    value: co2Consumed.toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.eco_rounded,
+                    title: translate('CO2 saved'),
+                    subtitle: '',
+                    value: (carCO2Consumed - co2Consumed).toStringAsFixed(2),
+                    unit: 'kg',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.nature_rounded,
+                    title: translate('Unfelled trees'),
+                    subtitle: '',
+                    value: ((carCO2Consumed-co2Consumed)/21.77).toStringAsFixed(2),
+                    unit: translate('trees'),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.electric_bolt,
+                    title: translate('Energy saved'),
+                    subtitle: '',
+                    value: ((carCO2Consumed-co2Consumed)/0.280).toStringAsFixed(2),
+                    unit: 'kWh',
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 1,
+                  child: InfoBox(
+                    icon: Icons.family_restroom,
+                    title: translate('Families supplied'),
+                    subtitle: '',
+                    value: (((carCO2Consumed-co2Consumed)/0.280)/4000).toStringAsFixed(2),
+                    unit: translate('families'),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             _buildRoutesButton(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             _buildProgressBar(Icons.directions_walk, kmWalked),
             _buildProgressBar(Icons.directions_bike, kmBiked),
             _buildProgressBar(Icons.electric_car, kmElectricCar),
@@ -102,34 +186,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ],
         ),
       ),
-    );
-  }
-
-  // Widget to display statistical information
-  Widget _buildInfoCard(
-      String label, double value, String unit, IconData icon) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon),
-            const SizedBox(width: 10),
-            Text(
-              '${value.toStringAsFixed(2)} $unit',
-              style:
-                  const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Text(
-          translate(label),
-          style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 20),
-      ],
     );
   }
 
@@ -202,6 +258,87 @@ class ProgressBar extends StatelessWidget {
           Text(
             '${(percentage * 100).toStringAsFixed(2)}%',
             style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InfoBox extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String value;
+  final String unit;
+
+  const InfoBox({super.key, 
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.unit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      height: 90,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          const SizedBox(width: 16),
+          Expanded(child:
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  minFontSize: 1,
+                ),
+                if (subtitle.isNotEmpty) 
+                  AutoSizeText(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    minFontSize: 1,
+                  ),
+                const SizedBox(height: 8),
+                AutoSizeText(
+                  '$value $unit',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -46,8 +46,8 @@
     "Friends": "Amics",
     "Km travelled: ": "Km recorreguts: ",
     "Previous travel: ": "Recorregut anterior: ",
-    "of CO2 saved": "de CO2 estalviat",
-    "traveled": "recorreguts",
+    "CO2 saved": "CO2 estalviat",
+    "Distance traveled": "Distància recorreguda",
     "PERCENTAGE OF USE": "PERCENTATGE D'ÚS",
     "Settings": "Configuració",
     "Log Out": "Tanca la sessió",
@@ -90,8 +90,8 @@
     "Trips:": "Viatges:",
     "Reviews:": "Resenyes:",
     "travelled": "recorreguts",
-    "of CO2 consumed": "de CO2 consumits",
-    "co2_consumed_combustion_car": "de CO2 consumits si haguessis\nanat en cotxe de combustió",
+    "CO2 consumed": "CO2 consumit",
+    "If travelled by combustion car": "Si viatgés en cotxe de combustió",
     "My Routes": "Les meves rutes",
     "Error loading routes": "Error en carregar les rutes",
     "Total distance: ": "Distància total: ",
@@ -140,7 +140,7 @@
     "When you purify a district, you will earn a badge, collect them all": "Quan descontaminis un districte guanyaràs una insígnia, aconsegueix-les totes",
     "Compete with your friends and other users to climb positions in the ranking": "Competeix amb els teus amics i altres usuaris per pujar posicions al rànquing",
     "View your statistics and check how you are doing": "Visualitza les teves estadístiques i comprova com et mous",
-    "Share your achievements and statistics with your acquaintances": "Comparteix els teus èxits i estadístiques amb els teus coneguts"
+    "Share your achievements and statistics with your acquaintances": "Comparteix els teus èxits i estadístiques amb els teus coneguts",
     "Could not sign up. Please check your credentials": "No s'ha pogut fer el registre. Comprova les teves credencials",
     "Welcome to Greeny!": "Benvinguts a Greeny!",
     "Enter your verification code": "Introdueix el teu codi de verificació",
@@ -157,5 +157,11 @@
     "Password successfully changed": "Contrasenya canviada amb èxit",
     "Failed to reset password. Try again": "No s'ha pogut restablir la contrasenya. Torna a intentar-ho",
     "Passwords do not match. Try again": "Les contrasenyes no coincideixen. Torna a intentar-ho",
-    "Failed to verify. The code is incorrect, try again": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho"
+    "Failed to verify. The code is incorrect, try again": "No s'ha pogut verificar. El codi és incorrecte, torna a intentar-ho",
+    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport",
+    "Unfelled trees": "Arbres no talats",
+    "trees": "arbres",
+    "Energy saved": "Energia estalviada",
+    "Families supplied": "Famílies subministrades",
+    "families": "famílies"
 }
