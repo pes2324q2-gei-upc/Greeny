@@ -7,9 +7,7 @@ import 'dart:convert';
 //import 'package:greeny/utils/utils.dart';
 
 class HistoryPage extends StatefulWidget {
-  final int level;
-
-  HistoryPage({Key? key, required this.level}) : super(key: key);
+  HistoryPage({Key? key}) : super(key: key);
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
