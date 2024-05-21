@@ -141,7 +141,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     icon: Icons.nature_rounded,
                     title: translate('Unfelled trees'),
                     subtitle: '',
-                    value: 1.toStringAsFixed(2),
+                    value: ((carCO2Consumed-co2Consumed)/21.77).toStringAsFixed(2),
                     unit: translate('trees'),
                   ),
                 ),
@@ -153,10 +153,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 Expanded(
                   flex: 1,
                   child: InfoBox(
-                    icon: Icons.eco_rounded,
+                    icon: Icons.electric_bolt,
                     title: translate('Energy saved'),
                     subtitle: '',
-                    value: 0.toStringAsFixed(2),
+                    value: ((carCO2Consumed-co2Consumed)/0.280).toStringAsFixed(2),
                     unit: 'kWh',
                   ),
                 ),
@@ -164,10 +164,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 Expanded(
                   flex: 1,
                   child: InfoBox(
-                    icon: Icons.nature_rounded,
+                    icon: Icons.family_restroom,
                     title: translate('Families supplied'),
                     subtitle: '',
-                    value: 1.toStringAsFixed(2),
+                    value: (((carCO2Consumed-co2Consumed)/0.280)/4000).toStringAsFixed(2),
                     unit: translate('families'),
                   ),
                 ),
