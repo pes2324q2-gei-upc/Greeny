@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
 import 'package:greeny/utils/utils.dart';
@@ -107,7 +108,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     unit: 'kg',
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 1,
                   child: InfoBox(
@@ -133,7 +134,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     unit: 'kg',
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 1,
                   child: InfoBox(
@@ -245,7 +246,7 @@ class InfoBox extends StatelessWidget {
   final String value;
   final String unit;
 
-  InfoBox({
+  const InfoBox({super.key, 
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -256,12 +257,12 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4,
@@ -276,34 +277,41 @@ class InfoBox extends StatelessWidget {
             size: 20,
             color: const Color.fromARGB(255, 1, 167, 164),
           ),
-          SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (subtitle.isNotEmpty) 
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 7,
+          const SizedBox(width: 16),
+          Expanded(child:
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  minFontSize: 1,
                 ),
-              SizedBox(height: 8),
-              Text(
-                '$value $unit',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                if (subtitle.isNotEmpty) 
+                  AutoSizeText(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    minFontSize: 1,
+                  ),
+                const SizedBox(height: 8),
+                AutoSizeText(
+                  '$value $unit',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
