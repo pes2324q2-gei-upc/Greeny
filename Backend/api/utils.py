@@ -1,5 +1,7 @@
 from .models import Blacklist
 from googletrans import Translator
+from django.core.mail import send_mail
+from django.conf import settings
 
 def calculate_co2_consumed(transports, total_distance):
     # Calculate the CO2 consumed by the user
@@ -96,7 +98,19 @@ def invalidate_user(user):
     user.save()
     Blacklist.objects.create(email=user.email)
 
-def translate(text, lang):
+def translate(text, id):
     translator = Translator()
-    result = translator.translate(text, src=lang, dest='en').text
+    lang = translator.detect(text).lang
+    result = ''
+    if lang != 'en':
+        try:
+            result = translator.translate(text, src=lang, dest='en').text
+        except Exception as e:
+            send_mail(
+                'Doubt with this review',
+                f'Couldn\'t detect de language of the reported review with ID: {id}, please check it',
+                settings.EMAIL_HOST_USER,
+                [settings.EMAIL_HOST_USER],
+                fail_silently=False,
+            )
     return result

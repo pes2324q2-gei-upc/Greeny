@@ -9,7 +9,6 @@ from .serializers import ReviewSerializer
 from django.conf import settings
 from profanity_check import predict_prob
 from .utils import check_for_ban, translate
-from ftlangdetect import detect
 import logging
 
 logger = logging.getLogger(__name__)
@@ -48,23 +47,13 @@ def profanity_filter(request, station_id, review_id):
     review = Review.objects.get(id=review_id)
     body = review.body
 
-    lang = detect(text=body, low_memory=False)['lang']
-    if lang != 'en':
-        try:
-            body = translate(body, lang)
-        except Exception as e:
-            send_mail(
-                'Código de verificación',
-                f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it',
-                settings.EMAIL_HOST_USER,
-                [settings.EMAIL_HOST_USER],
-                fail_silently=False,
-            )
-            logger.error(f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it')
-            return Response({'message':'Review pending of evaluation'})
+    result = translate(body, review.id)
+
+    if result == '':
+        return Response({'message':'Review pending of evaluation'})
 
 
-    if predict_prob([body]) >= 0.75:
+    if predict_prob([result]) >= 0.75:
         # Añadimos report al user
         user = request.user
         user.reports = user.reports + 1
