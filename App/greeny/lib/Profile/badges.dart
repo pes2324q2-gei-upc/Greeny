@@ -68,7 +68,10 @@ class _BadgesPageState extends State<BadgesPage> {
                 print('level: $level');
                 print('itemIndex: $itemIndex');
                 if (mastery <= 0) {
-                  imagePath = 'assets/badges/${itemIndex}0.png';
+                  if (itemIndex < level)
+                    imagePath = 'assets/badges/${itemIndex}0.png';
+                  else
+                    return SizedBox();
                 } else if (itemIndex > level - 1) {
                   print('level down');
                   if (mastery > 0) {

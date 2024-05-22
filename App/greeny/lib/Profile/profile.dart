@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         userUsername = userData[0]['username'];
         dateJoined = DateFormat('dd-MM-yyyy')
             .format(DateTime.parse(userData[0]['date_joined']));
-        level = 5;
+        level = userData[0]['level'];
         friends = userData[0]['friends_number'];
         trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
