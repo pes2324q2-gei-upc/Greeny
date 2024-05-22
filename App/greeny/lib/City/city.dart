@@ -265,31 +265,33 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ),
           ],
         ),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-          leading: IconButton(
-              onPressed: viewHistory,
-              icon: const Icon(Icons.restore),
-              color: const Color.fromARGB(255, 1, 167, 164)),
-          actions: isStaff
-              ? [
-                  IconButton(
-                    onPressed: () {
-                      addPoints();
-                    },
-                    icon: const Icon(Icons.add),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      removePoints();
-                    },
-                    icon: const Icon(Icons.remove),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                ]
-              : [],
-        ),
+        appBar: allCompleted
+            ? null
+            : AppBar(
+                backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+                leading: IconButton(
+                    onPressed: viewHistory,
+                    icon: const Icon(Icons.restore),
+                    color: const Color.fromARGB(255, 1, 167, 164)),
+                actions: isStaff
+                    ? [
+                        IconButton(
+                          onPressed: () {
+                            addPoints();
+                          },
+                          icon: const Icon(Icons.add),
+                          color: const Color.fromARGB(255, 1, 167, 164),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            removePoints();
+                          },
+                          icon: const Icon(Icons.remove),
+                          color: const Color.fromARGB(255, 1, 167, 164),
+                        ),
+                      ]
+                    : [],
+              ),
       );
     }
   }
