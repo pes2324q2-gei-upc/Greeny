@@ -231,7 +231,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           ],
                         )),
                     const SizedBox(height: 20),
-                    if (!appState.isPlaying)
+                    if (!appState.isPlaying && !allCompleted)
                       SizedBox(
                         height: 300,
                         width: 300,
@@ -250,7 +250,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           ],
                         ),
                       )
-                    else
+                    else if (!allCompleted)
                       SizedBox(
                           height: 300,
                           width: 300,
@@ -382,11 +382,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void removePoints() {
-    setState(() {
-      userPoints -= 50;
-    });
-    updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+    updateProgress(userPoints -
+        50); // Llama a la función para actualizar la barra de progreso
   }
 }
 
