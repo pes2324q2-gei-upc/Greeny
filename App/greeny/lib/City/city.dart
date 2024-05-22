@@ -34,7 +34,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int levelNumber = 1;
   String nhoodName = '';
   String nhoodPath = '';
-  bool first = true;
+  bool allCompleted = false;
 
   String userName = '';
   bool isStaff = false;
@@ -53,23 +53,20 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData();
-  }
-
-  void getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200 && response.statusCode != 401) {
-      var data = jsonDecode(utf8.decode(response.bodyBytes));
+    getCityData().then((newCityData) {
       setState(() {
-        cityDataNotifier.value = data;
-        userPoints = data['points_user'];
-        levelPoints = data['points_total'];
-        levelNumber = data['number'];
-        nhoodName = data['neighborhood']['name'];
-        nhoodPath = data['neighborhood']['path'];
-        userName = data['user_name'];
-        isStaff = data['is_staff'];
+        cityDataNotifier.value = newCityData;
+        userName = newCityData['user_name'];
+        isStaff = newCityData['is_staff'];
+        allCompleted = newCityData.containsKey('status') &&
+            newCityData['status'] == 'all_completed';
+        if (!allCompleted) {
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+        }
       });
     } else {
       // ignore: use_build_context_synchronously
@@ -79,21 +76,36 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   Future<void> updateCityData(int points) async {
     final response = await httpPut(
-        '/api/city/', jsonEncode({'points_user': points}), 'application/json');
-
+      '/api/city/',
+      jsonEncode({'points_user': points}),
+    );
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
+      print(newCityData);
+      if (newCityData.containsKey('status') &&
+          newCityData['status'] == 'all_completed') {
+        setState(() {
+          cityDataNotifier.value =
+              newCityData; // Actualiza los datos notificados
+          allCompleted = true; // Marca que todos los niveles están completados
+          userPoints = points; // Actualiza los puntos del usuario
 
-      setState(() {
-        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
-        cityDataNotifier.value = newCityData;
-        userPoints = newCityData['points_user'];
-        levelPoints = newCityData['points_total'];
-        levelNumber = newCityData['number'];
-        nhoodName = newCityData['neighborhood']['name'];
-        nhoodPath = newCityData['neighborhood']['path'];
-      });
+          // Actualiza los datos del usuario y el estado de staff si están disponibles
+          userName = newCityData['user_name'] ??
+              userName; // Utiliza el operador ?? para mantener el valor anterior si no viene uno nuevo
+          isStaff = newCityData['is_staff'] ?? isStaff;
+        });
+      } else {
+        setState(() {
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+        });
+      }
     } else {
       throw Exception('Failed to update city data');
     }
@@ -106,11 +118,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void updateProgress(int points) {
-    updateCityData(points);
-    setState(() {
-      userPoints = points;
-    });
+  void updateProgress(int points) async {
+    await updateCityData(points);
   }
 
   @override
@@ -118,9 +127,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     if (userName == '') {
       return const Scaffold(
         backgroundColor: Color.fromARGB(255, 220, 255, 255),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     } else {
       double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
@@ -145,15 +152,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         height: MediaQuery.of(context).size.width * 0.9,
                         child: Stack(
                           children: [
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
-                            ),
                             ValueListenableBuilder<Map<String, dynamic>?>(
                               valueListenable: cityDataNotifier,
                               builder: (BuildContext context,
@@ -162,17 +160,24 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                 if (cityData == null || !_showModelViewer) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
                                     ),
                                   );
                                 } else {
-                                  if (first) {
-                                    // Los datos están disponibles, construye el ModelViewer.
+                                  if (cityData.containsKey('status') &&
+                                      cityData['status'] == 'all_completed') {
+                                    // Todos los niveles están completados, muestra un botón de reinicio.
+                                    return Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Aquí puedes poner la lógica para reiniciar los niveles.
+                                        },
+                                        child: const Text('Restart'),
+                                      ),
+                                    );
+                                  } else {
+                                    // Los datos están disponibles, construye el ModelViewer y las imágenes de niebla.
                                     userPoints = cityData['points_user'];
                                     levelPoints = cityData['points_total'];
                                     levelNumber = cityData['number'];
@@ -180,35 +185,48 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                         cityData['neighborhood']['name'];
                                     nhoodPath =
                                         cityData['neighborhood']['path'];
-                                    first = false;
-                                  }
 
-                                  return ModelViewer(
-                                    debugLogging: false,
-                                    key: Key(nhoodName),
-                                    src: 'assets/neighborhoods/$nhoodPath',
-                                    autoRotate: true,
-                                    disableZoom: true,
-                                    rotationPerSecond: "25deg",
-                                    autoRotateDelay: 1000,
-                                    cameraControls: false,
-                                  );
+                                    return Stack(
+                                      children: [
+                                        Opacity(
+                                          opacity:
+                                              opct, // Calcula la opacidad basada en los puntos
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                        ModelViewer(
+                                          debugLogging: false,
+                                          key: Key(nhoodName),
+                                          src:
+                                              'assets/neighborhoods/$nhoodPath',
+                                          autoRotate: true,
+                                          disableZoom: true,
+                                          rotationPerSecond: "25deg",
+                                          autoRotateDelay: 1000,
+                                          cameraControls: false,
+                                        ),
+                                        Opacity(
+                                          opacity:
+                                              opct, // Repite la opacidad para la segunda imagen de niebla
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                      ],
+                                    );
+                                  }
                                 }
                               },
-                            ),
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
                             ),
                           ],
                         )),
                     const SizedBox(height: 20),
-                    if (!appState.isPlaying)
+                    if (!appState.isPlaying && !allCompleted)
                       SizedBox(
                         height: 300,
                         width: 300,
@@ -227,7 +245,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           ],
                         ),
                       )
-                    else
+                    else if (!allCompleted)
                       SizedBox(
                           height: 300,
                           width: 300,
@@ -242,31 +260,33 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ),
           ],
         ),
-        appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-          leading: IconButton(
-              onPressed: viewHistory,
-              icon: const Icon(Icons.restore),
-              color: const Color.fromARGB(255, 1, 167, 164)),
-          actions: isStaff
-              ? [
-                  IconButton(
-                    onPressed: () {
-                      addPoints();
-                    },
-                    icon: const Icon(Icons.add),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      removePoints();
-                    },
-                    icon: const Icon(Icons.remove),
-                    color: const Color.fromARGB(255, 1, 167, 164),
-                  ),
-                ]
-              : [],
-        ),
+        appBar: allCompleted
+            ? null
+            : AppBar(
+                backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+                leading: IconButton(
+                    onPressed: viewHistory,
+                    icon: const Icon(Icons.restore),
+                    color: const Color.fromARGB(255, 1, 167, 164)),
+                actions: isStaff
+                    ? [
+                        IconButton(
+                          onPressed: () {
+                            addPoints();
+                          },
+                          icon: const Icon(Icons.add),
+                          color: const Color.fromARGB(255, 1, 167, 164),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            removePoints();
+                          },
+                          icon: const Icon(Icons.remove),
+                          color: const Color.fromARGB(255, 1, 167, 164),
+                        ),
+                      ]
+                    : [],
+              ),
       );
     }
   }
@@ -362,19 +382,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void addPoints() {
-    setState(() {
-      userPoints += 10;
-    });
-    updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+    updateProgress(userPoints +
+        50); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
-    setState(() {
-      userPoints -= 10;
-    });
-    updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+    updateProgress(userPoints -
+        50); // Llama a la función para actualizar la barra de progreso
   }
 }
 
