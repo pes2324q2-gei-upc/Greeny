@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1083622676199",
+    "project_id": "greeny-89bd0",
+    "storage_bucket": "greeny-89bd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083622676199:android:0580b6367e043f74d9b442",
+        "android_client_info": {
+          "package_name": "com.example.greeny"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1083622676199-1ptjs07g3nacpa0k9shlnq8qvgbqvd5u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.greeny",
+            "certificate_hash": "4be8dde084ab7e8dfced7e0bfdc97e6f0a25eceb"
+          }
+        },
+        {
+          "client_id": "1083622676199-jukbruqpua7d82pr7qq9tobapofijl11.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4EFivyPVuhpfgf8D5p5SHNRrOT8SU-B0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1083622676199-jukbruqpua7d82pr7qq9tobapofijl11.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1083622676199-rjuedlchg3sumeenod4km9h3esuov27j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.greeny.greeny.greeny.greeny.greeny.greeny.greeny"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

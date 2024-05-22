@@ -6,9 +6,10 @@ FetchPublicTransportStations methods.
 """
 # Standard library imports
 import json
+from unittest.mock import patch
 
 # Third-party imports
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.gis.geos import Point
 from rest_framework.test import APIClient
@@ -331,7 +332,7 @@ class TestReviewsViews(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Review.objects.count(), 2)
-        self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
+        self.assertEqual(Review.objects.get(body='Good station!').body, 'Good station!')
         self.station.refresh_from_db()
         self.assertEqual(self.station.rating, 4.5)
 
@@ -387,3 +388,44 @@ class CityViewTest(TestCase):
         unauthenticated_client = APIClient()
         response = unauthenticated_client.get(reverse('city'))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+
+class ProfanityFilterTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        location = Point(0, 0)  # replace with actual longitude and latitude
+        self.station = Station.objects.create(name='Station1', location=location, rating=0)
+        self.user = User.objects.create_user(username='user1', password='pass')
+        self.review = Review.objects.create(author=self.user, station=self.station, body='Test review', puntuation=5)
+        self.url = reverse('profanity-filter', kwargs={'station_id': self.station.id, 'review_id': self.review.id})
+        self.client.force_authenticate(user=self.user)
+    def test_no_profanity(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'No profanity detected'})
+
+    def test_profanity_no_previous_reports(self):
+        self.review.body = 'This station is very shit!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
+        self.assertEqual(self.user.reports, 1)
+
+    def test_profanity_with_previous_reports(self):
+        self.user.reports = 2
+        self.user.save()
+        self.review.body = 'This station is shit!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_423_LOCKED)
+        self.assertEqual(response.data, {'message': 'User has been banned'})
+
+    def test_non_english_review(self):
+        self.review.body = 'Mierda de estacion!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
+        self.assertEqual(self.user.reports, 1)

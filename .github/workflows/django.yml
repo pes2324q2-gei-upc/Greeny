@@ -2,9 +2,14 @@ name: Django CI
 
 on:
   push:
-    branches: ["main", "develop", "hotfix/jangoCI"]
+    branches: ["main", "develop"]
+    paths:
+      - '**.py'
+      - '**.txt'
   pull_request:
     branches: ["main", "develop"]
+    paths:
+      - '**.py'
 
 jobs:
   build:

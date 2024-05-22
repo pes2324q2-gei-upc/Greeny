@@ -13,6 +13,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -37,6 +38,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   String userName = '';
   bool isStaff = false;
+
+  bool _showModelViewer = true;
 
   ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
@@ -65,16 +68,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           nhoodPath = newCityData['neighborhood']['path'];
         }
       });
-    });
-  }
-
-  Future<Map<String, dynamic>> getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
-      throw Exception('Failed to load city data');
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('Failed to load city data'));
     }
   }
 
@@ -83,7 +79,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       '/api/city/',
       jsonEncode({'points_user': points}),
     );
-    print("put ejecutado");
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
@@ -162,7 +157,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               builder: (BuildContext context,
                                   Map<String, dynamic>? cityData,
                                   Widget? child) {
-                                if (cityData == null) {
+                                if (cityData == null || !_showModelViewer) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
                                     child: CircularProgressIndicator(
@@ -323,8 +318,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
+    setState(() {
+      _showModelViewer = false;
+    });
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
+      setState(() {
+        _showModelViewer = true;
+      });
+    });
   }
 
   void finalForm() {
