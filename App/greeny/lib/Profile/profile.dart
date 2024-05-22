@@ -488,10 +488,11 @@ class _ProfilePageState extends State<ProfilePage> {
     // Bucle para generar medallas basadas en el nivel
     for (int i = 0; i < level; i++) {
       int maxlevel;
-      if (mastery == 0)
+      if (mastery == 0) {
         maxlevel = level - 1;
-      else
+      } else {
         maxlevel = 9;
+      }
       badges.add(
         Positioned(
           left: i * 25.0, // Espacio horizontal entre las medallas
@@ -502,7 +503,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
               child: Image.asset(
-                'assets/badges/${i}${mastery}.png', // Cambia la imagen según corresponda
+                'assets/badges/$i$mastery.png', // Cambia la imagen según corresponda
                 width: 40, // Ancho deseado
                 height: 40, // Alto deseado
                 fit: BoxFit.cover,
@@ -524,7 +525,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(60),
                 child: Image.asset(
-                  'assets/badges/${i}${mastery - 1}.png', // Cambia la imagen según corresponda
+                  'assets/badges/$i${mastery - 1}.png', // Cambia la imagen según corresponda
                   width: 40, // Ancho deseado
                   height: 40, // Alto deseado
                   fit: BoxFit.cover,

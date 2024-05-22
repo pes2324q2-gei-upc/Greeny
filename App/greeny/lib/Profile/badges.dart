@@ -64,26 +64,20 @@ class _BadgesPageState extends State<BadgesPage> {
               itemBuilder:
                   (BuildContext context, int itemIndex, int pageViewIndex) {
                 String imagePath;
-                print('mastery: $mastery');
-                print('level: $level');
-                print('itemIndex: $itemIndex');
-                print(maxlevel);
                 if (mastery <= 0) {
-                  if (itemIndex < level)
+                  if (itemIndex < level) {
                     imagePath = 'assets/badges/${itemIndex}0.png';
-                  else
-                    return SizedBox();
+                  } else {
+                    return const SizedBox();
+                  }
                 } else if (itemIndex > level - 1) {
-                  print('level down');
                   if (mastery > 0) {
-                    print('mastery-1');
-                    imagePath = 'assets/badges/${itemIndex}${mastery - 1}.png';
+                    imagePath = 'assets/badges/$itemIndex${mastery - 1}.png';
                   } else {
                     imagePath = 'assets/badges/${itemIndex}0.png';
                   }
                 } else {
-                  print('else');
-                  imagePath = 'assets/badges/${itemIndex}${mastery}.png';
+                  imagePath = 'assets/badges/$itemIndex$mastery.png';
                 }
 
                 return Image.asset(
