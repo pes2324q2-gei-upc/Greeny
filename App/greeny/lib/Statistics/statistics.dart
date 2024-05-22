@@ -8,7 +8,8 @@ import 'package:greeny/utils/utils.dart';
 import '../utils/info_dialog.dart';
 
 class StatisticsPage extends StatefulWidget {
-  const StatisticsPage({super.key});
+  const StatisticsPage({Key? key, required this.sharing}) : super(key: key);
+  final bool sharing;
 
   @override
   State<StatisticsPage> createState() => _StatisticsPageState();
@@ -65,22 +66,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: Text(
-          translate('Statistics'),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              showInformationDialog(context);
-            },
-            icon: const Icon(Icons.info_outline_rounded),
-            color: const Color.fromARGB(255, 1, 167, 164),
-          ),
-        ],
-      ),
+      appBar: widget.sharing
+          ? null // Oculta la AppBar si sharing es true
+          : AppBar(
+              backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+              title: Text(
+                translate('Statistics'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    showInformationDialog(context);
+                  },
+                  icon: const Icon(Icons.info_outline_rounded),
+                  color: const Color.fromARGB(255, 1, 167, 164),
+                ),
+              ],
+            ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListView(
@@ -138,7 +141,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     icon: Icons.nature_rounded,
                     title: translate('Unfelled trees'),
                     subtitle: '',
-                    value: ((carCO2Consumed-co2Consumed)/21.77).toStringAsFixed(2),
+                    value: ((carCO2Consumed - co2Consumed) / 21.77)
+                        .toStringAsFixed(2),
                     unit: translate('trees'),
                   ),
                 ),
@@ -153,7 +157,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     icon: Icons.electric_bolt,
                     title: translate('Energy saved'),
                     subtitle: '',
-                    value: ((carCO2Consumed-co2Consumed)/0.280).toStringAsFixed(2),
+                    value: ((carCO2Consumed - co2Consumed) / 0.280)
+                        .toStringAsFixed(2),
                     unit: 'kWh',
                   ),
                 ),
@@ -164,22 +169,25 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     icon: Icons.family_restroom,
                     title: translate('Families supplied'),
                     subtitle: '',
-                    value: (((carCO2Consumed-co2Consumed)/0.280)/4000).toStringAsFixed(2),
+                    value: (((carCO2Consumed - co2Consumed) / 0.280) / 4000)
+                        .toStringAsFixed(2),
                     unit: translate('families'),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            _buildRoutesButton(),
-            const SizedBox(height: 20),
-            _buildProgressBar(Icons.directions_walk, kmWalked),
-            _buildProgressBar(Icons.directions_bike, kmBiked),
-            _buildProgressBar(Icons.electric_car, kmElectricCar),
-            _buildProgressBar(Icons.train, kmPublicTransport),
-            _buildProgressBar(Icons.directions_bus, kmBus),
-            _buildProgressBar(Icons.motorcycle, kmMotorcycle),
-            _buildProgressBar(Icons.directions_car, kmCar),
+            if (!widget.sharing) ...[
+              const SizedBox(height: 20),
+              _buildRoutesButton(),
+              const SizedBox(height: 20),
+              _buildProgressBar(Icons.directions_walk, kmWalked),
+              _buildProgressBar(Icons.directions_bike, kmBiked),
+              _buildProgressBar(Icons.electric_car, kmElectricCar),
+              _buildProgressBar(Icons.train, kmPublicTransport),
+              _buildProgressBar(Icons.directions_bus, kmBus),
+              _buildProgressBar(Icons.motorcycle, kmMotorcycle),
+              _buildProgressBar(Icons.directions_car, kmCar),
+            ]
           ],
         ),
       ),
@@ -269,7 +277,8 @@ class InfoBox extends StatelessWidget {
   final String value;
   final String unit;
 
-  const InfoBox({super.key, 
+  const InfoBox({
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -302,8 +311,8 @@ class InfoBox extends StatelessWidget {
             color: const Color.fromARGB(255, 1, 167, 164),
           ),
           const SizedBox(width: 16),
-          Expanded(child:
-            Column(
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AutoSizeText(
@@ -315,7 +324,7 @@ class InfoBox extends StatelessWidget {
                   maxLines: 1,
                   minFontSize: 1,
                 ),
-                if (subtitle.isNotEmpty) 
+                if (subtitle.isNotEmpty)
                   AutoSizeText(
                     subtitle,
                     style: const TextStyle(
