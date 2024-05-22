@@ -1,9 +1,18 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework import status
-from .models import Review, Station
-from .serializers import ReviewSerializer
+from rest_framework.decorators import api_view
+from django.core.mail import send_mail
 
+from rest_framework import status
+from .models import Review, Station, User
+from .serializers import ReviewSerializer
+from django.conf import settings
+from profanity_check import predict_prob
+from .utils import check_for_ban, translate
+from ftlangdetect import detect
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ReviewsViews(ModelViewSet):
     serializer_class = ReviewSerializer
@@ -33,3 +42,40 @@ class ReviewsViews(ModelViewSet):
         station = Station.objects.get(id=station_id)
         reviews = Review.objects.filter(station=station).order_by('-creation_date')
         return reviews
+
+@api_view(['POST'])
+def profanity_filter(request, station_id, review_id):
+    review = Review.objects.get(id=review_id)
+    body = review.body
+
+    lang = detect(text=body, low_memory=False)['lang']
+    if lang != 'en':
+        try:
+            body = translate(body, lang)
+        except Exception as e:
+            send_mail(
+                'Código de verificación',
+                f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it',
+                settings.EMAIL_HOST_USER,
+                [settings.EMAIL_HOST_USER],
+                fail_silently=False,
+            )
+            logger.error(f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it')
+            return Response({'message':'Review pending of evaluation'})
+
+
+    if predict_prob([body]) >= 0.75:
+        # Añadimos report al user
+        user = request.user
+        user.reports = user.reports + 1
+        user.save()
+
+        # Eliminamos la review
+        review.delete()
+
+        if check_for_ban(user):
+            # redirect to BAN Screen
+            return Response({'message': 'User has been banned'}, status=status.HTTP_423_LOCKED)
+
+        return Response({'message': 'Review has been deleted due to profanity'}, status=status.HTTP_200_OK)
+    return Response({'message': 'No profanity detected'}, status=status.HTTP_200_OK)

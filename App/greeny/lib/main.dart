@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:greeny/firebase_options.dart';
 import 'package:greeny/utils/app_state.dart';
+import 'package:greeny/utils/banned.dart';
 import 'package:greeny/utils/loading_screen.dart';
 import 'package:greeny/main_page.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:greeny/API/requests.dart';
 
 final ValueNotifier<bool> startAnimationNotifier = ValueNotifier<bool>(false);
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class TranslatePreferences implements ITranslatePreferences {
   static const String _selectedLocaleKey = 'selected_locale';
@@ -45,6 +48,7 @@ Future<void> main() async {
       supportedLocales: ['en_US', 'es', 'ca']);
 
   await dotenv.load(fileName: ".env");
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState(),
@@ -56,16 +60,45 @@ Future<void> main() async {
   );
 }
 
-class Greeny extends StatelessWidget {
+class Greeny extends StatefulWidget {
   const Greeny({super.key});
-  // This widget is the root of your application.
+
+  @override
+  _GreenyState createState() => _GreenyState();
+}
+
+class _GreenyState extends State<Greeny> {
+  StreamSubscription? _banSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _banSubscription = bannedUserController.stream.listen((event) {
+      if (event && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.pushReplacement(
+            MaterialPageRoute(builder: (context) => BannedScreen()),
+          );
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _banSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var localizationDelegate = LocalizedApp.of(context).delegate;
+
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
       child: MaterialApp(
         title: 'Greeny',
+        navigatorKey: navigatorKey, // Asigna el GlobalKey aquí
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -115,6 +148,8 @@ Future<Widget> mainScreenIfUser() async {
   String token = await getToken();
   if (token != '' && await checkTokenFirstTime(token)) {
     return const MainPage();
+  } else if (token == 'banned') {
+    return BannedScreen();
   } else {
     return const LogInPage();
   }

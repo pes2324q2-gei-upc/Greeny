@@ -19,7 +19,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import User, Neighborhood, Level, VerificationCode
+from .models import User, Neighborhood, Level, VerificationCode, Blacklist
+
 from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
@@ -38,7 +39,12 @@ class UsersView(ModelViewSet):
         validated_data = serializer.validated_data
 
         validated_data['is_active'] = False
-        user = User.objects.create_user(**validated_data)
+        banned = Blacklist.objects.filter(email=validated_data['email']).exists()
+        if not banned:
+            user = User.objects.create_user(**validated_data)
+        else:
+            return Response({'message':'You are banned from this application for violating our guidelines'},
+                            status=status.HTTP_403_FORBIDDEN)
 
         send_verification_email(user)
 
@@ -294,6 +300,28 @@ def google_auth(request):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
         'username': user.username,
+    }
+
+    return Response(info, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def obtain_token(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = User.objects.filter(username=username).first()
+
+    if user is None or not check_password(password, user.password):
+        return Response({'error': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if user.is_active == False:
+        return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    refresh = RefreshToken.for_user(user)
+    info = {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
     }
 
     return Response(info, status=status.HTTP_200_OK)

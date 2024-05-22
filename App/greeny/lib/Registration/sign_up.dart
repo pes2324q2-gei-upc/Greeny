@@ -5,6 +5,7 @@ import 'log_in.dart';
 import '../utils/translate.dart' as t;
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/utils/banned.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});

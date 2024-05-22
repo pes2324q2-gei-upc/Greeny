@@ -1,3 +1,6 @@
+from .models import Blacklist
+from googletrans import Translator
+
 def calculate_co2_consumed(transports, total_distance):
     # Calculate the CO2 consumed by the user
     # 0.0 kg CO2 per km for walking and biking
@@ -80,3 +83,20 @@ def calculate_points(co2_consumed, car_co2_consumed):
     multiplier = 2
 
     return int(round(total_points * multiplier))
+
+def check_for_ban(user):
+    if user.reports == 3:
+        invalidate_user(user)
+        return True
+    return False
+
+def invalidate_user(user):
+    #añadir a lista negra.
+    user.is_active = False
+    user.save()
+    Blacklist.objects.create(email=user.email)
+
+def translate(text, lang):
+    translator = Translator()
+    result = translator.translate(text, src=lang, dest='en').text
+    return result

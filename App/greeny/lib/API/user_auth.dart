@@ -73,6 +73,8 @@ class UserAuth {
     var response = await httpPostNoToken('api/user/', data, 'application/json');
     if (response.statusCode == 201) {
       return 'ok';
+    } else if (response.statusCode == 403) {
+      return 'banned';
     } else {
       Map json = jsonDecode(response.body);
       if (json.containsKey("email")) {
