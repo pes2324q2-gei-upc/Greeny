@@ -100,3 +100,10 @@ def translate(text, lang):
     translator = Translator()
     result = translator.translate(text, src=lang, dest='en').text
     return result
+
+'''def translate(text):
+    translator = Translator()
+    detected_lang = translator.detect(text).lang
+    if detected_lang != 'en':
+        result = translator.translate(text, src=detected_lang, dest='en').text
+    return result'''
