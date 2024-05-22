@@ -53,7 +53,7 @@ def profanity_filter(request, station_id, review_id):
         return Response({'message':'Review pending of evaluation'})
 
 
-    if predict_prob([body]) >= 0.75:
+    if predict_prob([result]) >= 0.75:
         # Añadimos report al user
         user = request.user
         user.reports = user.reports + 1
