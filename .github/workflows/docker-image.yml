@@ -26,6 +26,10 @@ jobs:
       run: |
         pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==3.3.0
 
+    - name: Install pybind11
+      run: |
+        pip install pybind11
+
     - name: Install Python Dependencies
       working-directory: Backend
       run: |
