@@ -30,10 +30,8 @@ class CityView(APIView):
             response_data = {"status": "all_completed"}
             response_data.update(user_data)  # Agrega los datos del usuario a la respuesta
             return Response(response_data)
-    
         if level is None:
             return Response({"message": "No current level"})
-        
         level_data = LevelSerializer(level).data
         return Response(level_data)
 
@@ -55,7 +53,6 @@ class CityView(APIView):
                 response_data = {"status": "all_completed"}
                 response_data.update(user_data) 
                 return response_data
-
             next_level = self.update_level(user)
             if next_level:
                 level_data = LevelSerializer(next_level).data

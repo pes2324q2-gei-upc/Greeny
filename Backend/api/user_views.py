@@ -42,7 +42,6 @@ class UsersView(ModelViewSet):
                 user=user,
                 neighborhood=neighborhood
             )
-    
     def reset_levels(self, user):
         Level.objects.filter(user=user).delete()
         self.init_levels(user)
