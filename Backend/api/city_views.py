@@ -20,7 +20,6 @@ class CityView(APIView):
         user = request.user
         levels = Level.objects.filter(user=user)
         all_completed = all(level.completed for level in levels)
-
         if all_completed:
             user_data = {
                 "user_name": user.username,
@@ -40,21 +39,17 @@ class CityView(APIView):
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
         response_data = {}
-
-        if level is None:
-            response_data = {"message": "No current level"}
-        elif new_points is not None:
+        if new_points is not None:
             if new_points < 0:
                 level.points_user = 0
                 level.save()
-
                 if level.number > 1:
-                    previous_level = Level.objects.filter(user=user, number=level.number - 1).first()
+                    lvlnb = level.number - 1
+                    previous_level = Level.objects.filter(user=user, number=lvlnb - 1).first()
                     if previous_level:
                         level.current = False
                         level.completed = False
                         level.save()
-
                         previous_level.current = True
                         previous_level.completed = False
                         previous_level.save()
@@ -66,7 +61,6 @@ class CityView(APIView):
             else:
                 level.points_user = new_points
                 level.save()
-
                 if level.number == 10 and new_points >= 1500:
                     level.completed = True
                     level.current = False
