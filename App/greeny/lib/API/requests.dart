@@ -5,8 +5,12 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http_parser/http_parser.dart';
+import 'dart:async';
 
 String backendURL = dotenv.env['BACKEND_URL']!;
+
+final StreamController<bool> bannedUserController =
+    StreamController<bool>.broadcast();
 
 getBackendURL() {
   return backendURL;
@@ -29,6 +33,8 @@ Future<String> getToken() async {
       Map json = jsonDecode(response.body);
       await SecureStorage().writeSecureData('access_token', json['access']);
       return json['access'];
+    } else if (response.statusCode == 401) {
+      return 'banned';
     } else {
       return '';
     }
@@ -57,6 +63,8 @@ httpGet(String url) async {
       'Authorization': 'Bearer $token',
     },
   );
+  checkForBan(response);
+
   return response;
 }
 
@@ -72,6 +80,21 @@ httpPost(String url, String params, String contentType) async {
     body: params,
   );
 
+  checkForBan(response);
+
+  return response;
+}
+
+httpPostNoToken(String url, String params, String contentType) async {
+  var uri = Uri.http(backendURL, url);
+  var response = await http.post(
+    uri,
+    headers: {
+      'Content-Type': contentType,
+    },
+    body: params,
+  );
+  checkForBan(response);
   return response;
 }
 
@@ -86,6 +109,9 @@ httpPut(String url, String params, String type) async {
     },
     body: params,
   );
+
+  checkForBan(response);
+
   return response;
 }
 
@@ -100,6 +126,9 @@ httpPatch(String url, String params, String type) async {
     },
     body: params,
   );
+
+  checkForBan(response);
+
   return response;
 }
 
@@ -112,6 +141,24 @@ httpDelete(String url) async {
       'Authorization': 'Bearer $token',
     },
   );
+
+  checkForBan(response);
+
+  return response;
+}
+
+httpDeleteNoToken(String url, String params, String contentType) async {
+  var uri = Uri.http(backendURL, url);
+  var response = await http.delete(
+    uri,
+    headers: {
+      'Content-Type': contentType,
+    },
+    body: params,
+  );
+
+  checkForBan(response);
+
   return response;
 }
 
@@ -209,4 +256,10 @@ httpUpdateAccount({
 
   final streamedResponse = await request.send();
   return await http.Response.fromStream(streamedResponse);
+}
+
+void checkForBan(response) {
+  if (response.statusCode == 401) {
+    bannedUserController.add(true);
+  }
 }

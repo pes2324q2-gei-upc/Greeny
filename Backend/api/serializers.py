@@ -37,6 +37,10 @@ class UserSerializer(serializers.ModelSerializer):
     routes_number = serializers.SerializerMethodField()
     friends_number = serializers.SerializerMethodField()
     level = serializers.SerializerMethodField()
+    is_google = serializers.SerializerMethodField()
+
+    def get_is_google(self, obj):
+        return obj.password == ''
 
     def get_level(self, obj):
         try:
@@ -60,10 +64,6 @@ class UserSerializer(serializers.ModelSerializer):
         favorite_stations = FavoriteStation.objects.filter(user=obj)
         return FavoriteStationSerializer(favorite_stations, many=True).data
 
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
-
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret.pop('password', None)
@@ -73,13 +73,19 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'email', 'password',
                   'date_joined', 'favorite_stations', 'routes_number', 'reviews_number',
-                  'friends_number', 'level', 'image']
+                  'friends_number', 'level', 'image', 'is_google']
         extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url)
+
     class Meta:
         model = User
-        fields = ['username', 'first_name']
+        fields = ['username', 'first_name', 'image']
 
 class FriendSerializer(serializers.ModelSerializer):
     friends = serializers.SerializerMethodField()
@@ -161,12 +167,19 @@ class LevelSerializer(serializers.ModelSerializer):
         fields = ['number', 'completed', 'current', 'points_user',
                   'points_total', 'neighborhood', 'user_name', 'is_staff']
 
+class HistorySerializer(serializers.ModelSerializer):
+    neighborhood = NeighborhoodSerializer()
+
+    class Meta:
+        model = Level
+        fields = ['number', 'completed', 'neighborhood']
+
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
 
     class Meta:
         model = Review
-        exclude = ['id', 'station', 'author']
+        exclude = ['station', 'author']
 
     def get_author_username(self, obj):
         return obj.author.username
@@ -174,10 +187,16 @@ class ReviewSerializer(serializers.ModelSerializer):
 class FriendRequestSerializer(serializers.ModelSerializer):
     from_user_username = serializers.ReadOnlyField(source='from_user.username')
     to_user_username = serializers.ReadOnlyField(source='to_user.username')
+    from_user_image = serializers.SerializerMethodField()
+
+    def get_from_user_image(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.from_user.image.url)
 
     class Meta:
         model = FriendRequest
-        fields = ['id', 'from_user', 'to_user', 'from_user_username', 'to_user_username']
+        fields = ['id', 'from_user', 'to_user', 'from_user_username',
+                  'to_user_username', 'from_user_image']
 
 class RouteSerializer(serializers.ModelSerializer):
     class Meta:

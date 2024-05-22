@@ -38,6 +38,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   String userName = '';
   bool isStaff = false;
 
+  bool _showModelViewer = true;
+
   ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
   void initState() {
@@ -67,7 +69,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   Future<Map<String, dynamic>> getCityData() async {
     final response = await httpGet('/api/city/');
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 && response.statusCode != 401) {
       return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load city data');
@@ -76,10 +78,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
   Future<void> updateCityData(int points) async {
     final response = await httpPut(
-      '/api/city/',
-      jsonEncode({'points_user': points}),
-      'application/json'
-    );
+        '/api/city/', jsonEncode({'points_user': points}), 'application/json');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
@@ -159,7 +158,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               builder: (BuildContext context,
                                   Map<String, dynamic>? cityData,
                                   Widget? child) {
-                                if (cityData == null) {
+                                if (cityData == null || !_showModelViewer) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
                                     child: SizedBox(
@@ -298,8 +297,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
+    setState(() {
+      _showModelViewer = false;
+    });
+
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
+        context, MaterialPageRoute(builder: (context) => const HistoryPage())
+    ).then((_) {
+      setState(() {
+        _showModelViewer = true;
+      });
+    });
   }
 
   void finalForm() {

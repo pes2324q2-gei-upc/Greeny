@@ -75,6 +75,11 @@ class _StationPageState extends State<StationPage> {
                 station['rating'].toString(),
                 style: const TextStyle(fontSize: 20),
               ),
+              const SizedBox(width: 5),
+              Text(
+                '(${reviewsList.length.toString()})',
+                style: const TextStyle(fontSize: 20),
+              ),
             ]),
             IconButton(
               onPressed: () async {
@@ -270,6 +275,20 @@ class _StationPageState extends State<StationPage> {
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 5),
                       const Icon(Icons.star, color: Colors.yellow),
+                      IconButton(
+                        onPressed: () async {
+                          var reviewID = review['id'];
+                          var res = await httpPost(
+                              'api/stations/$stationId/reviews/$reviewID/profanity-filter',
+                              jsonEncode({}),
+                              'application/json');
+                          if (res.statusCode == 200) {
+                            showMessage(context,
+                                translate('The review has been reported'));
+                          }
+                        },
+                        icon: const Icon(Icons.report),
+                      )
                     ],
                   ),
                 ),

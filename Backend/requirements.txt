@@ -8,3 +8,5 @@ djangorestframework_simplejwt==5.3.1
 GDAL==3.3.0
 whitenoise==6.6.0
 Pillow==10.1.0
+alt-profanity-check==1.4.2
+googletrans==3.1.0a0
