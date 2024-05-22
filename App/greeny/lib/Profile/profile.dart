@@ -171,7 +171,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 5,
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
                         const Icon(Icons.emoji_events_outlined,

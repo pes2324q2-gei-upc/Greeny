@@ -53,55 +53,21 @@ class _MapPageState extends State<MapPage> {
   bool isLoading = true;
   bool gettingLocation = true;
   GoogleMapController? mapController;
-  final Map<int, int> _zoomToDistance = {
-    0: 4294967296,
-    1: 4294967296,
-    2: 4294967296,
-    3: 4294967296,
-    4: 4294967296,
-    5: 4294967296,
-    6: 4294967296,
-    7: 15000,
-    8: 15000,
-    9: 10000,
-    10: 4000,
-    11: 3000,
-    12: 2000,
-    13: 1000,
-    14: 500,
-    15: 300,
-    16: 200,
-    17: 100,
-    18: 0,
-    19: 0,
-    20: 0,
-    21: 0,
-    22: 0
-  };
   // ignore: prefer_typing_uninitialized_variables
   var t;
   CameraPosition camposition =
       const CameraPosition(target: LatLng(0, 0), zoom: 16);
   Set<String> favStations = {};
+  Timer? _debounce;
 
-  Future<void> _updateMarkers(
-      CameraPosition newposition, bool moving, bool forceupdate) async {
-    if (!forceupdate &&
-        _markerss.isNotEmpty &&
-        camposition.target.latitude == newposition.target.latitude) {
-      return;
-    }
-
-    var dist = markersHelper.distanceBetweenTwoCoords(
-        newposition.target, camposition.target);
-
-    if (moving &&
-        dist < _zoomToDistance[newposition.zoom.toInt()]! &&
-        camposition.zoom.toInt() == newposition.zoom.toInt()) {
-      return;
-    }
-
+  Future<void> _updateMarkers(CameraPosition newposition) async {
     var visible = await mapController!.getVisibleRegion();
+
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
+      stations = await locations.getStations(visible);
+      // rest of your code
+    });
 
     final List<MapMarker> markers = await markersHelper.getMarkers(
         // ignore: use_build_context_synchronously
@@ -157,7 +123,9 @@ class _MapPageState extends State<MapPage> {
   Future<void> getInfo() async {
     stations = Provider.of<AppState>(context, listen: false).stations;
     if (stations.stations.publicTransportStations.isEmpty) {
-      stations = await locations.getStations();
+      var visible = LatLngBounds(
+          northeast: const LatLng(0, 0), southwest: const LatLng(0, 0));
+      stations = await locations.getStations(visible);
       favStations = await markersHelper.getFavoriteStations();
       if (mounted) {
         Provider.of<AppState>(context, listen: false).setStations(stations);
@@ -316,7 +284,7 @@ class _MapPageState extends State<MapPage> {
                     initialCameraPosition: camposition,
                     markers: Set<Marker>.of(appState.markers),
                     onCameraMove: (position) => {
-                          _updateMarkers(position, true, false),
+                          _updateMarkers(position),
                         }),
                 Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                   Column(
@@ -361,7 +329,7 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       transports[type] = !transports[type]!;
     });
-    _updateMarkers(camposition, false, true);
+    _updateMarkers(camposition);
   }
 
   void _mapType() {
@@ -415,7 +383,7 @@ class _MapPageState extends State<MapPage> {
     setState(() {
       appState.setFav(!appState.fav);
     });
-    _updateMarkers(camposition, false, true);
+    _updateMarkers(camposition);
   }
 
   void showAlert(String message) {

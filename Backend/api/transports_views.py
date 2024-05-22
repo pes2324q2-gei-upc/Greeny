@@ -4,6 +4,7 @@ from django.views import View
 from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Polygon
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -13,7 +14,8 @@ from rest_framework.permissions import AllowAny
 from .models import (PublicTransportStation, Stop, BusStation,
                     Station, ChargingStation, TransportType, BicingStation, FavoriteStation)
 from .serializers import (PublicTransportStationSerializer, BusStationSerializer,
-                        BicingStationSerializer, ChargingStationSerializer)
+                        BicingStationSerializer, ChargingStationSerializer,
+                        PublicTransportStationSimpleSerializer, StationSimpleSerializer)
 
 headers_OD = {"X-App-Token" : settings.APP_ID}
 headers_AJT = {"Authorization" : settings.API_TOKEN_AJT, "Accept" : "application/json"}
@@ -238,24 +240,39 @@ class StationsView(APIView):
         except station_type.DoesNotExist:
             return None
 
-    def get_all_stations(self):
+    def get_all_stations(self, request):
+        margin = 0.01
+        # Get the viewport bounds from the request
+        min_lng = request.GET.get('min_lng')
+        min_lat = request.GET.get('min_lat')
+        max_lng = request.GET.get('max_lng')
+        max_lat = request.GET.get('max_lat')
+
+        if min_lng and min_lat and max_lng and max_lat:
+            min_lng = float(min_lng) - margin
+            min_lat = float(min_lat) - margin
+            max_lng = float(max_lng) + margin
+            max_lat = float(max_lat) + margin
+            # Create a Polygon representing the viewport
+            viewport = Polygon.from_bbox((min_lng, min_lat, max_lng, max_lat))
+        else:
+            # If no parameters are sent, set the viewport to cover everything
+            viewport = Polygon.from_bbox((-180, -90, 180, 90))
+
         data = {}
 
-        queryset_pt = PublicTransportStation.objects.all()
-        serializer_pt = PublicTransportStationSerializer(queryset_pt, many=True)
-        data['publicTransportStations'] = serializer_pt.data
+        queryset_pt = PublicTransportStation.objects.filter(location__within=viewport)
+        data['publicTransportStations'] = PublicTransportStationSimpleSerializer(queryset_pt,
+                                                                                 many=True)
 
-        queryset_bus = BusStation.objects.all()
-        serializer_bus = BusStationSerializer(queryset_bus, many=True)
-        data['busStations'] = serializer_bus.data
+        queryset_bus = BusStation.objects.filter(location__within=viewport)
+        data['busStations'] = StationSimpleSerializer(queryset_bus, many=True)
 
-        queryset_bicing = BicingStation.objects.all()
-        serializer_bicing = BicingStationSerializer(queryset_bicing, many=True)
-        data['bicingStations'] = serializer_bicing.data
+        queryset_bicing = BicingStation.objects.filter(location__within=viewport)
+        data['bicingStations'] = StationSimpleSerializer(queryset_bicing, many=True)
 
-        queryset_charging = ChargingStation.objects.all()
-        serializer_charging = ChargingStationSerializer(queryset_charging, many=True)
-        data['chargingStations'] = serializer_charging.data
+        queryset_charging = ChargingStation.objects.filter(location__within=viewport)
+        data['chargingStations'] = StationSimpleSerializer(queryset_charging, many=True)
 
         return data
 
@@ -283,7 +300,7 @@ class StationsView(APIView):
 
             r = Response(status=status.HTTP_404_NOT_FOUND)
         else:
-            data = self.get_all_stations()
+            data = self.get_all_stations(request)
             r = Response({'stations': data})
         return r
 

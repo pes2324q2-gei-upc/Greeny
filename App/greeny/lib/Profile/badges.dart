@@ -9,12 +9,11 @@ class BadgesPage extends StatefulWidget {
   final int mastery;
 
   const BadgesPage(
-      {Key? key,
+      {super.key,
       required this.level,
       required this.badges,
       required this.maxLevel,
-      required this.mastery})
-      : super(key: key);
+      required this.mastery});
 
   @override
   State<BadgesPage> createState() => _BadgesPageState();
