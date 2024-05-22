@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 class BadgesPage extends StatefulWidget {
   final int level;
@@ -30,19 +31,9 @@ class _BadgesPageState extends State<BadgesPage> {
     maxlevel = widget.maxLevel;
   }
 
-  void incrementLevel() {
+  void updateLevel(int index) {
     setState(() {
-      if (level < 9 && level < maxlevel) {
-        level++;
-      }
-    });
-  }
-
-  void decrementLevel() {
-    setState(() {
-      if (level > 0) {
-        level--;
-      }
+      level = index;
     });
   }
 
@@ -63,39 +54,32 @@ class _BadgesPageState extends State<BadgesPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 100),
-            Image.asset(
-              'assets/badges/${level}0.png',
-              width: 300,
-              height: 300,
-              fit: BoxFit.cover,
+            CarouselSlider.builder(
+              itemCount: maxlevel + 1,
+              itemBuilder:
+                  (BuildContext context, int itemIndex, int pageViewIndex) {
+                return Image.asset(
+                  'assets/badges/${itemIndex}0.png',
+                  width: 300,
+                  height: 300,
+                  fit: BoxFit.cover,
+                );
+              },
+              options: CarouselOptions(
+                height: 300,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) {
+                  updateLevel(index);
+                },
+              ),
             ),
-            // dos botones con flechas hacia la izquierda y derecha para incrementar y decrementar el nivel
-            // de las insignias
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_left_rounded,
-                    size: 36.0,
-                  ),
-                  onPressed: decrementLevel,
-                ),
-                Text(
-                  (level + 1).toString(),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.arrow_right_rounded,
-                    size: 36.0,
-                  ),
-                  onPressed: incrementLevel,
-                ),
-              ],
+            const SizedBox(height: 20),
+            Text(
+              "Nivell ${(level + 1).toString()}",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),
