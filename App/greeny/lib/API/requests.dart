@@ -95,8 +95,6 @@ httpPostNoToken(String url, String params, String contentType) async {
     body: params,
   );
 
-  checkForBan(response);
-
   return response;
 }
 
