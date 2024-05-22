@@ -129,7 +129,6 @@
     "Current password is not correct": "La contrasenya actual no és correcta",
     "Select an image": "Selecciona una imatge",
     "Could not log in. Please try it later": "No s'ha pogut iniciar la sessió. Si us plau, intenta-ho més tard",
-    "Indicate the percentage usage of each mode of transport": "Indica el percentatge d'ús de cada mode de transport",
     "Welcome to Greeny!": "Benvingut a Greeny!",
     "Purify districts": "Descontamina districtes",
     "Be the best": "Sigues el millor",
@@ -162,5 +161,6 @@
     "trees": "arbres",
     "Energy saved": "Energia estalviada",
     "Families supplied": "Famílies subministrades",
-    "families": "famílies"
+    "families": "famílies",
+    "Are you sure you want to report this review?": "Estàs segur que vols informar d'aquesta ressenya?"
 }

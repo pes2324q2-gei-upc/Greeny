@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Friends/friend_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:greeny/Map/add_review.dart';
@@ -28,6 +29,8 @@ class _StationPageState extends State<StationPage> {
   Map<String, dynamic> station = {};
   List<dynamic> reviewsList = [];
 
+  String currentUsername = '';
+
   @override
   void initState() {
     getInfo();
@@ -44,18 +47,24 @@ class _StationPageState extends State<StationPage> {
         ),
       );
     } else {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(station['name']),
-          ),
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                rating(),
-                specificInfo(),
-                reviews(),
-              ],
+      return RefreshIndicator(
+          onRefresh: getInfo,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(station['name']),
+            ),
+            body: SingleChildScrollView(
+              // Add this
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    rating(),
+                    specificInfo(),
+                    reviews(),
+                  ],
+                ),
+              ),
             ),
           ));
     }
@@ -275,20 +284,11 @@ class _StationPageState extends State<StationPage> {
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 5),
                       const Icon(Icons.star, color: Colors.yellow),
-                      IconButton(
-                        onPressed: () async {
-                          var reviewID = review['id'];
-                          var res = await httpPost(
-                              'api/stations/$stationId/reviews/$reviewID/profanity-filter',
-                              jsonEncode({}),
-                              'application/json');
-                          if (res.statusCode == 200) {
-                            showMessage(context,
-                                translate('The review has been reported'));
-                          }
-                        },
-                        icon: const Icon(Icons.report),
-                      )
+                      if (currentUsername != review['author_username'])
+                        IconButton(
+                          onPressed: () => _showConfirmDialog(review),
+                          icon: const Icon(Icons.report),
+                        )
                     ],
                   ),
                 ),
@@ -457,6 +457,7 @@ class _StationPageState extends State<StationPage> {
   }
 
   Future<void> getInfo() async {
+    currentUsername = await UserAuth().getUserInfo('username');
     var responseStation = await httpGet('api/stations/$stationId');
     if (responseStation.statusCode == 200) {
       String body = utf8.decode(responseStation.bodyBytes);
@@ -492,5 +493,43 @@ class _StationPageState extends State<StationPage> {
     if (mounted) {
       showMessage(context, translate('Error loading station'));
     }
+  }
+
+  void _sendReport(review) async {
+    var reviewID = review['id'];
+    var res = await httpPost(
+        'api/stations/$stationId/reviews/$reviewID/profanity-filter',
+        jsonEncode({}),
+        'application/json');
+    if (res.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('The review has been reported'));
+    }
+  }
+
+  void _showConfirmDialog(review) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(translate("Are you sure?")),
+        content: Text(
+            translate(
+              "Are you sure you want to report this review?",
+            ),
+            textAlign: TextAlign.justify),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => _sendReport(review),
+            child: Text(translate("Ok")),
+          ),
+          TextButton(
+            child: Text(translate("Cancel")),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 }
