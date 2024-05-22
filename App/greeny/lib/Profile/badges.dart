@@ -6,12 +6,14 @@ class BadgesPage extends StatefulWidget {
   final int level;
   final int maxLevel;
   final List<Widget> badges;
+  final int mastery;
 
   const BadgesPage(
       {Key? key,
       required this.level,
       required this.badges,
-      required this.maxLevel})
+      required this.maxLevel,
+      required this.mastery})
       : super(key: key);
 
   @override
@@ -22,6 +24,8 @@ class _BadgesPageState extends State<BadgesPage> {
   late int level;
   late List<Widget> badges;
   late int maxlevel;
+  late int mastery;
+  int currentlevel = 0;
 
   @override
   void initState() {
@@ -29,11 +33,12 @@ class _BadgesPageState extends State<BadgesPage> {
     level = widget.level;
     badges = widget.badges;
     maxlevel = widget.maxLevel;
+    mastery = widget.mastery;
   }
 
   void updateLevel(int index) {
     setState(() {
-      level = index;
+      currentlevel = index;
     });
   }
 
@@ -58,8 +63,27 @@ class _BadgesPageState extends State<BadgesPage> {
               itemCount: maxlevel + 1,
               itemBuilder:
                   (BuildContext context, int itemIndex, int pageViewIndex) {
+                String imagePath;
+                print('mastery: $mastery');
+                print('level: $level');
+                print('itemIndex: $itemIndex');
+                if (mastery <= 0) {
+                  imagePath = 'assets/badges/${itemIndex}0.png';
+                } else if (itemIndex > level - 1) {
+                  print('level down');
+                  if (mastery > 0) {
+                    print('mastery-1');
+                    imagePath = 'assets/badges/${itemIndex}${mastery - 1}.png';
+                  } else {
+                    imagePath = 'assets/badges/${itemIndex}0.png';
+                  }
+                } else {
+                  print('else');
+                  imagePath = 'assets/badges/${itemIndex}${mastery}.png';
+                }
+
                 return Image.asset(
-                  'assets/badges/${itemIndex}0.png',
+                  imagePath,
                   width: 300,
                   height: 300,
                   fit: BoxFit.cover,
@@ -75,7 +99,7 @@ class _BadgesPageState extends State<BadgesPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              "Nivell ${(level + 1).toString()}",
+              "Nivell ${(currentlevel + 1).toString()}",
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

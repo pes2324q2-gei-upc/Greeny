@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         userUsername = userData[0]['username'];
         dateJoined = DateFormat('dd-MM-yyyy')
             .format(DateTime.parse(userData[0]['date_joined']));
-        level = userData[0]['level'];
+        level = 5;
         friends = userData[0]['friends_number'];
         trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
@@ -475,8 +475,11 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                BadgesPage(badges: badges, level: level, maxLevel: maxLevel)));
+            builder: (context) => BadgesPage(
+                badges: badges,
+                level: level,
+                maxLevel: maxLevel,
+                mastery: mastery)));
   }
 
   Widget buildBadges(int level, int mastery) {
@@ -489,7 +492,7 @@ class _ProfilePageState extends State<ProfilePage> {
           left: i * 25.0, // Espacio horizontal entre las medallas
           child: GestureDetector(
             onTap: () {
-              clickBadge(badges, i, level);
+              clickBadge(badges, level, 9);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),
@@ -511,7 +514,7 @@ class _ProfilePageState extends State<ProfilePage> {
             left: i * 25.0, // Espacio horizontal entre las medallas
             child: GestureDetector(
               onTap: () {
-                clickBadge(badges, i, 9);
+                clickBadge(badges, level, 9);
               },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(60),
