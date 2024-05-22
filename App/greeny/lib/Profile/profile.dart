@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
+import 'package:greeny/Profile/badges.dart';
 import 'package:greeny/Profile/edit_profile.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/Registration/log_in.dart';
@@ -30,6 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int friends = 0;
   int trips = 0;
   int reviews = 0;
+  int mastery = 1;
 
   @override
   void initState() {
@@ -163,6 +165,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.emoji_events_outlined,
+                            color: ProfilePage.titolColor),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: buildBadges(level - 1, mastery),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(
@@ -451,6 +469,79 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void share() {
+  void share() {}
+
+  void clickBadge(List<Widget> badges, int level, int maxLevel) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BadgesPage(
+                badges: badges,
+                level: level,
+                maxLevel: maxLevel,
+                mastery: mastery)));
+  }
+
+  Widget buildBadges(int level, int mastery) {
+    List<Widget> badges = []; // Lista para almacenar las medallas
+
+    // Bucle para generar medallas basadas en el nivel
+    for (int i = 0; i < level; i++) {
+      int maxlevel;
+      if (mastery == 0) {
+        maxlevel = level - 1;
+      } else {
+        maxlevel = 9;
+      }
+      badges.add(
+        Positioned(
+          left: i * 25.0, // Espacio horizontal entre las medallas
+          child: GestureDetector(
+            onTap: () {
+              clickBadge(badges, level, maxlevel);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: Image.asset(
+                'assets/badges/$i$mastery.png', // Cambia la imagen según corresponda
+                width: 40, // Ancho deseado
+                height: 40, // Alto deseado
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (mastery > 0) {
+      for (int i = level; i < 10; i++) {
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, level, 9);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/$i${mastery - 1}.png', // Cambia la imagen según corresponda
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return SizedBox(
+      height: 40, // Establece la altura deseada
+      child: Stack(
+        children: badges,
+      ),
+    );
   }
 }
