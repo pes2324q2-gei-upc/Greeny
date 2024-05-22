@@ -262,17 +262,20 @@ class StationsView(APIView):
         data = {}
 
         queryset_pt = PublicTransportStation.objects.filter(location__within=viewport)
-        data['publicTransportStations'] = PublicTransportStationSimpleSerializer(queryset_pt,
-                                                                                 many=True)
+        serializer_pt = PublicTransportStationSimpleSerializer(queryset_pt, many=True)
+        data['publicTransportStations'] = serializer_pt.data
 
         queryset_bus = BusStation.objects.filter(location__within=viewport)
-        data['busStations'] = StationSimpleSerializer(queryset_bus, many=True)
+        serializer_bus = StationSimpleSerializer(queryset_bus, many=True)
+        data['busStations'] = serializer_bus.data
 
         queryset_bicing = BicingStation.objects.filter(location__within=viewport)
-        data['bicingStations'] = StationSimpleSerializer(queryset_bicing, many=True)
+        serializer_bicing = StationSimpleSerializer(queryset_bicing, many=True)
+        data['bicingStations'] = serializer_bicing.data
 
         queryset_charging = ChargingStation.objects.filter(location__within=viewport)
-        data['chargingStations'] = StationSimpleSerializer(queryset_charging, many=True)
+        serializer_charging = StationSimpleSerializer(queryset_charging, many=True)
+        data['chargingStations'] = serializer_charging.data
 
         return data
 
