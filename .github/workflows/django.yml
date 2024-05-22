@@ -2,7 +2,7 @@ name: Django CI
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: ["main", "develop", "hotfix/djangoCI"]
     paths:
       - '**.py'
       - '**.txt'
