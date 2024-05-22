@@ -26,9 +26,9 @@ jobs:
       run: |
         pip install --global-option=build_ext --global-option="-I/usr/include/gdal" GDAL==3.3.0
 
-    - name: Install pybind11
+    - name: Install pybind11 in build environment
       run: |
-        pip install pybind11
+        pip install --install-option="--prefix=/tmp/pip-build-env-ztsr5vwt/overlay" pybind11
 
     - name: Install Python Dependencies
       working-directory: Backend
