@@ -487,12 +487,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // Bucle para generar medallas basadas en el nivel
     for (int i = 0; i < level; i++) {
+      int maxlevel;
+      if (mastery == 0)
+        maxlevel = level - 1;
+      else
+        maxlevel = 9;
       badges.add(
         Positioned(
           left: i * 25.0, // Espacio horizontal entre las medallas
           child: GestureDetector(
             onTap: () {
-              clickBadge(badges, level, 9);
+              clickBadge(badges, level, maxlevel);
             },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(60),

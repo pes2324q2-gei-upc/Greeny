@@ -67,6 +67,7 @@ class _BadgesPageState extends State<BadgesPage> {
                 print('mastery: $mastery');
                 print('level: $level');
                 print('itemIndex: $itemIndex');
+                print(maxlevel);
                 if (mastery <= 0) {
                   if (itemIndex < level)
                     imagePath = 'assets/badges/${itemIndex}0.png';
