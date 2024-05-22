@@ -68,9 +68,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           nhoodPath = newCityData['neighborhood']['path'];
         }
       });
+    });
+  }
+
+  Future<Map<String, dynamic>> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
-      // ignore: use_build_context_synchronously
-      showMessage(context, translate('Failed to load city data'));
+      throw Exception('Failed to load city data');
     }
   }
 
