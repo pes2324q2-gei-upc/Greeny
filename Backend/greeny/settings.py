@@ -29,7 +29,7 @@ PRODUCTION = os.environ.get('PRODUCTION', 'false').lower() == 'true'
 DEBUG = not PRODUCTION
 
 ALLOWED_HOSTS = ['nattech.fib.upc.edu', 'localhost', '10.0.2.2']
-ALLOWED_HOSTS = [os.getenv('SERVER_NAME')]
+# ALLOWED_HOSTS = [os.getenv('SERVER_NAME'), 'localhost']
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (

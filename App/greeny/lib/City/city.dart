@@ -33,7 +33,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int levelNumber = 1;
   String nhoodName = '';
   String nhoodPath = '';
-  bool first = true;
   bool allCompleted = false;
 
   String userName = '';
@@ -51,32 +50,29 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData();
-  }
-
-  Future<void> getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200) {
-      var cityData = utf8.decode(response.bodyBytes);
-      print(cityData);
-      Map<String, dynamic> newCityData = jsonDecode(cityData);
-      if (newCityData.containsKey('message') &&
-          newCityData['message'] == 'All levels are completed') {
-        setState(() {
-          allCompleted = true;
-        });
-      } else {
-        print("get levels y no ha completado el 10");
-        setState(() {
-          cityDataNotifier.value = newCityData;
+    getCityData().then((newCityData) {
+      setState(() {
+        cityDataNotifier.value = newCityData;
+        userName = newCityData['user_name'];
+        isStaff = newCityData['is_staff'];
+        allCompleted = newCityData.containsKey('status') &&
+            newCityData['status'] == 'all_completed';
+        if (!allCompleted) {
           userPoints = newCityData['points_user'];
           levelPoints = newCityData['points_total'];
           levelNumber = newCityData['number'];
           nhoodName = newCityData['neighborhood']['name'];
           nhoodPath = newCityData['neighborhood']['path'];
-        });
-      }
+        }
+      });
+    });
+  }
+
+  Future<Map<String, dynamic>> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
       throw Exception('Failed to load city data');
     }
@@ -89,14 +85,21 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     );
     print("put ejecutado");
     if (response.statusCode == 200) {
-      var responseBody = utf8.decode(response.bodyBytes);
-      Map<String, dynamic> newCityData = jsonDecode(responseBody);
-      print(responseBody);
+      Map<String, dynamic> newCityData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      print(newCityData);
       if (newCityData.containsKey('status') &&
           newCityData['status'] == 'all_completed') {
         setState(() {
-          allCompleted = true;
-          userPoints = points;
+          cityDataNotifier.value =
+              newCityData; // Actualiza los datos notificados
+          allCompleted = true; // Marca que todos los niveles están completados
+          userPoints = points; // Actualiza los puntos del usuario
+
+          // Actualiza los datos del usuario y el estado de staff si están disponibles
+          userName = newCityData['user_name'] ??
+              userName; // Utiliza el operador ?? para mantener el valor anterior si no viene uno nuevo
+          isStaff = newCityData['is_staff'] ?? isStaff;
         });
       } else {
         setState(() {
@@ -129,9 +132,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     if (userName == '') {
       return const Scaffold(
         backgroundColor: Color.fromARGB(255, 220, 255, 255),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     } else {
       double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
@@ -156,15 +157,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         height: MediaQuery.of(context).size.width * 0.9,
                         child: Stack(
                           children: [
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
-                            ),
                             ValueListenableBuilder<Map<String, dynamic>?>(
                               valueListenable: cityDataNotifier,
                               builder: (BuildContext context,
@@ -173,56 +165,68 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                 if (cityData == null) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  );
-                                } else if (allCompleted) {
-                                  // Todos los niveles están completados, muestra un botón de reinicio.
-                                  return Center(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        // Aquí puedes poner la lógica para reiniciar los niveles.
-                                      },
-                                      child: const Text('Restart'),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
                                     ),
                                   );
                                 } else {
-                                  //if (first) {
-                                  // Los datos están disponibles, construye el ModelViewer.
-                                  userPoints = cityData['points_user'];
-                                  levelPoints = cityData['points_total'];
-                                  levelNumber = cityData['number'];
-                                  nhoodName = cityData['neighborhood']['name'];
-                                  nhoodPath = cityData['neighborhood']['path'];
-                                  first = false;
-                                  //}
+                                  if (cityData.containsKey('status') &&
+                                      cityData['status'] == 'all_completed') {
+                                    // Todos los niveles están completados, muestra un botón de reinicio.
+                                    return Center(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          // Aquí puedes poner la lógica para reiniciar los niveles.
+                                        },
+                                        child: const Text('Restart'),
+                                      ),
+                                    );
+                                  } else {
+                                    // Los datos están disponibles, construye el ModelViewer y las imágenes de niebla.
+                                    userPoints = cityData['points_user'];
+                                    levelPoints = cityData['points_total'];
+                                    levelNumber = cityData['number'];
+                                    nhoodName =
+                                        cityData['neighborhood']['name'];
+                                    nhoodPath =
+                                        cityData['neighborhood']['path'];
 
-                                  return ModelViewer(
-                                    debugLogging: false,
-                                    key: Key(nhoodName),
-                                    src: 'assets/neighborhoods/$nhoodPath',
-                                    autoRotate: true,
-                                    disableZoom: true,
-                                    rotationPerSecond: "25deg",
-                                    autoRotateDelay: 1000,
-                                    cameraControls: false,
-                                  );
+                                    return Stack(
+                                      children: [
+                                        Opacity(
+                                          opacity:
+                                              opct, // Calcula la opacidad basada en los puntos
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                        ModelViewer(
+                                          debugLogging: false,
+                                          key: Key(nhoodName),
+                                          src:
+                                              'assets/neighborhoods/$nhoodPath',
+                                          autoRotate: true,
+                                          disableZoom: true,
+                                          rotationPerSecond: "25deg",
+                                          autoRotateDelay: 1000,
+                                          cameraControls: false,
+                                        ),
+                                        Opacity(
+                                          opacity:
+                                              opct, // Repite la opacidad para la segunda imagen de niebla
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                      ],
+                                    );
+                                  }
                                 }
                               },
-                            ),
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
                             ),
                           ],
                         )),
