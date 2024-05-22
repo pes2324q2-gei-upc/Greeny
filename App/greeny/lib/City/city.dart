@@ -13,9 +13,6 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
-import 'package:greeny/utils/utils.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -91,7 +88,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
-      print(newCityData);
       if (newCityData.containsKey('status') &&
           newCityData['status'] == 'all_completed') {
         setState(() {
