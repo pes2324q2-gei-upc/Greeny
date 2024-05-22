@@ -39,19 +39,17 @@ class CityView(APIView):
 
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
+        response_data = {}
 
         if level is None:
-            return {"message": "No current level"}
-
-        if new_points is not None:
+            response_data = {"message": "No current level"}
+        elif new_points is not None:
             if new_points < 0:
                 level.points_user = 0
                 level.save()
 
                 if level.number > 1:
-                    crt_lvl_nb = level.number
-                    previous_level = Level.objects.filter(user=user, number=crt_lvl_nb - 1).first()
-
+                    previous_level = Level.objects.filter(user=user, number=level.number - 1).first()
                     if previous_level:
                         level.current = False
                         level.completed = False
@@ -60,42 +58,43 @@ class CityView(APIView):
                         previous_level.current = True
                         previous_level.completed = False
                         previous_level.save()
-
-                        return LevelSerializer(previous_level).data
-
-                return LevelSerializer(level).data
-
-            level.points_user = new_points
-            level.save()
-
-            if level.number == 10 and new_points >= 1500:
-                level.completed = True
-                level.current = False
+                        response_data = LevelSerializer(previous_level).data
+                    else:
+                        response_data = {"message": "No previous level found"}
+                else:
+                    response_data = LevelSerializer(level).data
+            else:
+                level.points_user = new_points
                 level.save()
-                user_data = {
-                    "user_name": user.username,
-                    "is_staff": user.is_staff
-                }
-                response_data = {"status": "all_completed"}
-                response_data.update(user_data)
-                return response_data
 
-            next_level = self.update_level(user)
-            if next_level:
-                return LevelSerializer(next_level).data
+                if level.number == 10 and new_points >= 1500:
+                    level.completed = True
+                    level.current = False
+                    level.save()
+                    user_data = {
+                        "user_name": user.username,
+                        "is_staff": user.is_staff,
+                        "status": "all_completed"
+                    }
+                    response_data = user_data
+                else:
+                    next_level = self.update_level(user)
+                    if next_level:
+                        response_data = LevelSerializer(next_level).data
+                    else:
+                        response_data = {"message": "Failed to update level"}
 
         levels = Level.objects.filter(user=user)
         all_completed = all(l.completed for l in levels)
         if all_completed:
             user_data = {
                 "user_name": user.username,
-                "is_staff": user.is_staff
+                "is_staff": user.is_staff,
+                "status": "all_completed"
             }
-            response_data = {"status": "all_completed"}
             response_data.update(user_data)
-            return response_data
 
-        return {"message": "No updates performed."}
+        return response_data if response_data else {"message": "No updates performed."}
 
     def update_level(self, user):
         current_level = self.get_current_level(user)
