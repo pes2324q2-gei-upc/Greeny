@@ -75,6 +75,11 @@ class _StationPageState extends State<StationPage> {
                 station['rating'].toString(),
                 style: const TextStyle(fontSize: 20),
               ),
+              const SizedBox(width: 5),
+              Text(
+                '(${reviewsList.length.toString()})',
+                style: const TextStyle(fontSize: 20),
+              ),
             ]),
             IconButton(
               onPressed: () async {

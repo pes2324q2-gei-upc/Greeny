@@ -5,7 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/Registration/sign_up.dart';
-import 'package:greeny/main_page.dart';
+import 'package:greeny/utils/onboarding_page.dart';
 import 'package:greeny/utils/utils.dart';
 import '../utils/translate.dart' as t;
 import 'package:greeny/API/user_auth.dart';
@@ -268,7 +268,7 @@ class VerificationPageState extends State<VerificationPage> {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const MainPage()),
+            MaterialPageRoute(builder: (context) => OnboardingPage()),
             (Route<dynamic> route) => false,
           );
         }
