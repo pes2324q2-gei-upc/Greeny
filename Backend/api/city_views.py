@@ -51,8 +51,7 @@ class CityView(APIView):
                     "is_staff": user.is_staff
                 }
                 response_data = {"status": "all_completed"}
-                response_data.update(user_data) 
-                return response_data
+                return response_data.update(user_data) 
             next_level = self.update_level(user)
             if next_level:
                 level_data = LevelSerializer(next_level).data
