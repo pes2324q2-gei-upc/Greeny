@@ -3,12 +3,13 @@ import random
 import string
 import jwt
 import requests
-from django.conf import settings
+
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
@@ -17,7 +18,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import User, Neighborhood, Level, VerificationCode, Blacklist
+
 from .serializers import UserSerializer
 
 class UsersView(ModelViewSet):
@@ -43,17 +46,7 @@ class UsersView(ModelViewSet):
             return Response({'message':'You are banned from this application for violating our guidelines'},
                             status=status.HTTP_403_FORBIDDEN)
 
-        # Generate the verification code and send the email
-        code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-        VerificationCode.objects.create(user=user, code=code)
-
-        send_mail(
-            'Código de verificación',
-            f'Tu código de verificación es {code}',
-            settings.EMAIL_HOST_USER,
-            [user.email],
-            fail_silently=False,
-        )
+        send_verification_email(user)
 
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -65,7 +58,7 @@ class UsersView(ModelViewSet):
         image = request.data.get('image')
 
         # Remove the 'email' field from the request data
-        data = request.data.copy()
+        data = request.data.dict()
         data.pop('email', None)
         data.pop('image', None)
 
@@ -165,23 +158,45 @@ def init_levels(user):
             neighborhood=neighborhood
         )
 
+#Method to generate and send the verification code for signing up or for password reset
+def send_verification_email(user):
+    # Generate the verification code
+    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    VerificationCode.objects.create(user=user, code=code)
 
+    send_mail(
+        'Código de verificación',
+        f'Tu código de verificación es {code}',
+        'Greeny <greenyPES@gmail.com>',
+        [user.email],
+        fail_silently=False,
+    )
+    return code
+
+#Method to get and delete the verification code
+def get_and_delete_verification_code(user, code):
+    try:
+        verification_code = VerificationCode.objects.get(user=user, code=code)
+    except VerificationCode.DoesNotExist:
+        return None
+
+    verification_code.delete()
+    return verification_code
+
+#Methods to verify the code while signing up and canceling the registration [SIGN UP SITUATION]
 @api_view(['POST'])
 @permission_classes([AllowAny])
-def verify(request):
+def verify_registration(request):
     code = request.data.get('verificationCode')
     username = request.data.get('username')
     user = User.objects.get(username=username)
 
-    try:
-        verification_code = VerificationCode.objects.get(user=user, code=code)
-    except VerificationCode.DoesNotExist:
+    verification_code = get_and_delete_verification_code(user, code)
+    if verification_code is None:
         return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
 
     user.is_active = True
     user.save()
-
-    verification_code.delete()
 
     init_neighborhoods()
     init_levels(user)
@@ -202,6 +217,52 @@ def cancel_registration(request):
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+# Methods for sending the email to an existent user who has forgotten his password,
+# for verifying the code and updating the password [FORGOT PASSWORD SITUATION]
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    email = request.data.get('email')
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    send_verification_email(user)
+
+    return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_forgotten_password(request):
+    code = request.data.get('verificationCode')
+    email = request.data.get('email')
+    user = User.objects.get(email=email)
+
+    verification_code = get_and_delete_verification_code(user, code)
+    if verification_code is None:
+        return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({"message": "Account successfully verified."}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    email = request.data.get('email')
+    new_password = request.data.get('new_password')
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    user.set_password(new_password)
+    user.save()
+
+    return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+
+# Method to authenticate the user with Google
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_auth(request):

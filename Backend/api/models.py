@@ -26,7 +26,8 @@ class User(AbstractUser):
     reports = models.IntegerField(default=0)
 
 class Blacklist(models.Model):
-    email = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+
 
 class VerificationCode(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

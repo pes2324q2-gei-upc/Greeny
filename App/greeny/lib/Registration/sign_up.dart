@@ -199,9 +199,6 @@ class _SignInPageState extends State<SignInPage> {
       final password = passwordController.text;
       final email = emailController.text;
       final name = nameContoller.text;
-      setState(() {
-        _loading = true;
-      });
 
       String res =
           await UserAuth().userRegister(name, username, email, password);
@@ -220,22 +217,17 @@ class _SignInPageState extends State<SignInPage> {
   void checkSuccess(String res) {
     if (res == 'ok') {
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => VerificationPage(
                     username: usernameController.text,
                     password: passwordController.text,
                     email: emailController.text,
+                    resetPassword: false,
                   )),
-          ModalRoute.withName('/'),
         );
       }
-    } else if (res == 'banned') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => BannedScreen()),
-      );
     } else {
       if (mounted) {
         showMessage(context, translate(res));

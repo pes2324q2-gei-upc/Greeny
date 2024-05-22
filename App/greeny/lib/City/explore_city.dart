@@ -5,7 +5,7 @@ class ExploreCity extends StatelessWidget {
   final String name;
   final String path;
 
-  ExploreCity({Key? key, required this.name, required this.path}) : super(key: key);
+  const ExploreCity({super.key, required this.name, required this.path});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class ExploreCity extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 220, 255, 255),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        title: Text('$name'),
+        title: Text(name),
       ),
       /*body: Column(
         children: [
@@ -38,13 +38,13 @@ class ExploreCity extends StatelessWidget {
       )*/
       body: Center(
         child: Container(
-          margin: EdgeInsets.all(10.0),
+          margin: const EdgeInsets.all(10.0),
           width: 600,
           height: 600,
           //Falta que desaparezca el tutorial de como rotar
           child: ModelViewer(
             debugLogging: true,
-            key: Key('$name'),
+            key: Key(name),
             src: 'assets/neighborhoods/$path',
             autoRotate: true,
             disableZoom: true,

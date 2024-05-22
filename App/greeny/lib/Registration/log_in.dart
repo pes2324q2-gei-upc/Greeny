@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:greeny/Registration/send_email.dart';
 import 'sign_up.dart';
 import '../main_page.dart';
 import '../utils/translate.dart' as t;
@@ -194,7 +195,14 @@ class _LogInPageState extends State<LogInPage> {
     }
   }
 
-  Future<void> forgotPassword() async {}
+  Future<void> forgotPassword() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SendEmailPage(),
+      ),
+    );
+  }
 
   Future<void> signUpHere() async {
     Navigator.push(

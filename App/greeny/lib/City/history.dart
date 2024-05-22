@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/City/explore_city.dart';
 import 'package:greeny/API/requests.dart';
 
@@ -7,15 +6,14 @@ import 'dart:convert';
 //import 'package:greeny/utils/utils.dart';
 
 class HistoryPage extends StatefulWidget {
-  final int level;
-
-  HistoryPage({Key? key, required this.level}) : super(key: key);
+  const HistoryPage({super.key});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
 class _HistoryPageState extends State<HistoryPage> {
+  // ignore: non_constant_identifier_names
   final int level_aux = 4;
 
   List<dynamic> data = [];
@@ -36,7 +34,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     } else {
       return Scaffold(
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
@@ -46,18 +44,18 @@ class _HistoryPageState extends State<HistoryPage> {
         ),
         body: Column(
           children: [
-            SizedBox(height: 30), // Adjust the height as needed
+            const SizedBox(height: 30), // Adjust the height as needed
             Expanded(
               child: SingleChildScrollView(
                 child: GridView.count(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
                   //mainAxisSpacing: -10,
                   children: List.generate(numNeighborhoods, (index) {
                     return Column(
                       children: <Widget>[
-                        Container(
+                        SizedBox(
                           height: 125, // Set the height and width to the same value
                           width: 125, // Set the height and width to the same value
                           child: ElevatedButton(
@@ -66,7 +64,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(0),
                               ),
-                              padding: EdgeInsets.all(20),
+                              padding: const EdgeInsets.all(20),
                             ),
                             child: Image.asset(data[index]['completed'] ? 'assets/neighborhoods/City${1}PNG.png' : 'assets/neighborhoods/City${1}PNG_BW.png'),
                           ),
@@ -78,7 +76,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
           ],
         ),
       );
@@ -99,11 +97,11 @@ class _HistoryPageState extends State<HistoryPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Title'), // Reemplaza 'Title' con el título de tu diálogo
-            content: Text('PRUEBA'), // Reemplaza 'PRUEBA' con el contenido de tu diálogo
+            title: const Text('Title'), // Reemplaza 'Title' con el título de tu diálogo
+            content: const Text('PRUEBA'), // Reemplaza 'PRUEBA' con el contenido de tu diálogo
             actions: <Widget>[
               TextButton(
-                child: Text('Close'), // Reemplaza 'Close' con el texto de tu botón
+                child: const Text('Close'), // Reemplaza 'Close' con el texto de tu botón
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -122,7 +120,5 @@ class _HistoryPageState extends State<HistoryPage> {
       data = jsonDecode(body);
     }
     numNeighborhoods = data.length;
-    print(numNeighborhoods);
-    print(data[1]['completed']);
   }
 }

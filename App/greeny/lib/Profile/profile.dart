@@ -451,5 +451,6 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void share() {}
+  void share() {
+  }
 }

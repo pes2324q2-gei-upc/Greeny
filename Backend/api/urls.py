@@ -5,7 +5,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UsersView, verify, cancel_registration, google_auth, obtain_token
+from api.user_views import (UsersView, verify_registration, cancel_registration, google_auth,
+                            forgot_password, verify_forgotten_password, reset_password, obtain_token)
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
@@ -39,9 +40,13 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
+  
     path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', profanity_filter, name='profanity-filter'),
-    path('verify/', verify, name='verify'),
+    path('token/', obtain_token, name='token_obtain_pair')
+    path('verify_registration/', verify_registration, name='verify_registration'),
     path('cancel_registration/', cancel_registration, name='cancel_registration'),
     path('oauth2/', google_auth, name='google_oauth'),
-    path('token/', obtain_token, name='token_obtain_pair')
+    path('forgot_password/', forgot_password, name='forgot_password'),
+    path('verify_forgotten_password/', verify_forgotten_password, name='verify_forgotten_password'),
+    path('reset_password/', reset_password, name='reset_password')
 ]
