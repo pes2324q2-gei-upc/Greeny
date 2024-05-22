@@ -268,7 +268,7 @@ class VerificationPageState extends State<VerificationPage> {
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => OnboardingPage()),
+            MaterialPageRoute(builder: (context) => const OnboardingPage()),
             (Route<dynamic> route) => false,
           );
         }

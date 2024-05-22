@@ -305,7 +305,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     });
 
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HistoryPage())
+        context, MaterialPageRoute(builder: (context) => const HistoryPage())
     ).then((_) {
       setState(() {
         _showModelViewer = true;

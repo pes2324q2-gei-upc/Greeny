@@ -3,7 +3,10 @@ import 'package:greeny/main_page.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
 class OnboardingPage extends StatefulWidget {
+  const OnboardingPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _OnboardingPageState createState() => _OnboardingPageState();
 }
 
@@ -43,20 +46,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: _currentPage != 5 // Si no estamos en la última página, mostramos el botón 'Saltar'
                     ? TextButton(
                         onPressed: () {
-                          _pageController.animateToPage(5, duration: Duration(milliseconds: 400), curve: Curves.linear);
+                          _pageController.animateToPage(5, duration: const Duration(milliseconds: 400), curve: Curves.linear);
                         },
-                        child: const Text('Saltar', style: TextStyle(color: const Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: const Text('Saltar', style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       )
                     : const SizedBox.shrink(), // Si estamos en la última página, no mostramos nada
                 ),
               ),
-              Container(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    for (int i = 0; i < 6; i++) i == _currentPage ? _buildPageIndicator(true, i) : _buildPageIndicator(false, i)
-                  ],
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  for (int i = 0; i < 6; i++) i == _currentPage ? _buildPageIndicator(true, i) : _buildPageIndicator(false, i)
+                ],
               ),
               Expanded(
                 child: Align(
@@ -64,13 +65,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: _currentPage != 5 // Si no estamos en la última página, mostramos la flecha
                     ? TextButton(
                         onPressed: () {
-                          _pageController.animateToPage(_currentPage + 1, duration: Duration(milliseconds: 400), curve: Curves.linear);
+                          _pageController.animateToPage(_currentPage + 1, duration: const Duration(milliseconds: 400), curve: Curves.linear);
                         },
-                        child: const Icon(Icons.arrow_forward, color: const Color.fromARGB(255, 1, 167, 164), size: 24.0),
+                        child: const Icon(Icons.arrow_forward, color:  Color.fromARGB(255, 1, 167, 164), size: 24.0),
                       )
                     : TextButton( // Si estamos en la última página, mostramos el botón 'Empezar'
-                        onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage())),
-                        child: const Text('Empezar', style: TextStyle(color: const Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage())),
+                        child: const Text('Empezar', style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       ),
                 ),
               ),
@@ -113,7 +114,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       onTap: () {
         _pageController.animateToPage(
           pageIndex,
-          duration: Duration(milliseconds: 400),
+          duration: const Duration(milliseconds: 400),
           curve: Curves.ease,
         );
       },
