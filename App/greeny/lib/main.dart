@@ -64,10 +64,10 @@ class Greeny extends StatefulWidget {
   const Greeny({super.key});
 
   @override
-  _GreenyState createState() => _GreenyState();
+  GreenyState createState() => GreenyState();
 }
 
-class _GreenyState extends State<Greeny> {
+class GreenyState extends State<Greeny> {
   StreamSubscription? _banSubscription;
 
   @override
@@ -76,8 +76,11 @@ class _GreenyState extends State<Greeny> {
     _banSubscription = bannedUserController.stream.listen((event) {
       if (event && mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          navigatorKey.currentState?.pushReplacement(
-            MaterialPageRoute(builder: (context) => BannedScreen()),
+          navigatorKey.currentState?.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => const BannedScreen(),
+            ),
+            (Route<dynamic> route) => false,
           );
         });
       }
@@ -149,7 +152,7 @@ Future<Widget> mainScreenIfUser() async {
   if (token != '' && await checkTokenFirstTime(token)) {
     return const MainPage();
   } else if (token == 'banned') {
-    return BannedScreen();
+    return const BannedScreen();
   } else {
     return const LogInPage();
   }

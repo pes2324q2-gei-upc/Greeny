@@ -13,6 +13,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -52,7 +53,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData().then((data) {
+    getCityData();
+  }
+
+  void getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200 && response.statusCode != 401) {
+      var data = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         cityDataNotifier.value = data;
         userPoints = data['points_user'];
@@ -63,16 +71,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         userName = data['user_name'];
         isStaff = data['is_staff'];
       });
-    });
-  }
-
-  Future<Map<String, dynamic>> getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200 && response.statusCode != 401) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
-      throw Exception('Failed to load city data');
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('Failed to load city data'));
     }
   }
 
@@ -301,9 +302,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _showModelViewer = false;
     });
 
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HistoryPage())
-    ).then((_) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
       setState(() {
         _showModelViewer = true;
       });

@@ -157,10 +157,10 @@
     "Failed to reset password. Try again": "No se pudo restablecer la contraseña. Inténtalo de nuevo",
     "Passwords do not match. Try again": "Las contraseñas no coinciden. Inténtalo de nuevo",
     "Failed to verify. The code is incorrect, try again": "No se pudo verificar. El código es incorrecto, inténtalo de nuevo",
-    "Indicate the percentage usage of each mode of transport": "Indica el porcentaje de uso de cada modo de transporte",
     "Unfelled trees": "Árboles no talados",
     "trees": "árboles",
     "Energy saved": "Energía ahorrada",
     "Families supplied": "Familias abastecidas",
-    "families": "familias"
+    "families": "familias",
+    "Are you sure you want to report this review?": "¿Estás seguro de que quieres reportar esta reseña?"
 }

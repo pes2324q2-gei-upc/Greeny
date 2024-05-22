@@ -21,7 +21,7 @@ Future<String> getToken() async {
   if (access == null) return '';
   bool hasExpired = JwtDecoder.isExpired(access);
   /* Si el token ha expirado, se obtiene un nuevo token con el refresh token */
-  /* Si el refresh token ha expirado, se devuelve un string vacío */
+  /* Si el refresh token ha expirado o no hay access, se devuelve un string vacío */
   if (hasExpired) {
     String refresh = await SecureStorage().readSecureData('refresh_token');
     var uri = Uri.http(backendURL, 'api/token/refresh/');
@@ -258,8 +258,10 @@ httpUpdateAccount({
   return await http.Response.fromStream(streamedResponse);
 }
 
-void checkForBan(response) {
+bool checkForBan(response) {
   if (response.statusCode == 401) {
     bannedUserController.add(true);
+    return true;
   }
+  return false;
 }
