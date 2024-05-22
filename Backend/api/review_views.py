@@ -45,6 +45,7 @@ class ReviewsViews(ModelViewSet):
 @api_view(['POST'])
 def profanity_filter(request, station_id, review_id):
     review = Review.objects.get(id=review_id)
+    station = Station.objects.get(id=station_id)
     body = review.body
 
     result = translate(body, review.id)
@@ -55,12 +56,15 @@ def profanity_filter(request, station_id, review_id):
 
     if predict_prob([result]) >= 0.75:
         # Añadimos report al user
-        user = request.user
+        user = review.author
         user.reports = user.reports + 1
         user.save()
 
         # Eliminamos la review
         review.delete()
+        review_view = ReviewsViews()
+
+        review_view.update_station_rating(station)
 
         if check_for_ban(user):
             # redirect to BAN Screen
