@@ -54,6 +54,20 @@ Future<bool> checkTokenFirstTime(token) async {
   return response.statusCode == 200;
 }
 
+httpGetParams(String url, Map<String, String> params) async {
+  var token = await getToken();
+  var uri = Uri.http(backendURL, url, params);
+  var response = await http.get(
+    uri,
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+  checkForBan(response);
+
+  return response;
+}
+
 httpGet(String url) async {
   var token = await getToken();
   var uri = Uri.http(backendURL, url);

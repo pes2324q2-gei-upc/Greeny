@@ -202,3 +202,36 @@ class RouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Route
         fields = '__all__'
+
+class StationSimpleSerializer(serializers.ModelSerializer):
+    latitude = serializers.SerializerMethodField()
+    longitude = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Station
+        fields = ['id', 'latitude', 'longitude']
+
+    def get_latitude(self, obj):
+        return obj.location.y
+
+    def get_longitude(self, obj):
+        return obj.location.x
+
+class StopSimpleSerializer(serializers.ModelSerializer):
+    transport_type = TransportTypeSerializer(read_only=True)
+
+    class Meta:
+        model = Stop
+        fields = ['transport_type']
+
+class PublicTransportStationSimpleSerializer(StationSimpleSerializer):
+    stops = serializers.SerializerMethodField()
+
+    class Meta(StationSimpleSerializer.Meta):
+        model = PublicTransportStation
+        fields = StationSimpleSerializer.Meta.fields + ['stops']
+
+    def get_stops(self, obj):
+        stops = Stop.objects.filter(station=obj)
+        serializer = StopSimpleSerializer(stops, many=True)
+        return serializer.data

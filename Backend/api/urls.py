@@ -40,8 +40,8 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
-  
-    path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', profanity_filter, name='profanity-filter'),
+    path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', 
+         profanity_filter, name='profanity-filter'),
     path('token/', obtain_token, name='token_obtain_pair'),
     path('verify_registration/', verify_registration, name='verify_registration'),
     path('cancel_registration/', cancel_registration, name='cancel_registration'),
