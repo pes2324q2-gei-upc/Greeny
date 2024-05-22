@@ -94,7 +94,7 @@ httpPostNoToken(String url, String params, String contentType) async {
     },
     body: params,
   );
-
+  checkForBan(response);
   return response;
 }
 
@@ -261,6 +261,5 @@ httpUpdateAccount({
 void checkForBan(response) {
   if (response.statusCode == 401) {
     bannedUserController.add(true);
-    print("BANNEEEEEEED");
   }
 }

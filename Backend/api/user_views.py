@@ -242,3 +242,25 @@ def google_auth(request):
     }
 
     return Response(info, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def obtain_token(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = User.objects.filter(username=username).first()
+
+    if user is None or not check_password(password, user.password):
+        return Response({'error': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if user.is_active == False:
+        return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    refresh = RefreshToken.for_user(user)
+    info = {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+    return Response(info, status=status.HTTP_200_OK)

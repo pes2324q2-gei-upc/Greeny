@@ -1,10 +1,12 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.core.mail import send_mail
 
 from rest_framework import status
 from .models import Review, Station, User
 from .serializers import ReviewSerializer
+from django.conf import settings
 from profanity_check import predict_prob
 from .utils import check_for_ban, translate
 from ftlangdetect import detect
@@ -51,6 +53,13 @@ def profanity_filter(request, station_id, review_id):
         try:
             body = translate(body, lang)
         except Exception as e:
+            send_mail(
+                'Código de verificación',
+                f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it',
+                settings.EMAIL_HOST_USER,
+                [settings.EMAIL_HOST_USER],
+                fail_silently=False,
+            )
             logger.error(f'Couldn\'t detect de language of the reported review with ID: {review.id}, please check it')
             return Response({'message':'Review pending of evaluation'})
 

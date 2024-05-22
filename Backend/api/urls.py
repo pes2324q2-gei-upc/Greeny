@@ -5,7 +5,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
-from api.user_views import UsersView, verify, cancel_registration, google_auth
+from api.user_views import UsersView, verify, cancel_registration, google_auth, obtain_token
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
@@ -43,4 +43,5 @@ urlpatterns = [
     path('verify/', verify, name='verify'),
     path('cancel_registration/', cancel_registration, name='cancel_registration'),
     path('oauth2/', google_auth, name='google_oauth'),
+    path('token/', obtain_token, name='token_obtain_pair')
 ]
