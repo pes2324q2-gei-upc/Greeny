@@ -13,27 +13,29 @@ class CityView(APIView):
         except Level.DoesNotExist:
             return None  # Asegúrate de manejar el caso en que no exista el nivel
 
-
     def get_neighborhood(self, level):
         return Neighborhood.objects.get(id=level.neighborhood_id)
 
     def get(self, request):
-        user = self.request.user
-        level = self.get_current_level(user)
+        user = request.user
         levels = Level.objects.filter(user=user)
         all_completed = all(level.completed for level in levels)
+
         if all_completed:
             user_data = {
                 "user_name": user.username,
-                "is_staff": user.is_staff
+                "is_staff": user.is_staff,
+                "status": "all_completed"
             }
-            response_data = {"status": "all_completed"}
-            response_data.update(user_data)  # Agrega los datos del usuario a la respuesta
-            return Response(response_data)
+            return Response(user_data)
+
+        level = self.get_current_level(user)
         if level is None:
-            return Response({"message": "No current level"})
-        level_data = LevelSerializer(level).data
-        return Response(level_data)
+            response_data = {"message": "No current level"}
+        else:
+            response_data = LevelSerializer(level).data
+
+        return Response(response_data)
 
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
@@ -47,8 +49,8 @@ class CityView(APIView):
                 level.save()
 
                 if level.number > 1:
-                    current_level_number = level.number
-                    previous_level = Level.objects.filter(user=user, number=current_level_number - 1).first()
+                    crt_lvl_nb = level.number
+                    previous_level = Level.objects.filter(user=user, number=crt_lvl_nb - 1).first()
 
                     if previous_level:
                         level.current = False
