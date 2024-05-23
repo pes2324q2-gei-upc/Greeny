@@ -606,37 +606,60 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
   Widget buildBadges(int level, int mastery) {
     List<Widget> badges = []; // Lista para almacenar las medallas
-
-    // Bucle para generar medallas basadas en el nivel
-    for (int i = 0; i < level; i++) {
-      int maxlevel;
-      if (mastery == 0) {
-        maxlevel = level - 1;
-      } else {
-        maxlevel = 9;
-      }
-      badges.add(
-        Positioned(
-          left: i * 25.0, // Espacio horizontal entre las medallas
-          child: GestureDetector(
-            onTap: () {
-              clickBadge(badges, level, maxlevel);
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(60),
-              child: Image.asset(
-                'assets/badges/$i$mastery.png', // Cambia la imagen según corresponda
-                width: 40, // Ancho deseado
-                height: 40, // Alto deseado
-                fit: BoxFit.cover,
+    if (mastery < 3) {
+      // Bucle para generar medallas basadas en el nivel
+      for (int i = 0; i < level; i++) {
+        int maxlevel;
+        if (mastery == 0) {
+          maxlevel = level - 1;
+        } else {
+          maxlevel = 9;
+        }
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, level, maxlevel);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/$i$mastery.png',
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
-        ),
-      );
-    }
-    if (mastery > 0) {
-      for (int i = level; i < 10; i++) {
+        );
+      }
+      if (mastery > 0) {
+        for (int i = level; i < 10; i++) {
+          badges.add(
+            Positioned(
+              left: i * 25.0, // Espacio horizontal entre las medallas
+              child: GestureDetector(
+                onTap: () {
+                  clickBadge(badges, level, 9);
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.asset(
+                    'assets/badges/$i${mastery - 1}.png',
+                    width: 40, // Ancho deseado
+                    height: 40, // Alto deseado
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    } else {
+      for (int i = 0; i < 10; i++) {
         badges.add(
           Positioned(
             left: i * 25.0, // Espacio horizontal entre las medallas
@@ -647,7 +670,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(60),
                 child: Image.asset(
-                  'assets/badges/$i${mastery - 1}.png', // Cambia la imagen según corresponda
+                  'assets/badges/${i}2.png',
                   width: 40, // Ancho deseado
                   height: 40, // Alto deseado
                   fit: BoxFit.cover,
@@ -660,7 +683,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     }
 
     return SizedBox(
-      height: 40, // Establece la altura deseada
+      height: 40,
       child: Stack(
         children: badges,
       ),
