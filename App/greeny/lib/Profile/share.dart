@@ -1,6 +1,15 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/Statistics/statistics.dart';
+import 'package:share_plus/share_plus.dart';
+
+final GlobalKey _globalKey = GlobalKey();
 
 class SharePage extends StatefulWidget {
   const SharePage({
@@ -22,6 +31,38 @@ class SharePage extends StatefulWidget {
 }
 
 class _SharePageState extends State<SharePage> {
+  Future<Uint8List?> capturePng() async {
+    try {
+      RenderRepaintBoundary boundary = _globalKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  void share() async {
+    Uint8List? bytes = await capturePng();
+    if (bytes != null) {
+      try {
+        // Guarda los bytes de la imagen en un archivo temporal
+        final tempDir = await getTemporaryDirectory();
+        final file = await File('${tempDir.path}/share_image.png').create();
+        await file.writeAsBytes(bytes);
+
+        // Comparte el archivo utilizando Share.shareFiles
+        await Share.shareXFiles([XFile(file.path)],
+            text: 'Check out my statistics on Greeny!');
+      } catch (e) {
+        print(e.toString());
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,90 +79,89 @@ class _SharePageState extends State<SharePage> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-            child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape:
-                          BoxShape.circle, // Establece la forma como un círculo
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey
-                              .withOpacity(0.5), // Color de la sombra
-                          spreadRadius: 3, // Extensión de la sombra
-                          blurRadius: 3, // Desenfoque de la sombra
-                          offset:
-                              const Offset(0, 2), // Desplazamiento de la sombra
-                        ),
-                      ],
+      body: RepaintBoundary(
+        key: _globalKey,
+        child: SingleChildScrollView(
+          child: Center(
+              child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        shape: BoxShape
+                            .circle, // Establece la forma como un círculo
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey
+                                .withOpacity(0.5), // Color de la sombra
+                            spreadRadius: 3, // Extensión de la sombra
+                            blurRadius: 3, // Desenfoque de la sombra
+                            offset: const Offset(
+                                0, 2), // Desplazamiento de la sombra
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                          backgroundImage: NetworkImage(widget.imagePath)),
                     ),
-                    child: CircleAvatar(
-                        backgroundImage: NetworkImage(widget.imagePath)),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                    const SizedBox(width: 10),
+                    Text(
+                      widget.name,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    '@${widget.username}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 133, 131, 131),
+                    const SizedBox(width: 10),
+                    Text(
+                      '@${widget.username}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 133, 131, 131),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.only(left: 10),
-              child: Row(
-                children: [
-                  const Icon(Icons.emoji_events_outlined,
-                      color: Color.fromARGB(255, 133, 131, 131)),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: buildBadges(widget.level - 1, widget.mastery),
-                  ),
-                ],
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.only(left: 10),
+                child: Row(
+                  children: [
+                    const Icon(Icons.emoji_events_outlined,
+                        color: Color.fromARGB(255, 133, 131, 131)),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: buildBadges(widget.level - 1, widget.mastery),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 450, // Ajusta este valor según tus necesidades
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: 450, // Ajusta este valor según tus necesidades
+                ),
+                child: const StatisticsPage(
+                  sharing: true,
+                ),
               ),
-              child: const StatisticsPage(
-                sharing: true,
+              ElevatedButton(
+                onPressed: share,
+                child: Text(translate('Share')),
               ),
-            ),
-            ElevatedButton(
-              onPressed: share,
-              child: Text(translate('Share')),
-            ),
-          ],
-        )),
+            ],
+          )),
+        ),
       ),
     );
   }
-}
-
-void share() {
-  // Compartir estadísticas
 }
 
 Widget buildBadges(int level, int mastery) {
