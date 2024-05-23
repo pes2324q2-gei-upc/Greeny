@@ -7,10 +7,16 @@ class SharePage extends StatefulWidget {
     Key? key,
     required this.level,
     required this.mastery,
+    required this.name,
+    required this.username,
+    required this.imagePath,
   }) : super(key: key);
 
   final int level;
   final int mastery;
+  final String name;
+  final String username;
+  final String imagePath;
   @override
   State<SharePage> createState() => _SharePageState();
 }
@@ -35,6 +41,52 @@ class _SharePageState extends State<SharePage> {
       body: Center(
           child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape:
+                        BoxShape.circle, // Establece la forma como un círculo
+                    boxShadow: [
+                      BoxShadow(
+                        color:
+                            Colors.grey.withOpacity(0.5), // Color de la sombra
+                        spreadRadius: 3, // Extensión de la sombra
+                        blurRadius: 3, // Desenfoque de la sombra
+                        offset:
+                            const Offset(0, 2), // Desplazamiento de la sombra
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                      backgroundImage: NetworkImage(widget.imagePath)),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  widget.name,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  '@${widget.username}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 133, 131, 131),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.only(left: 10),
             child: Row(

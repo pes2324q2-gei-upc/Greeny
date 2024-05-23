@@ -474,7 +474,12 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => SharePage(level: level, mastery: mastery)));
+            builder: (context) => SharePage(
+                level: level,
+                mastery: mastery,
+                name: userName,
+                username: userUsername,
+                imagePath: imagePath)));
   }
 
   void clickBadge(List<Widget> badges, int level, int maxLevel) {
