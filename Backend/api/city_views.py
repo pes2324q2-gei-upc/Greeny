@@ -1,8 +1,14 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+
+from django.contrib.gis.geos import GEOSGeometry
+
 from .models import Neighborhood, Level
 from .serializers import LevelSerializer, HistorySerializer
+from .adapters.airmon_adapter import ICQAAirmonAdapter
+
 
 class CityView(APIView):
 
@@ -126,3 +132,16 @@ class NeighborhoodsView(APIView):
         levels = Level.objects.filter(user=self.request.user).order_by('number')
         serializer = HistorySerializer(levels, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+def get_icqa(request):
+    request = request.data
+    nhood = Neighborhood.objects.get(name=request['name'])
+    coords = nhood.coords.replace('{', '').replace('}', '').split(':')
+
+    parsed_coords = []
+    for coord in coords:
+        pnt = GEOSGeometry(coord)
+        parsed_coords.append({"latitude": pnt.y, "longitude": pnt.x})
+
+    return Response(ICQAAirmonAdapter.get_icqa(parsed_coords), status=status.HTTP_200_OK)
