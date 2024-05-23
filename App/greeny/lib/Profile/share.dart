@@ -47,7 +47,8 @@ class _SharePageState extends State<SharePage> {
           recorder,
           Rect.fromPoints(
               Offset.zero, Offset(width.toDouble(), height.toDouble())));
-      final Paint paint = Paint()..color = Colors.white;
+      final Paint paint = Paint()
+        ..color = const Color.fromARGB(255, 220, 255, 255);
       canvas.drawRect(
           Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()), paint);
 
