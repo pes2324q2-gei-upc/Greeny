@@ -65,6 +65,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           levelNumber = newCityData['number'];
           nhoodName = newCityData['neighborhood']['name'];
           nhoodPath = newCityData['neighborhood']['path'];
+        } else {
+          nhoodName = "all_nhoods";
+          nhoodPath = "all_nhoods.glb";
         }
       });
     });
@@ -95,7 +98,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               newCityData; // Actualiza los datos notificados
           allCompleted = true; // Marca que todos los niveles están completados
           userPoints = points; // Actualiza los puntos del usuario
-
+          nhoodName = "all_nhoods";
+          nhoodPath = "all_nhoods.glb";
           // Actualiza los datos del usuario y el estado de staff si están disponibles
           userName = newCityData['user_name'] ??
               userName; // Utiliza el operador ?? para mantener el valor anterior si no viene uno nuevo
@@ -113,6 +117,44 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       }
     } else {
       throw Exception('Failed to update city data');
+    }
+  }
+
+  Future<void> resetLevels() async {
+    final response = await httpPut(
+        '/api/city/', // Assuming '/api/city/reset' is the endpoint for resetting levels
+        jsonEncode({
+          'reset': true
+        }), // Assuming your API requires a body to initiate reset
+        'application/json' // Set the content type as JSON
+        );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> newCityData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      setState(() {
+        print(newCityData);
+        cityDataNotifier.value =
+            newCityData; // Update the data notifier with the reset response
+
+        if (newCityData.containsKey('status') &&
+            newCityData['status'] == 'levels_reset') {
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+          userName = newCityData['user_name'];
+          isStaff = newCityData['is_staff'];
+          allCompleted = false; // Mark all levels as not completed
+        } else {
+          throw Exception(
+              'Failed to reset levels properly: Status not confirmed');
+        }
+      });
+    } else {
+      throw Exception('Failed to reset levels: ${response.statusCode}');
     }
   }
 
@@ -173,13 +215,96 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                   if (cityData.containsKey('status') &&
                                       cityData['status'] == 'all_completed') {
                                     // Todos los niveles están completados, muestra un botón de reinicio.
-                                    return Center(
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          // Aquí puedes poner la lógica para reiniciar los niveles.
-                                        },
-                                        child: const Text('Restart'),
-                                      ),
+                                    return Stack(
+                                      children: [
+                                        const Positioned(
+                                          top: 5,
+                                          left: 0,
+                                          right: 0,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Congratulations, you have',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.0,
+                                                ),
+                                              ),
+                                              Text(
+                                                'achieved Mastery I !',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.0,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        ModelViewer(
+                                          debugLogging: false,
+                                          key: Key(nhoodName),
+                                          src:
+                                              'assets/neighborhoods/$nhoodPath',
+                                          autoRotate: true,
+                                          disableZoom: true,
+                                          rotationPerSecond: "25deg",
+                                          autoRotateDelay: 1000,
+                                          cameraControls: false,
+                                        ),
+                                        Positioned(
+                                          bottom: 20,
+                                          left: 0,
+                                          right: 0,
+                                          child: Center(
+                                            // Asegura que el SizedBox esté centrado horizontalmente
+                                            child: SizedBox(
+                                              width:
+                                                  200, // Establece el ancho del botón
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  try {
+                                                    await resetLevels();
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: const Text(
+                                                                "Game restarted"),
+                                                            content: const Text(
+                                                                "Levels have been restarted"),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(),
+                                                                  child:
+                                                                      const Text(
+                                                                          "OK"))
+                                                            ],
+                                                          );
+                                                        });
+                                                  } catch (e) {
+                                                    final snackBar = SnackBar(
+                                                        content: Text(
+                                                            'Fallo al reiniciar el juego: $e'));
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(snackBar);
+                                                  }
+                                                },
+                                                child:
+                                                    const Text('Restart game'),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     );
                                   } else {
                                     // Los datos están disponibles, construye el ModelViewer y las imágenes de niebla.
