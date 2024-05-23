@@ -65,7 +65,7 @@ class CityView(APIView):
                 level.completed = True
                 level.current = False
                 level.save()
-                if (user.mastery < 2):
+                if (user.mastery < 3):
                     user.mastery += 1
                     user.save()
                 user_data = {
