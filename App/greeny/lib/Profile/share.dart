@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
+import 'package:greeny/utils/utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/Statistics/statistics.dart';
 import 'package:share_plus/share_plus.dart';
+import '../utils/info_dialog.dart';
 
 final GlobalKey _globalKey = GlobalKey();
 
@@ -36,11 +38,30 @@ class _SharePageState extends State<SharePage> {
       RenderRepaintBoundary boundary = _globalKey.currentContext!
           .findRenderObject() as RenderRepaintBoundary;
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+
+      // Crear un nuevo ImageInfo con un fondo blanco
+      final int width = image.width;
+      final int height = image.height;
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(
+          recorder,
+          Rect.fromPoints(
+              Offset.zero, Offset(width.toDouble(), height.toDouble())));
+      final Paint paint = Paint()..color = Colors.white;
+      canvas.drawRect(
+          Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()), paint);
+
+      // Dibujar la imagen encima del fondo blanco
+      canvas.drawImage(image, Offset.zero, Paint());
+
+      // Convertir la imagen con el fondo blanco a formato png
+      final ui.Image whiteBackgroundImage =
+          await recorder.endRecording().toImage(width, height);
       ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
+          await whiteBackgroundImage.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     } catch (e) {
-      print(e.toString());
+      showMessage(context, translate("Error generating image"));
       return null;
     }
   }
@@ -55,10 +76,9 @@ class _SharePageState extends State<SharePage> {
         await file.writeAsBytes(bytes);
 
         // Comparte el archivo utilizando Share.shareFiles
-        await Share.shareXFiles([XFile(file.path)],
-            text: 'Check out my statistics on Greeny!');
+        await Share.shareXFiles([XFile(file.path)]);
       } catch (e) {
-        print(e.toString());
+        showMessage(context, translate("Error sharing"));
       }
     }
   }
@@ -89,6 +109,7 @@ class _SharePageState extends State<SharePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
+                    const SizedBox(height: 100),
                     Container(
                       width: 70,
                       height: 70,
