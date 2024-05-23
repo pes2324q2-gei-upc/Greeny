@@ -28,6 +28,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int trips = 0;
   int reviews = 0;
   int friendId = 0;
+  int mastery = 1;
   bool isFriend = false;
   String currentUsername = '';
 
@@ -289,6 +290,40 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            //Mastery
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: FriendProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.military_tech_rounded,
+                                    color: FriendProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Mastery:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: FriendProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             //Amics
                             Container(
                               decoration: BoxDecoration(
@@ -417,6 +452,22 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           ),
         ),
       );
+    }
+  }
+
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
     }
   }
 
