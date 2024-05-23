@@ -36,7 +36,6 @@ class CityView(APIView):
 
         return Response(response_data)
 
-
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
         response_data = {}
