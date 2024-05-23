@@ -130,24 +130,27 @@ class _SharePageState extends State<SharePage> {
                                 backgroundImage: NetworkImage(widget.imagePath),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Text(
-                              widget.name,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              '@${widget.username}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 133, 131, 131),
-                              ),
-                            ),
+                            const SizedBox(width: 15),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.name,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    '@${widget.username}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 133, 131, 131),
+                                    ),
+                                  ),
+                                ]),
                           ],
                         ),
                       ),
