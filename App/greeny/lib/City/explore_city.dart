@@ -47,7 +47,7 @@ class ExploreCity extends StatelessWidget {
             key: Key(name),
             src: 'assets/neighborhoods/$path',
             autoRotate: true,
-            disableZoom: true,
+            disableZoom: false,
             disableTap: true,
             rotationPerSecond: "25deg", // Rota 30 grados por segundo
             autoRotateDelay: 1000, // Espera 1 segundos antes de rotar
