@@ -67,6 +67,7 @@ dependencies:
   #introduction_screen: ^2.1.0
 
 
+  path_provider: any
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:

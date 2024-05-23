@@ -8,7 +8,7 @@ import 'package:greeny/utils/utils.dart';
 import '../utils/info_dialog.dart';
 
 class StatisticsPage extends StatefulWidget {
-  const StatisticsPage({Key? key, required this.sharing}) : super(key: key);
+  const StatisticsPage({super.key, required this.sharing});
   final bool sharing;
 
   @override

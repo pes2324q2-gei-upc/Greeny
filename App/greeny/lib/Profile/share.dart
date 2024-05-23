@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io';
 import 'package:greeny/utils/utils.dart';
@@ -9,19 +8,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/Statistics/statistics.dart';
 import 'package:share_plus/share_plus.dart';
-import '../utils/info_dialog.dart';
 
 final GlobalKey _globalKey = GlobalKey();
 
 class SharePage extends StatefulWidget {
   const SharePage({
-    Key? key,
+    super.key,
     required this.level,
     required this.mastery,
     required this.name,
     required this.username,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   final int level;
   final int mastery;
@@ -62,7 +60,7 @@ class _SharePageState extends State<SharePage> {
           await whiteBackgroundImage.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     } catch (e) {
-      showMessage(context, translate("Error generating image"));
+      if (mounted) showMessage(context, translate("Error generating image"));
       return null;
     }
   }
@@ -79,7 +77,7 @@ class _SharePageState extends State<SharePage> {
         // Comparte el archivo utilizando Share.shareFiles
         await Share.shareXFiles([XFile(file.path)]);
       } catch (e) {
-        showMessage(context, translate("Error sharing"));
+        if (mounted) showMessage(context, translate("Error sharing"));
       }
     }
   }
@@ -167,7 +165,7 @@ class _SharePageState extends State<SharePage> {
                 ),
               ),
               ConstrainedBox(
-                constraints: BoxConstraints(
+                constraints: const BoxConstraints(
                   maxHeight: 450, // Ajusta este valor según tus necesidades
                 ),
                 child: const StatisticsPage(
