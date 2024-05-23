@@ -36,6 +36,18 @@ class CityView(APIView):
 
         return Response(response_data)
 
+    def add_points(self, user, new_points):
+        level = self.get_current_level(user)
+
+        if new_points is not None:
+            level.points_user += new_points
+            level.save()
+
+            level = self.update_level(user)
+
+            level_data = LevelSerializer(level).data
+            return level_data
+        return "No level data"
 
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
