@@ -96,7 +96,7 @@ class _BadgesPageState extends State<BadgesPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              "Nivell ${(currentlevel + 1).toString()}",
+              "${translate('Level')} ${(currentlevel + 1).toString()}",
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
