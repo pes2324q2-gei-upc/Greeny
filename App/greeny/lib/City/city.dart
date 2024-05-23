@@ -215,9 +215,19 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                   if (cityData.containsKey('status') &&
                                       cityData['status'] == 'all_completed') {
                                     // Todos los niveles están completados, muestra un botón de reinicio.
+                                    var translatedtext1 =
+                                        translate('Congratulations, you have');
+                                    var translatedtext2 =
+                                        translate('achieved Mastery I !');
+                                    var translatedtext3 =
+                                        translate('Game restarted');
+                                    var translatedtext4 =
+                                        translate('Levels have been restarted');
+                                    var translatedtext5 =
+                                        translate('Restart game');
                                     return Stack(
                                       children: [
-                                        const Positioned(
+                                        Positioned(
                                           top: 5,
                                           left: 0,
                                           right: 0,
@@ -226,17 +236,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                 MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                'Congratulations, you have',
+                                                translatedtext1,
                                                 textAlign: TextAlign.center,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20.0,
                                                 ),
                                               ),
                                               Text(
-                                                'achieved Mastery I !',
+                                                translatedtext2,
                                                 textAlign: TextAlign.center,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 20.0,
                                                 ),
@@ -273,10 +283,10 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                         builder: (BuildContext
                                                             context) {
                                                           return AlertDialog(
-                                                            title: const Text(
-                                                                "Game restarted"),
-                                                            content: const Text(
-                                                                "Levels have been restarted"),
+                                                            title: Text(
+                                                                translatedtext3),
+                                                            content: Text(
+                                                                translatedtext4),
                                                             actions: <Widget>[
                                                               TextButton(
                                                                   onPressed: () =>
@@ -289,17 +299,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                             ],
                                                           );
                                                         });
-                                                  } catch (e) {
-                                                    final snackBar = SnackBar(
-                                                        content: Text(
-                                                            'Fallo al reiniciar el juego: $e'));
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(snackBar);
-                                                  }
+                                                  } catch (e) {}
                                                 },
-                                                child:
-                                                    const Text('Restart game'),
+                                                child: Text(translatedtext5),
                                               ),
                                             ),
                                           ),
@@ -629,11 +631,12 @@ class BarraProgres extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
+              var translatedtext = translate('Level');
               return Container(
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  "Nivell $levelNumber - $nhoodName",
+                  "$translatedtext $levelNumber - $nhoodName",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -659,12 +662,13 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
+              var translatedtext = translate('Points:');
               return Container(
                 alignment: Alignment.centerLeft,
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: $userPoints/$levelPoints',
+                  '$translatedtext $userPoints/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
