@@ -387,4 +387,3 @@ def refresh_token(request):
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
     return Response({'access': access_token}, status=status.HTTP_200_OK)
-

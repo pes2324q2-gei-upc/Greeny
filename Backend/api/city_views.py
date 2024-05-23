@@ -71,7 +71,7 @@ class CityView(APIView):
                 level.completed = True
                 level.current = False
                 level.save()
-                if (user.mastery < 3):
+                if user.mastery < 3:
                     user.mastery += 1
                     user.save()
                 user_data = {
@@ -159,16 +159,16 @@ class CityView(APIView):
         print(request.data)
         if request.data.get('reset'):
             return self.reset_levels(user)
-        else:
-            new_points = request.data.get('points_user')
-            if new_points is not None:
-                user.points += new_points
-                user.save()
-                level_data = self.update_points(user, new_points)
-                return Response(level_data)
-            else:
-                return Response({'error': 'No se proporcionaron nuevos puntos o acciones.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+
+        new_points = request.data.get('points_user')
+        if new_points is not None:
+            user.points += new_points
+            user.save()
+            level_data = self.update_points(user, new_points)
+            return Response(level_data)
+
+        return Response({'error': 'No se proporcionaron nuevos puntos o acciones.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 class NeighborhoodsView(APIView):
 
