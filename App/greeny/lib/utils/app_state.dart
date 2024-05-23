@@ -86,18 +86,24 @@ class AppState with ChangeNotifier {
   }
 
   set isPlaying(bool value) {
-    _isPlaying = value;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isPlaying = value;
+      notifyListeners();
+    });
   }
 
   set totalDistance(double value) {
-    _totalDistance = value;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _totalDistance = value;
+      notifyListeners();
+    });
   }
 
   set previousPosition(Position? newPosition) {
-    _previousPosition = newPosition;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _previousPosition = newPosition;
+      notifyListeners();
+    });
   }
 
   set startedAt(DateTime? value) {

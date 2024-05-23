@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
 import 'package:greeny/utils/app_state.dart';
@@ -363,7 +362,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             // Si está reproduciendo, pausar
             pause();
           } else {
-            bool ubiActiva = await comprovarUbicacio();
+            bool ubiActiva = await LocationService.instance.comprovarUbicacio();
             if (!ubiActiva) return;
             // Si no está reproduciendo, reproducir
             play();
@@ -452,31 +451,6 @@ class KmTravelled extends StatelessWidget {
     print('Error obtaining location: $e');
   }
 } */
-
-// comprova que els servieis dúbicació estan activats i tenen permissos
-Future<bool> comprovarUbicacio() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await Geolocator.openLocationSettings();
-    if (!serviceEnabled) {
-      return false;
-    }
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission != LocationPermission.whileInUse &&
-        permission != LocationPermission.always) {
-      return false;
-    }
-  }
-
-  return true;
-}
 
 class BarraProgres extends StatelessWidget {
   final int userPoints;
