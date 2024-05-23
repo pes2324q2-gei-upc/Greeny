@@ -172,7 +172,7 @@ class HistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'neighborhood']
+        fields = ['number', 'completed', 'current', 'neighborhood']
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()
