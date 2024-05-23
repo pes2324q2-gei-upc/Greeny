@@ -24,6 +24,8 @@ class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
     image = models.ImageField(upload_to='imatges/', default=get_default_image)
     reports = models.IntegerField(default=0)
+    mastery = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
 
 class Blacklist(models.Model):
     email = models.EmailField(unique=True)

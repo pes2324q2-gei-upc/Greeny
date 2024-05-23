@@ -96,7 +96,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           cityDataNotifier.value =
               newCityData; // Actualiza los datos notificados
           allCompleted = true; // Marca que todos los niveles están completados
-          userPoints = points; // Actualiza los puntos del usuario
+          userPoints = 0; // Actualiza los puntos del usuario
           nhoodName = "all_nhoods";
           nhoodPath = "all_nhoods.glb";
           // Actualiza los datos del usuario y el estado de staff si están disponibles
@@ -513,13 +513,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void addPoints() {
-    updateProgress(userPoints +
+    updateProgress(
         50); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
-    updateProgress(userPoints -
-        50); // Llama a la función para actualizar la barra de progreso
+    updateProgress(
+        -50); // Llama a la función para actualizar la barra de progreso
   }
 }
 
