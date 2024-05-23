@@ -1,15 +1,14 @@
-import logging
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from rest_framework import status
+from profanity_check import predict_prob
+
 from .models import Review, Station
 from .serializers import ReviewSerializer
 from .utils import check_for_ban, translate
-from profanity_check import predict_prob
 
-logger = logging.getLogger(__name__)
 
 class ReviewsViews(ModelViewSet):
     serializer_class = ReviewSerializer
