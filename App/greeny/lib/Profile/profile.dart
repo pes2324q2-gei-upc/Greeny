@@ -32,6 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int friends = 0;
   int trips = 0;
   int reviews = 0;
+  int points = 0;
   int mastery = 1;
 
   @override
@@ -58,6 +59,8 @@ class _ProfilePageState extends State<ProfilePage> {
         trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
         imagePath = userData[0]['image'];
+        mastery = userData[0]['mastery'];
+        points = userData[0]['points'];
       });
     } else {
       if (mounted) {
@@ -358,6 +361,40 @@ class _ProfilePageState extends State<ProfilePage> {
                                   const Spacer(),
                                   Text(
                                     toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            //Points
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: ProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.score_rounded,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Points:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: ProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    points.toString(),
                                     style: const TextStyle(
                                       fontSize: 16,
                                     ),

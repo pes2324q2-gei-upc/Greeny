@@ -29,7 +29,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   int trips = 0;
   int reviews = 0;
   int friendId = 0;
-  int mastery = 1;
+  int points = 0;
+  int mastery = 0;
   bool isFriend = false;
   String currentUsername = '';
 
@@ -61,6 +62,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           reviews = userData['reviews_number'];
           friendId = userData['id'];
           imagePath = userData['image'];
+          mastery = userData['mastery'];
+          points = userData['points'];
         });
       } else {
         if (mounted) {
@@ -332,6 +335,40 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                                   const Spacer(),
                                   Text(
                                     toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            //Points
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: FriendProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.score_rounded,
+                                    color: FriendProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Points:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: FriendProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    points.toString(),
                                     style: const TextStyle(
                                       fontSize: 16,
                                     ),
