@@ -50,7 +50,7 @@ class CO2Consumed(models.Model):
         if not self.pk and CO2Consumed.objects.exists():
             # if the objects exists, then update the first one found
             self.pk = CO2Consumed.objects.first().pk
-        super(CO2Consumed, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "CO2Consumed"

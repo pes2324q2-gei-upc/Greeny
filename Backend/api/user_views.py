@@ -49,7 +49,8 @@ class UsersView(ModelViewSet):
         if not banned:
             user = User.objects.create_user(**validated_data)
         else:
-            return Response({'message':'You are banned from this application for violating our guidelines'},
+            return Response(
+                {'message':'You are banned from this application for violating our guidelines'},
                             status=status.HTTP_403_FORBIDDEN)
 
         send_verification_email(user)
@@ -319,9 +320,10 @@ def obtain_token(request):
     user = User.objects.filter(username=username).first()
 
     if user is None or not check_password(password, user.password):
-        return Response({'error': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid username or password'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-    if user.is_active == False:
+    if user.is_active is False:
         return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
 
     refresh = RefreshToken.for_user(user)
@@ -335,10 +337,10 @@ def obtain_token(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh_token(request):
-    refresh_token = request.data.get('refresh')
+    refresh_token_str = request.data.get('refresh')
 
     try:
-        refresh = RefreshToken(refresh_token)
+        refresh = RefreshToken(refresh_token_str)
         access_token = str(refresh.access_token)
 
         # Decode the token to get user's ID
@@ -348,7 +350,7 @@ def refresh_token(request):
         user = User.objects.get(id=user_id)
 
         # Check if the user is banned
-        if user.is_active == False:
+        if user.is_active is False:
             return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
 
     except TokenError:

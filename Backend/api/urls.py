@@ -6,7 +6,8 @@ from rest_framework.routers import DefaultRouter
 
 # Local application/library specific imports
 from api.user_views import (UsersView, verify_registration, cancel_registration, google_auth,
-                            forgot_password, verify_forgotten_password, reset_password, obtain_token, refresh_token)
+                            forgot_password, verify_forgotten_password, reset_password,
+                            obtain_token, refresh_token)
 from api.statistics_views import StatisticsView
 from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
@@ -40,8 +41,8 @@ urlpatterns = [
          name='charging_station_info'),
     path('ping', ping, name='ping'),
     path('user/<str:username>/', UsersView.as_view({'get': 'retrieve'}), name='user-detail'),
-    path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter', 
-         profanity_filter, name='profanity-filter'),
+    path('stations/<int:station_id>/reviews/<int:review_id>/profanity-filter',
+        profanity_filter, name='profanity-filter'),
     path('token/', obtain_token, name='token_obtain_pair'),
     path('token/refresh/', refresh_token, name='token_refresh'),
     path('verify_registration/', verify_registration, name='verify_registration'),

@@ -60,7 +60,7 @@ class CityView(APIView):
                     response_data = LevelSerializer(previous_level).data
                 else:
                     response_data = LevelSerializer(level).data
-                
+
             elif level.number == 10 and level.points_user >= 1500:
                 level.completed = True
                 level.current = False
@@ -109,7 +109,7 @@ class CityView(APIView):
                 return None
 
         return self.get_current_level(user)
-    
+
     def reset_levels(self, user):
         levels = Level.objects.filter(user=user)
         for level in levels:
@@ -122,7 +122,8 @@ class CityView(APIView):
             first_level = levels.first()
             first_level.current = True
             first_level.save()
-            neighborhood = self.get_neighborhood(first_level)  # Asumiendo que tienes un método para obtener el vecindario del nivel
+            # Asumiendo que tienes un método para obtener el vecindario del nivel
+            neighborhood = self.get_neighborhood(first_level)
             level_data = {
                 'points_user': first_level.points_user,
                 'points_total': first_level.points_total,
