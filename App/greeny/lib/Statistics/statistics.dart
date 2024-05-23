@@ -93,105 +93,175 @@ class _StatisticsPageState extends State<StatisticsPage> {
             if (!widget.sharing) ...[
               _buildSelectionButtons(),
             ],
-            InfoBox(
-              icon: Icons.route,
-              title: translate('Distance traveled'),
-              subtitle: '',
-              value: kmTotal.toStringAsFixed(2),
-              unit: 'km',
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.cloud,
-                    title: translate('CO2 consumed'),
-                    subtitle: translate('If travelled by combustion car'),
-                    value: carCO2Consumed.toStringAsFixed(2),
-                    unit: 'kg',
+            if (selectedOption == 'all') ...[
+              InfoBox(
+                icon: Icons.route,
+                title: translate('Distance traveled'),
+                subtitle: '',
+                value: kmTotal.toStringAsFixed(2),
+                unit: 'km',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.cloud,
+                      title: translate('CO2 consumed'),
+                      subtitle: translate('If travelled by combustion car'),
+                      value: carCO2Consumed.toStringAsFixed(2),
+                      unit: 'kg',
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.cloud,
-                    title: translate('CO2 consumed'),
-                    subtitle: '',
-                    value: co2Consumed.toStringAsFixed(2),
-                    unit: 'kg',
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.nature_rounded,
+                      title: translate('Unfelled trees'),
+                      subtitle: '',
+                      value: ((carCO2Consumed - co2Consumed) / 21.77)
+                          .toStringAsFixed(2),
+                      unit: translate('trees'),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.eco_rounded,
-                    title: translate('CO2 saved'),
-                    subtitle: '',
-                    value: (carCO2Consumed - co2Consumed).toStringAsFixed(2),
-                    unit: 'kg',
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.cloud,
+                      title: translate('CO2 consumed'),
+                      subtitle: '',
+                      value: co2Consumed.toStringAsFixed(2),
+                      unit: 'kg',
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.nature_rounded,
-                    title: translate('Unfelled trees'),
-                    subtitle: '',
-                    value: ((carCO2Consumed - co2Consumed) / 21.77)
-                        .toStringAsFixed(2),
-                    unit: translate('trees'),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.electric_bolt,
+                      title: translate('Energy saved'),
+                      subtitle: '',
+                      value: ((carCO2Consumed - co2Consumed) / 0.280)
+                          .toStringAsFixed(2),
+                      unit: 'kWh',
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.electric_bolt,
-                    title: translate('Energy saved'),
-                    subtitle: '',
-                    value: ((carCO2Consumed - co2Consumed) / 0.280)
-                        .toStringAsFixed(2),
-                    unit: 'kWh',
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.eco_rounded,
+                      title: translate('CO2 saved'),
+                      subtitle: '',
+                      value: (carCO2Consumed - co2Consumed).toStringAsFixed(2),
+                      unit: 'kg',
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 1,
-                  child: InfoBox(
-                    icon: Icons.family_restroom,
-                    title: translate('Families supplied'),
-                    subtitle: '',
-                    value: (((carCO2Consumed - co2Consumed) / 0.280) / 4000)
-                        .toStringAsFixed(2),
-                    unit: translate('families'),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.family_restroom,
+                      title: translate('Families supplied'),
+                      subtitle: '',
+                      value: (((carCO2Consumed - co2Consumed) / 0.280) / 4000)
+                          .toStringAsFixed(2),
+                      unit: translate('families'),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ] else if (selectedOption == 'real') ...[
+              InfoBox(
+                icon: Icons.route,
+                title: translate('Distance traveled'),
+                subtitle: '',
+                value: kmTotal.toStringAsFixed(2),
+                unit: 'km',
+              ),
+              InfoBox(
+                icon: Icons.cloud,
+                title: translate('CO2 consumed'),
+                subtitle: '',
+                value: co2Consumed.toStringAsFixed(2),
+                unit: 'kg',
+              ),
+            ] else if (selectedOption == 'estimated') ...[
+              InfoBox(
+                icon: Icons.cloud,
+                title: translate('CO2 consumed'),
+                subtitle: translate('If travelled by combustion car'),
+                value: carCO2Consumed.toStringAsFixed(2),
+                unit: 'kg',
+              ),
+              InfoBox(
+                icon: Icons.eco_rounded,
+                title: translate('CO2 saved'),
+                subtitle: '',
+                value: (carCO2Consumed - co2Consumed).toStringAsFixed(2),
+                unit: 'kg',
+              ),
+              InfoBox(
+                icon: Icons.nature_rounded,
+                title: translate('Unfelled trees'),
+                subtitle: '',
+                value:
+                    ((carCO2Consumed - co2Consumed) / 21.77).toStringAsFixed(2),
+                unit: translate('trees'),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.electric_bolt,
+                      title: translate('Energy saved'),
+                      subtitle: '',
+                      value: ((carCO2Consumed - co2Consumed) / 0.280)
+                          .toStringAsFixed(2),
+                      unit: 'kWh',
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 1,
+                    child: InfoBox(
+                      icon: Icons.family_restroom,
+                      title: translate('Families supplied'),
+                      subtitle: '',
+                      value: (((carCO2Consumed - co2Consumed) / 0.280) / 4000)
+                          .toStringAsFixed(2),
+                      unit: translate('families'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             if (!widget.sharing) ...[
               const SizedBox(height: 20),
               _buildRoutesButton(),
-              const SizedBox(height: 20),
-              _buildProgressBar(Icons.directions_walk, kmWalked),
-              _buildProgressBar(Icons.directions_bike, kmBiked),
-              _buildProgressBar(Icons.electric_car, kmElectricCar),
-              _buildProgressBar(Icons.train, kmPublicTransport),
-              _buildProgressBar(Icons.directions_bus, kmBus),
-              _buildProgressBar(Icons.motorcycle, kmMotorcycle),
-              _buildProgressBar(Icons.directions_car, kmCar),
+              if ((selectedOption == 'all' || selectedOption == 'real')) ...[
+                const SizedBox(height: 20),
+                _buildProgressBar(Icons.directions_walk, kmWalked),
+                _buildProgressBar(Icons.directions_bike, kmBiked),
+                _buildProgressBar(Icons.electric_car, kmElectricCar),
+                _buildProgressBar(Icons.train, kmPublicTransport),
+                _buildProgressBar(Icons.directions_bus, kmBus),
+                _buildProgressBar(Icons.motorcycle, kmMotorcycle),
+                _buildProgressBar(Icons.directions_car, kmCar),
+              ],
             ]
           ],
         ),
@@ -200,18 +270,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buildSelectionButtons() {
-    return Expanded(
-        flex: 1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildSelectionButton('all', translate('All')),
-            const SizedBox(width: 8),
-            _buildSelectionButton('real', translate('Real data')),
-            const SizedBox(width: 8),
-            _buildSelectionButton('estimated', translate('Estimated data')),
-          ],
-        ));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _buildSelectionButton('all', translate('All')),
+        const SizedBox(width: 8),
+        _buildSelectionButton('real', translate('Real data')),
+        const SizedBox(width: 8),
+        _buildSelectionButton('estimated', translate('Estimated data')),
+      ],
+    );
   }
 
   Widget _buildSelectionButton(String value, String text) {
@@ -225,7 +293,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
           backgroundColor: selectedOption == value
-              ? const Color.fromARGB(255, 1, 167, 164)
+              ? Theme.of(context).colorScheme.inversePrimary
               : Colors.white,
           foregroundColor:
               selectedOption == value ? Colors.white : Colors.black,
@@ -233,7 +301,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             borderRadius: BorderRadius.circular(20.0),
             side: BorderSide(
               color: selectedOption == value
-                  ? const Color.fromARGB(255, 1, 167, 164)
+                  ? Theme.of(context).colorScheme.inversePrimary
                   : Colors.black,
             ),
           ),
@@ -383,7 +451,7 @@ class InfoBox extends StatelessWidget {
                   AutoSizeText(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 5,
+                      fontSize: 6,
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
