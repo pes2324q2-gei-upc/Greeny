@@ -6,6 +6,7 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Profile/badges.dart';
 import 'package:greeny/Profile/edit_profile.dart';
+import 'package:greeny/Profile/share.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/utils/translate.dart' as t;
@@ -469,7 +470,17 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void share() {}
+  void share() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SharePage(
+                level: level,
+                mastery: mastery,
+                name: userName,
+                username: userUsername,
+                imagePath: imagePath)));
+  }
 
   void clickBadge(List<Widget> badges, int level, int maxLevel) {
     Navigator.push(

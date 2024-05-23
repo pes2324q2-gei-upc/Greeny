@@ -67,7 +67,9 @@ class _MainPageState extends State<MainPage> {
         const CityPage(),
         const MapPage(),
         const FriendsPage(),
-        const StatisticsPage(),
+        const StatisticsPage(
+          sharing: false,
+        ),
         const ProfilePage(),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBar(
