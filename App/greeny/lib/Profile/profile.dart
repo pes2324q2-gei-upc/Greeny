@@ -6,6 +6,7 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/API/user_auth.dart';
 import 'package:greeny/Profile/badges.dart';
 import 'package:greeny/Profile/edit_profile.dart';
+import 'package:greeny/Profile/share.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/Registration/log_in.dart';
 import 'package:greeny/utils/translate.dart' as t;
@@ -31,6 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int friends = 0;
   int trips = 0;
   int reviews = 0;
+  int points = 0;
   int mastery = 1;
 
   @override
@@ -57,6 +59,8 @@ class _ProfilePageState extends State<ProfilePage> {
         trips = userData[0]['routes_number'];
         reviews = userData[0]['reviews_number'];
         imagePath = userData[0]['image'];
+        mastery = userData[0]['mastery'];
+        points = userData[0]['points'];
       });
     } else {
       if (mounted) {
@@ -332,6 +336,74 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            //Mastery
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: ProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.military_tech_rounded,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Mastery:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: ProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            //Points
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: ProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.score_rounded,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Points:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: ProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    points.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             //Amics
                             Container(
                               decoration: BoxDecoration(
@@ -450,6 +522,22 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
+    }
+  }
+
   void logOut() async {
     await UserAuth().userLogout();
     if (mounted) {
@@ -469,7 +557,17 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  void share() {}
+  void share() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SharePage(
+                level: level,
+                mastery: mastery,
+                name: userName,
+                username: userUsername,
+                imagePath: imagePath)));
+  }
 
   void clickBadge(List<Widget> badges, int level, int maxLevel) {
     Navigator.push(
@@ -485,36 +583,63 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildBadges(int level, int mastery) {
     List<Widget> badges = []; // Lista para almacenar las medallas
 
-    // Bucle para generar medallas basadas en el nivel
-    for (int i = 0; i < level; i++) {
-      int maxlevel;
-      if (mastery == 0) {
-        maxlevel = level - 1;
-      } else {
-        maxlevel = 9;
-      }
-      badges.add(
-        Positioned(
-          left: i * 25.0, // Espacio horizontal entre las medallas
-          child: GestureDetector(
-            onTap: () {
-              clickBadge(badges, level, maxlevel);
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(60),
-              child: Image.asset(
-                'assets/badges/$i$mastery.png', // Cambia la imagen según corresponda
-                width: 40, // Ancho deseado
-                height: 40, // Alto deseado
-                fit: BoxFit.cover,
+    if (mastery < 3) {
+      //Si no tens el maxim nivell de maestria
+      // Bucle para generar medallas basadas en el nivel
+      for (int i = 0; i < level; i++) {
+        int maxlevel;
+        if (mastery == 0) {
+          maxlevel = level - 1;
+        } else {
+          maxlevel = 9;
+        }
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, level, maxlevel);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/$i$mastery.png',
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
-        ),
-      );
-    }
-    if (mastery > 0) {
-      for (int i = level; i < 10; i++) {
+        );
+      }
+      if (mastery > 0) {
+        int index = mastery - 1;
+        for (int i = level; i < 10; i++) {
+          badges.add(
+            Positioned(
+              left: i * 25.0, // Espacio horizontal entre las medallas
+              child: GestureDetector(
+                onTap: () {
+                  clickBadge(badges, level, 9);
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.asset(
+                    'assets/badges/$i$index.png',
+                    width: 40, // Ancho deseado
+                    height: 40, // Alto deseado
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    } else {
+      //Si tens el maxim nivell de maestria
+      for (int i = 0; i < 10; i++) {
         badges.add(
           Positioned(
             left: i * 25.0, // Espacio horizontal entre las medallas
@@ -525,7 +650,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(60),
                 child: Image.asset(
-                  'assets/badges/$i${mastery - 1}.png', // Cambia la imagen según corresponda
+                  'assets/badges/${i}2.png',
                   width: 40, // Ancho deseado
                   height: 40, // Alto deseado
                   fit: BoxFit.cover,
@@ -538,7 +663,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     return SizedBox(
-      height: 40, // Establece la altura deseada
+      height: 40,
       child: Stack(
         children: badges,
       ),

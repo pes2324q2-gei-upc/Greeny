@@ -69,12 +69,14 @@ class _BadgesPageState extends State<BadgesPage> {
                   } else {
                     return const SizedBox();
                   }
-                } else if (itemIndex > level - 1) {
+                } else if (itemIndex > level - 1 && mastery < 3) {
                   if (mastery > 0) {
                     imagePath = 'assets/badges/$itemIndex${mastery - 1}.png';
                   } else {
                     imagePath = 'assets/badges/${itemIndex}0.png';
                   }
+                } else if (mastery >= 3) {
+                  imagePath = 'assets/badges/${itemIndex}2.png';
                 } else {
                   imagePath = 'assets/badges/$itemIndex$mastery.png';
                 }
@@ -96,7 +98,7 @@ class _BadgesPageState extends State<BadgesPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              "Nivell ${(currentlevel + 1).toString()}",
+              "${translate('Level')} ${(currentlevel + 1).toString()}",
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

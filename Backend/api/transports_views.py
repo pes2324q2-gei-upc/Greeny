@@ -240,9 +240,9 @@ class StationsView(APIView):
         except station_type.DoesNotExist:
             return None
 
-    def get_all_stations(self, request):
-        margin = 0.01
-        # Get the viewport bounds from the request
+    def get_viewport(self, request):
+        margin=0.01
+
         min_lng = request.GET.get('min_lng')
         min_lat = request.GET.get('min_lat')
         max_lng = request.GET.get('max_lng')
@@ -253,11 +253,12 @@ class StationsView(APIView):
             min_lat = float(min_lat) - margin
             max_lng = float(max_lng) + margin
             max_lat = float(max_lat) + margin
-            # Create a Polygon representing the viewport
-            viewport = Polygon.from_bbox((min_lng, min_lat, max_lng, max_lat))
-        else:
-            # If no parameters are sent, set the viewport to cover everything
-            viewport = Polygon.from_bbox((-180, -90, 180, 90))
+            return Polygon.from_bbox((min_lng, min_lat, max_lng, max_lat))
+
+        return Polygon.from_bbox((-180, -90, 180, 90))
+
+    def get_all_stations(self, request):
+        viewport = self.get_viewport(request)
 
         data = {}
 

@@ -395,8 +395,9 @@ class ProfanityFilterTest(TestCase):
         self.client = APIClient()
         location = Point(0, 0)  # replace with actual longitude and latitude
         self.station = Station.objects.create(name='Station1', location=location, rating=0)
-        self.user = User.objects.create(username='user1', password='pass', email='aaa@gmail.com',
-                                        )
+
+        self.user = User.objects.create(username='user1', password='pass',
+                                        email='aaa@gmail.com')
         self.review = Review.objects.create(author=self.user, station=self.station,
                                             body='Test review completely harmless', puntuation=5)
         self.review2 = Review.objects.create(author=self.user, station=self.station,

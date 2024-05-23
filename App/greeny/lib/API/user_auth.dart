@@ -27,12 +27,18 @@ class UserAuth {
     try {
       await InternetAddress.lookup('google.com');
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+
+      // Check if googleUser is null
+      if (googleUser == null) {
+        return false;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
       var res = await FirebaseAuth.instance.signInWithCredential(credential);

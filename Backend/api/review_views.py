@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 
 from profanity_check import predict_prob
 
-from .models import Review, Station, User
+from .models import Review, Station
 from .serializers import ReviewSerializer
 from .utils import check_for_ban, translate
 

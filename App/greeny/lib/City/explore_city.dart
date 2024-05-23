@@ -94,7 +94,7 @@ class _ExploreCityState extends State<ExploreCity> {
                   key: Key(widget.name),
                   src: 'assets/neighborhoods/${widget.path}',
                   autoRotate: true,
-                  disableZoom: true,
+                  disableZoom: false,
                   disableTap: true,
                   rotationPerSecond: "25deg",
                   autoRotateDelay: 1000,
