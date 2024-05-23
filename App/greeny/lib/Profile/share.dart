@@ -38,77 +38,90 @@ class _SharePageState extends State<SharePage> {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Center(
-          child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape:
-                        BoxShape.circle, // Establece la forma como un círculo
-                    boxShadow: [
-                      BoxShadow(
-                        color:
-                            Colors.grey.withOpacity(0.5), // Color de la sombra
-                        spreadRadius: 3, // Extensión de la sombra
-                        blurRadius: 3, // Desenfoque de la sombra
-                        offset:
-                            const Offset(0, 2), // Desplazamiento de la sombra
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        child: Center(
+            child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      shape:
+                          BoxShape.circle, // Establece la forma como un círculo
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey
+                              .withOpacity(0.5), // Color de la sombra
+                          spreadRadius: 3, // Extensión de la sombra
+                          blurRadius: 3, // Desenfoque de la sombra
+                          offset:
+                              const Offset(0, 2), // Desplazamiento de la sombra
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                        backgroundImage: NetworkImage(widget.imagePath)),
                   ),
-                  child: CircleAvatar(
-                      backgroundImage: NetworkImage(widget.imagePath)),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  widget.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  const SizedBox(width: 10),
+                  Text(
+                    widget.name,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  '@${widget.username}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 133, 131, 131),
+                  const SizedBox(width: 10),
+                  Text(
+                    '@${widget.username}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 133, 131, 131),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.only(left: 10),
-            child: Row(
-              children: [
-                const Icon(Icons.emoji_events_outlined,
-                    color: Color.fromARGB(255, 133, 131, 131)),
-                const SizedBox(width: 5),
-                Expanded(
-                  child: buildBadges(widget.level - 1, widget.mastery),
-                ),
-              ],
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.only(left: 10),
+              child: Row(
+                children: [
+                  const Icon(Icons.emoji_events_outlined,
+                      color: Color.fromARGB(255, 133, 131, 131)),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: buildBadges(widget.level - 1, widget.mastery),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Expanded(
-            child: StatisticsPage(
-              sharing: true,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 450, // Ajusta este valor según tus necesidades
+              ),
+              child: const StatisticsPage(
+                sharing: true,
+              ),
             ),
-          ),
-        ],
-      )),
+            ElevatedButton(
+              onPressed: share,
+              child: Text(translate('Share')),
+            ),
+          ],
+        )),
+      ),
     );
   }
+}
+
+void share() {
+  // Compartir estadísticas
 }
 
 Widget buildBadges(int level, int mastery) {
