@@ -33,30 +33,6 @@ class UsersView(ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
 
-    def init_neighborhoods(self):
-        if Neighborhood.objects.exists():
-            return
-        names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
-                 'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
-        neighborhoods_data = [
-            {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
-        ]
-        for neighborhood_data in neighborhoods_data:
-            Neighborhood.objects.get_or_create(**neighborhood_data)
-
-    def init_levels(self, user):
-        points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
-        for i in range(1, 11):
-            neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
-            Level.objects.create(
-                number=i,
-                completed=False,
-                current=(i == 1),
-                points_user=0,
-                points_total = points_total[i-1],
-                user=user,
-                neighborhood=neighborhood
-            )
     def reset_levels(self, user):
         Level.objects.filter(user=user).delete()
         self.init_levels(user)
@@ -175,6 +151,31 @@ def send_verification_email(user):
         fail_silently=False,
     )
     return code
+
+def init_neighborhoods():
+    if Neighborhood.objects.exists():
+        return
+    names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
+             'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
+    neighborhoods_data = [
+        {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
+    ]
+    for neighborhood_data in neighborhoods_data:
+        Neighborhood.objects.get_or_create(**neighborhood_data)
+
+def init_levels(user):
+    points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
+    for i in range(1, 11):
+        neighborhood = Neighborhood.objects.get(path=f'nhood_{i}.glb')
+        Level.objects.create(
+            number=i,
+            completed=False,
+            current=(i == 1),
+            points_user=0,
+            points_total = points_total[i-1],
+            user=user,
+            neighborhood=neighborhood
+        )
 
 #Method to get and delete the verification code
 def get_and_delete_verification_code(user, code):
