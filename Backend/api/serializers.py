@@ -73,7 +73,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'email', 'password',
                   'date_joined', 'favorite_stations', 'routes_number', 'reviews_number',
-                  'friends_number', 'level', 'image', 'is_google']
+                  'friends_number', 'level', 'image', 'is_google', 'points', 'mastery']
         extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
