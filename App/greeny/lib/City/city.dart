@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
 import 'package:greeny/utils/app_state.dart';
+import 'package:greeny/utils/onboarding_page.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
@@ -453,12 +454,17 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _showModelViewer = false;
     });
 
-    Navigator.push(context,
+    /*Navigator.push(context,
         MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
       setState(() {
         _showModelViewer = true;
       });
-    });
+    });*/
+    Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const OnboardingPage()),
+            (Route<dynamic> route) => false,
+          );
   }
 
   void finalForm() {
