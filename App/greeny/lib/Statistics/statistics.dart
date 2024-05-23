@@ -27,6 +27,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
   double kmMotorcycle = 0;
   double kmCar = 0;
 
+  String selectedOption = 'all';
+
   @override
   void initState() {
     super.initState();
@@ -88,6 +90,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         padding: const EdgeInsets.all(10.0),
         child: ListView(
           children: [
+            if (!widget.sharing) ...[
+              _buildSelectionButtons(),
+            ],
             InfoBox(
               icon: Icons.route,
               title: translate('Distance traveled'),
@@ -189,6 +194,55 @@ class _StatisticsPageState extends State<StatisticsPage> {
               _buildProgressBar(Icons.directions_car, kmCar),
             ]
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectionButtons() {
+    return Expanded(
+        flex: 1,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            _buildSelectionButton('all', translate('All')),
+            const SizedBox(width: 8),
+            _buildSelectionButton('real', translate('Real data')),
+            const SizedBox(width: 8),
+            _buildSelectionButton('estimated', translate('Estimated data')),
+          ],
+        ));
+  }
+
+  Widget _buildSelectionButton(String value, String text) {
+    return Flexible(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            selectedOption = value;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+          backgroundColor: selectedOption == value
+              ? const Color.fromARGB(255, 1, 167, 164)
+              : Colors.white,
+          foregroundColor:
+              selectedOption == value ? Colors.white : Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+            side: BorderSide(
+              color: selectedOption == value
+                  ? const Color.fromARGB(255, 1, 167, 164)
+                  : Colors.black,
+            ),
+          ),
+        ),
+        child: AutoSizeText(
+          text,
+          style: const TextStyle(fontSize: 10),
+          minFontSize: 1,
+          maxLines: 1,
         ),
       ),
     );
@@ -313,6 +367,7 @@ class InfoBox extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AutoSizeText(
