@@ -18,6 +18,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
 
 from .models import User, Neighborhood, Level, VerificationCode, Blacklist
 
@@ -329,3 +331,29 @@ def obtain_token(request):
     }
 
     return Response(info, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def refresh_token(request):
+    refresh_token = request.data.get('refresh')
+
+    try:
+        refresh = RefreshToken(refresh_token)
+        access_token = str(refresh.access_token)
+
+        # Decode the token to get user's ID
+        user_id = refresh.access_token.payload['user_id']
+
+        # Retrieve the user
+        user = User.objects.get(id=user_id)
+
+        # Check if the user is banned
+        if user.is_active == False:
+            return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    except TokenError:
+        return Response({'error': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response({'access': access_token}, status=status.HTTP_200_OK)
