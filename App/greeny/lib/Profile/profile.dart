@@ -333,6 +333,40 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            //Mastery
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: ProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.military_tech_rounded,
+                                    color: ProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Mastery:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: ProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             //Amics
                             Container(
                               decoration: BoxDecoration(
@@ -448,6 +482,22 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       );
+    }
+  }
+
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
     }
   }
 
