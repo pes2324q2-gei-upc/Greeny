@@ -27,6 +27,12 @@ class UserAuth {
     try {
       await InternetAddress.lookup('google.com');
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Check if googleUser is null
+      if (googleUser == null) {
+        return false;
+      }
+
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
