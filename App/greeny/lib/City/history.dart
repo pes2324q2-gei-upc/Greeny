@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:greeny/City/explore_city.dart';
 import 'package:greeny/API/requests.dart';
-
+import 'package:flutter_translate/flutter_translate.dart';
 import 'dart:convert';
 //import 'package:greeny/utils/utils.dart';
 
@@ -64,11 +64,21 @@ class _HistoryPageState extends State<HistoryPage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(0),
                               ),
-                              padding: const EdgeInsets.all(20),
+                              //padding: const EdgeInsets.all(20),
+                              padding: EdgeInsets.zero,
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
                             ),
-                            child: Image.asset(data[index]['completed'] ? 'assets/neighborhoods/City${1}PNG.png' : 'assets/neighborhoods/City${1}PNG_BW.png'),
+                            //child: Image.asset(data[index]['completed'] ? 'assets/neighborhoods/nhood_${index+1}.png' : 'assets/neighborhoods/City${1}PNG_BW.png'),
+                            child: data[index]['completed'] 
+                                ? Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover) 
+                                : ColorFiltered(
+                                    colorFilter: const ColorFilter.mode(Colors.black, BlendMode.modulate),
+                                    child: Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover),
+                            ),
                           ),
                         ),
+                        SizedBox(height: 20),
                         Text('${data[index]['neighborhood']['name']}'),
                       ],
                     );
@@ -97,11 +107,11 @@ class _HistoryPageState extends State<HistoryPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Title'), // Reemplaza 'Title' con el título de tu diálogo
-            content: const Text('PRUEBA'), // Reemplaza 'PRUEBA' con el contenido de tu diálogo
+            title: Text(translate('Level not unlocked')), // Reemplaza 'Title' con el título de tu diálogo
+            content: Text(translate('Keep earning points and purifying districts to unlock this district')), // Reemplaza 'PRUEBA' con el contenido de tu diálogo
             actions: <Widget>[
               TextButton(
-                child: const Text('Close'), // Reemplaza 'Close' con el texto de tu botón
+                child: Text(translate('Close')), // Reemplaza 'Close' con el texto de tu botón
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

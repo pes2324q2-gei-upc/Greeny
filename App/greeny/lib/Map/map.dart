@@ -14,6 +14,7 @@ import 'package:fluster/fluster.dart';
 import 'utils/map_marker.dart';
 import 'utils/map_helper.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/City/location_service.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -50,7 +51,6 @@ class _MapPageState extends State<MapPage> {
 
   MapType _currentMapType = MapType.normal;
   final mapTypeList = ["Normal", "Hybrid", "Satellite", "Terrain"];
-  bool isLoading = true;
   bool gettingLocation = true;
   GoogleMapController? mapController;
   // ignore: prefer_typing_uninitialized_variables
@@ -143,53 +143,43 @@ class _MapPageState extends State<MapPage> {
         Provider.of<AppState>(context, listen: false).setIcons(icons);
       }
     }
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-    }
   }
 
   Future<void> getLocation() async {
-    if (camposition.target.latitude != 0 || camposition.target.longitude != 0) {
-      if (mounted) {
-        setState(() {
-          gettingLocation = false;
-        });
-      }
-    }
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      showAlert('Location services are disabled.');
+    bool islocationEnabled = await LocationService.instance.comprovarUbicacio();
+    if (!islocationEnabled) {
+      // ignore: use_build_context_synchronously
+      showAlert('Location services are disabled');
       t.cancel();
       return;
     }
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        showAlert(
-            'Location permissions are denied, we cannot request permissions.');
-        t.cancel();
-        return;
+    var position =
+        // ignore: use_build_context_synchronously
+        Provider.of<AppState>(context, listen: false).previousPosition;
+
+    if (position == null) {
+      // ignore: use_build_context_synchronously
+      await LocationService.instance.startLocationUpdates(context);
+
+      // ignore: use_build_context_synchronously
+      AppState appState = Provider.of<AppState>(context, listen: false);
+
+      while (appState.previousPosition == null) {
+        await Future.delayed(const Duration(
+            seconds: 1)); // wait for a second before trying again
       }
+
+      position = appState.previousPosition;
+      // ignore: use_build_context_synchronously
+      locationService?.stopLocationUpdates(context);
     }
 
-    if (permission == LocationPermission.deniedForever) {
-      showAlert(
-          'Location permissions are permanently denied, we cannot request permissions.');
-      t.cancel();
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition();
     if (mounted) {
       setState(() {
         gettingLocation = false;
         camposition = CameraPosition(
-            target: LatLng(position.latitude, position.longitude), zoom: 16);
+            target: LatLng(position!.latitude, position.longitude), zoom: 16);
         Provider.of<AppState>(context, listen: false)
             .setCameraPosition(camposition);
       });
@@ -197,11 +187,13 @@ class _MapPageState extends State<MapPage> {
   }
 
   late AppState appState;
+  LocationService? locationService;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     appState = Provider.of<AppState>(context, listen: false);
+    locationService = LocationService.instance;
   }
 
   @override
@@ -209,8 +201,6 @@ class _MapPageState extends State<MapPage> {
     // Use the saved reference to AppState here
     appState.setCameraPosition(camposition);
     appState.setStations(stations);
-
-    // Don't forget to dispose your other resources such as controllers
     mapController?.dispose();
 
     super.dispose();
@@ -224,7 +214,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading || gettingLocation) {
+    if (gettingLocation) {
       return const Scaffold(
         backgroundColor: Color.fromARGB(255, 220, 255, 255),
         body: Center(

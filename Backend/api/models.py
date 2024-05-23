@@ -28,11 +28,30 @@ class User(AbstractUser):
 class Blacklist(models.Model):
     email = models.EmailField(unique=True)
 
-
 class VerificationCode(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
 
+class CO2Consumed(models.Model):
+    kg_CO2_walking_biking_consumed = models.FloatField(default=0.0)
+    kg_CO2_bus_consumed = models.FloatField(default=0.0)
+    kg_CO2_motorcycle_consumed = models.FloatField(default=0.0)
+    kg_CO2_car_gasoline_consumed = models.FloatField(default=0.0)
+    kg_CO2_electric_car_consumed = models.FloatField(default=0.0)
+    kg_CO2_metro_consumed = models.FloatField(default=0.0)
+    kg_CO2_tram_consumed = models.FloatField(default=0.0)
+    kg_CO2_fgc_consumed = models.FloatField(default=0.0)
+    kg_CO2_train_consumed = models.FloatField(default=0.0)
+
+    def save(self, *args, **kwargs):
+        #Save object to the database. Updates the existing entry if there is one.
+        if not self.pk and CO2Consumed.objects.exists():
+            # if the objects exists, then update the first one found
+            self.pk = CO2Consumed.objects.first().pk
+        super(CO2Consumed, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = "CO2Consumed"
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
         METRO = "METRO", "metro"
