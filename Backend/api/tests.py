@@ -309,7 +309,8 @@ class UsersViewTestCase(TestCase):
     def test_create_user(self):
         data = {
             "username": "testuser2",
-            "password": "testpass2"
+            "password": "testpass2",
+            "email": "test@test.test"
         }
         response = self.client.post('/api/user/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
