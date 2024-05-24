@@ -17,6 +17,7 @@ class RankPage extends StatefulWidget {
 
 class _RankPageState extends State<RankPage> {
   List<User> _users = [];
+  int _userPosition = 0;
 
   @override
   void initState() {
@@ -30,10 +31,19 @@ class _RankPageState extends State<RankPage> {
       final response = await httpGet('/api/ranking/');
       if (response.statusCode == 200) {
         // Analizar la respuesta JSON
-        final List<dynamic> jsonData = json.decode(response.body);
-        final List<User> users = jsonData.map((e) => User.fromJson(e)).toList();
+        final jsonData = json.decode(response.body);
+
+        // Obtener la lista de usuarios del campo 'ranking' en la respuesta JSON
+        final List<dynamic> rankingData = jsonData['ranking'];
+        final List<User> users =
+            rankingData.map((e) => User.fromJson(e)).toList();
+
+        // Obtener la posición del usuario en el ranking
+        final int userPosition = jsonData['user_position'];
+
         setState(() {
           _users = users;
+          _userPosition = userPosition;
         });
       } else {
         throw Exception('Failed to load ranking');
@@ -117,10 +127,14 @@ class _RankPageState extends State<RankPage> {
                               ],
                             ]),
                       ),
-                      const SizedBox(
-                          height:
-                              20), // Espacio entre el podio y la lista de usuarios restantes
-
+                      Center(
+                        child: Text(
+                          'Congrats, you are in position #$_userPosition!',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
                       // Lista de usuarios restantes
                       Expanded(
                         child: SingleChildScrollView(
@@ -143,7 +157,7 @@ class _RankPageState extends State<RankPage> {
                                       padding: const EdgeInsets.all(10),
                                       child: Row(children: [
                                         Text(
-                                          '${index + 1 + 3}.',
+                                          '${index + 1 + 3}',
                                           style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold),

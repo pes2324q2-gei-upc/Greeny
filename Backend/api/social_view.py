@@ -22,9 +22,21 @@ class RankingViewSet(viewsets.ViewSet):
             friends = user.friends.all()
             friends = user.friends.all()
             friends |= User.objects.filter(id=user.id)
-            queryset = User.objects.filter(id__in=friends).order_by('-points')[:limit]
+            queryset = User.objects.filter(id__in=friends).order_by('-points')
         else:
-            queryset = User.objects.all().order_by('-points')[:limit]
+            queryset = User.objects.all().order_by('-points')
+
+        # Obtener la posición del usuario que hace la solicitud en el ranking
+        user_position = queryset.filter(points__gte=user.points).count()
+
+        queryset = queryset[:limit]
 
         serializer = FriendUserSerializer(queryset, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+
+        response_data = {
+            'ranking': data,
+            'user_position': user_position
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
