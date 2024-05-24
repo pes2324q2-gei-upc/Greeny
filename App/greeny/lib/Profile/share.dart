@@ -130,24 +130,27 @@ class _SharePageState extends State<SharePage> {
                                 backgroundImage: NetworkImage(widget.imagePath),
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            Text(
-                              widget.name,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              '@${widget.username}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 133, 131, 131),
-                              ),
-                            ),
+                            const SizedBox(width: 15),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.name,
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    '@${widget.username}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color.fromARGB(255, 133, 131, 131),
+                                    ),
+                                  ),
+                                ]),
                           ],
                         ),
                       ),
@@ -194,33 +197,51 @@ class _SharePageState extends State<SharePage> {
 
 Widget buildBadges(int level, int mastery) {
   List<Widget> badges = []; // Lista para almacenar las medallas
-
-  // Bucle para generar medallas basadas en el nivel
-  for (int i = 0; i < level; i++) {
-    badges.add(
-      Positioned(
-        left: i * 25.0, // Espacio horizontal entre las medallas
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(60),
-          child: Image.asset(
-            'assets/badges/$i$mastery.png', // Cambia la imagen según corresponda
-            width: 40, // Ancho deseado
-            height: 40, // Alto deseado
-            fit: BoxFit.cover,
+  if (mastery < 3) {
+    // Bucle para generar medallas basadas en el nivel
+    for (int i = 0; i < level; i++) {
+      badges.add(
+        Positioned(
+          left: i * 25.0,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(60),
+            child: Image.asset(
+              'assets/badges/$i$mastery.png',
+              width: 40, // Ancho deseado
+              height: 40, // Alto deseado
+              fit: BoxFit.cover,
+            ),
           ),
         ),
-      ),
-    );
-  }
-  if (mastery > 0) {
-    for (int i = level; i < 10; i++) {
+      );
+    }
+    if (mastery > 0) {
+      for (int i = level; i < 10; i++) {
+        badges.add(
+          Positioned(
+            left: i * 25.0,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(60),
+              child: Image.asset(
+                'assets/badges/$i${mastery - 1}.png',
+                width: 40, // Ancho deseado
+                height: 40, // Alto deseado
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      }
+    }
+  } else {
+    for (int i = 0; i < 10; i++) {
       badges.add(
         Positioned(
           left: i * 25.0, // Espacio horizontal entre las medallas
           child: ClipRRect(
             borderRadius: BorderRadius.circular(60),
             child: Image.asset(
-              'assets/badges/$i${mastery - 1}.png', // Cambia la imagen según corresponda
+              'assets/badges/${i}2.png',
               width: 40, // Ancho deseado
               height: 40, // Alto deseado
               fit: BoxFit.cover,

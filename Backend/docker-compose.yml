@@ -20,6 +20,7 @@ services:
       - -c
       - |
         python manage.py fetchstations
+        python manage.py fill_co2_consumed
         python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code

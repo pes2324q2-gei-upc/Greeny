@@ -3,16 +3,16 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/utils/app_state.dart';
-import 'package:greeny/utils/onboarding_page.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -52,7 +52,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData().then((newCityData) {
+    getCityData();
+  }
+
+  Future<void> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      var newCityData = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         cityDataNotifier.value = newCityData;
         userName = newCityData['user_name'];
@@ -70,16 +77,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           nhoodPath = "all_nhoods.glb";
         }
       });
-    });
-  }
-
-  Future<Map<String, dynamic>> getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
-      throw Exception('Failed to load city data');
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('Failed to load city data'));
     }
   }
 
@@ -133,7 +133,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
-        print(newCityData);
         cityDataNotifier.value =
             newCityData; // Update the data notifier with the reset response
 
@@ -279,6 +278,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                   try {
                                                     await resetLevels();
                                                     showDialog(
+                                                        // ignore: use_build_context_synchronously
                                                         context: context,
                                                         builder: (BuildContext
                                                             context) {
@@ -299,6 +299,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                             ],
                                                           );
                                                         });
+                                                    // ignore: empty_catches
                                                   } catch (e) {}
                                                 },
                                                 child: Text(translatedtext5),

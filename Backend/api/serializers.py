@@ -149,7 +149,7 @@ class StatisticsSerializer(serializers.ModelSerializer):
 class NeighborhoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Neighborhood
-        exclude = ['id']
+        exclude = ['id', 'coords']
 
 class LevelSerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
