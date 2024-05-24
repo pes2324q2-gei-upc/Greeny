@@ -5,6 +5,60 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 
+class GradientBar extends StatelessWidget {
+  final String icqa;
+
+  const GradientBar({super.key, required this.icqa});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: const Size(300, 10), // Define el tamaño de tu barra aquí
+      painter: GradientBarPainter(icqaToPercentage(icqa)),
+    );
+  }
+}
+
+class GradientBarPainter extends CustomPainter {
+  final double percentage;
+
+  GradientBarPainter(this.percentage);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final gradient = LinearGradient(
+      colors: const [
+        Colors.blue,
+        Colors.green,
+        Colors.yellow,
+        Colors.red,
+        Color.fromARGB(255, 76, 1, 1),
+        Colors.purple
+      ],
+    );
+
+    final paint = Paint()
+      ..shader =
+          gradient.createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final radius = Radius.circular(size.height / 2);
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, radius);
+
+    canvas.drawRRect(rrect, paint);
+
+    final markerPaint = Paint()..color = Colors.white;
+
+    canvas.drawCircle(
+        Offset(size.width * percentage, size.height / 2), 5, markerPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
 class ExploreCity extends StatefulWidget {
   final String name;
   final String path;
@@ -68,13 +122,11 @@ class _ExploreCityState extends State<ExploreCity> {
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(10.0),
-          width: 600,
-          height: 600,
           child: Column(
             children: [
+              const SizedBox(height: 40),
               Container(
-                padding: const EdgeInsets.all(10.0),
-                /*decoration: BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: const [
@@ -84,19 +136,27 @@ class _ExploreCityState extends State<ExploreCity> {
                       offset: Offset(0, 5),
                     ),
                   ],
-                ),*/
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
+                margin: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: [
-                    Icon(Icons.air,
-                        color: getAirQualityColor(icqa), size: 36.0),
-                    const SizedBox(width: 8),
-                    Text(icqa,
-                        style: const TextStyle(
-                            fontSize: 24.0, color: Colors.black)),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('ICQA ',
+                            style: TextStyle(
+                                fontSize: 15.0,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    GradientBar(icqa: icqa),
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
               Expanded(
                 child: ModelViewer(
                   debugLogging: true,
@@ -136,13 +196,13 @@ class _ExploreCityState extends State<ExploreCity> {
             children: <Widget>[
               const SizedBox(height: 20),
               Center(
-                  child: Text(translate("Information"),
+                  child: Text(translate("Air Quality"),
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
               for (int i = 0; i < icqaOptions.length; i++)
                 _buildRow(
-                  translate(icqaOptions[i]),
+                  icqaOptions[i],
                   Icons.air,
                 ),
               TextButton(
@@ -167,7 +227,7 @@ class _ExploreCityState extends State<ExploreCity> {
           Row(
             children: <Widget>[
               const SizedBox(width: 16),
-              Text(name),
+              Text(translate(name)),
               const Spacer(),
               Container(
                 padding:
@@ -198,5 +258,24 @@ class _ExploreCityState extends State<ExploreCity> {
       default:
         return Colors.grey;
     }
+  }
+}
+
+double icqaToPercentage(String icqa) {
+  switch (icqa) {
+    case 'Bona':
+      return 0.0;
+    case 'Raonablement bona':
+      return 0.15;
+    case 'Regular':
+      return 0.30;
+    case 'Desfavorable':
+      return 0.50;
+    case 'Molt desfavorable':
+      return 0.80;
+    case 'Extremadament desfavorable':
+      return 1.0;
+    default:
+      return 0.0;
   }
 }
