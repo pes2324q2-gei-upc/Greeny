@@ -10,6 +10,9 @@ from django.core.files.images import ImageFile
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
 
+from django.contrib.gis.geos import Point
+from django.contrib.gis.gdal.error import GDALException
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
@@ -24,6 +27,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from .models import User, Neighborhood, Level, VerificationCode, Blacklist
 
 from .serializers import UserSerializer
+from .data.neighborhood_data import nhood_names, nhood_coords
+
 
 class UsersView(ModelViewSet):
     serializer_class = UserSerializer
@@ -49,7 +54,8 @@ class UsersView(ModelViewSet):
         if not banned:
             user = User.objects.create_user(**validated_data)
         else:
-            return Response({'message':'You are banned from this application for violating our guidelines'},
+            return Response({'message': 'You are banned from this application for '
+                                        'violating our guidelines'},
                             status=status.HTTP_403_FORBIDDEN)
 
         send_verification_email(user)
@@ -110,10 +116,9 @@ class UsersView(ModelViewSet):
         if getattr(user, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
-            user._prefetched_objects_cache = {} # pylint: disable=protected-access
+            user._prefetched_objects_cache = {}  # pylint: disable=protected-access
 
         return Response(serializer.data)
-
 
     def get_queryset(self):
         user = self.request.user
@@ -127,7 +132,6 @@ class UsersView(ModelViewSet):
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
-
     def delete(self, request):
         user = self.request.user
         user.delete()
@@ -138,6 +142,7 @@ class UsersView(ModelViewSet):
             },
             status=status.HTTP_200_OK
         )
+
 
 #Method to generate and send the verification code for signing up or for password reset
 def send_verification_email(user):
@@ -154,16 +159,32 @@ def send_verification_email(user):
     )
     return code
 
+
 def init_neighborhoods():
     if Neighborhood.objects.exists():
         return
-    names = ['Nou Barris', 'Horta-Guinardó', 'Sants-Montjuïc', 'Sarrià-StGervasi',
-             'Les Corts', 'Sant Andreu', 'Sant Martí', 'Gràcia', 'Ciutat Vella', 'Eixample']
-    neighborhoods_data = [
-        {'name': names[i], 'path': f'nhood_{i+1}.glb'} for i in range(len(names))
-    ]
-    for neighborhood_data in neighborhoods_data:
-        Neighborhood.objects.get_or_create(**neighborhood_data)
+
+    n_data = dict(zip(nhood_names, nhood_coords))
+
+    for count, (name, coords) in enumerate(n_data.items(), start=1):
+        point_list = []
+        for coord in coords:
+            try:
+                point = Point(coord[1], coord[0])
+                point_list.append(point)
+            except (GDALException, ValueError):
+                print(f"Invalid coordinates: {coord}")
+                continue
+
+        neighborhoods_data = {'name': name, 'path': f'nhood_{count}.glb'}
+
+        nhood, created = Neighborhood.objects.get_or_create(**neighborhoods_data)
+        if created:
+            nhood.coords = point_list
+            nhood.save()
+
+
+
 
 def init_levels(user):
     points_total = [100, 150, 250, 400, 550, 700, 900, 1100, 1350, 1500]
@@ -174,10 +195,11 @@ def init_levels(user):
             completed=False,
             current=(i == 1),
             points_user=0,
-            points_total = points_total[i-1],
+            points_total=points_total[i - 1],
             user=user,
             neighborhood=neighborhood
         )
+
 
 #Method to get and delete the verification code
 def get_and_delete_verification_code(user, code):
@@ -188,6 +210,7 @@ def get_and_delete_verification_code(user, code):
 
     verification_code.delete()
     return verification_code
+
 
 #Methods to verify the code while signing up and canceling the registration [SIGN UP SITUATION]
 @api_view(['POST'])
@@ -209,6 +232,7 @@ def verify_registration(request):
 
     return Response({"message": "Account successfully verified."}, status=status.HTTP_200_OK)
 
+
 @api_view(['DELETE'])
 @permission_classes([AllowAny])
 def cancel_registration(request):
@@ -222,6 +246,7 @@ def cancel_registration(request):
         )
     except User.DoesNotExist:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 # Methods for sending the email to an existent user who has forgotten his password,
 # for verifying the code and updating the password [FORGOT PASSWORD SITUATION]
@@ -239,6 +264,7 @@ def forgot_password(request):
 
     return Response({"message": "Password reset email sent."}, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_forgotten_password(request):
@@ -251,6 +277,7 @@ def verify_forgotten_password(request):
         return Response({"error": "Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"message": "Account successfully verified."}, status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -267,6 +294,7 @@ def reset_password(request):
     user.save()
 
     return Response({"message": "Password reset successfully."}, status=status.HTTP_200_OK)
+
 
 # Method to authenticate the user with Google
 @api_view(['POST'])
@@ -310,6 +338,7 @@ def google_auth(request):
 
     return Response(info, status=status.HTTP_200_OK)
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def obtain_token(request):
@@ -319,9 +348,10 @@ def obtain_token(request):
     user = User.objects.filter(username=username).first()
 
     if user is None or not check_password(password, user.password):
-        return Response({'error': 'Invalid username or password'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Invalid username or password'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-    if user.is_active == False:
+    if user.is_active is False:
         return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
 
     refresh = RefreshToken.for_user(user)
@@ -335,10 +365,10 @@ def obtain_token(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh_token(request):
-    refresh_token = request.data.get('refresh')
+    refresh_token_str = request.data.get('refresh')
 
     try:
-        refresh = RefreshToken(refresh_token)
+        refresh = RefreshToken(refresh_token_str)
         access_token = str(refresh.access_token)
 
         # Decode the token to get user's ID
@@ -348,7 +378,7 @@ def refresh_token(request):
         user = User.objects.get(id=user_id)
 
         # Check if the user is banned
-        if user.is_active == False:
+        if user.is_active is False:
             return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
 
     except TokenError:

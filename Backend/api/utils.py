@@ -1,8 +1,9 @@
-from .models import Blacklist
 from googletrans import Translator
+
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import CO2Consumed
+from .models import CO2Consumed, Blacklist
+
 
 def calculate_co2_consumed(transports, total_distance):
     # Calculate the CO2 consumed by the user
@@ -18,7 +19,6 @@ def calculate_co2_consumed(transports, total_distance):
 
     co2 = CO2Consumed.objects.first()
 
-    co2_consumed = 0.0
     transport_to_co2 = {
         'Walking': co2.kg_CO2_walking_biking_consumed,
         'Bike': co2.kg_CO2_walking_biking_consumed,
@@ -32,9 +32,8 @@ def calculate_co2_consumed(transports, total_distance):
         'Electric Car': co2.kg_CO2_electric_car_consumed
     }
 
-    co2_consumed = 0
+    co2_consumed = 0.0
     for transport, percentage in transports.items():
-        print(transport_to_co2.get(transport, 0))
         transport_dist = total_distance * (percentage / 100)
         co2_consumed += transport_to_co2.get(transport, 0) * transport_dist
 
@@ -100,19 +99,22 @@ def invalidate_user(user):
     user.save()
     Blacklist.objects.create(email=user.email)
 
-def translate(text, id):
+def translate(text, review_id):
     translator = Translator()
     lang = translator.detect(text).lang
     result = ''
     if lang != 'en':
         try:
             result = translator.translate(text, src=lang, dest='en').text
-        except Exception as e:
+        except ValueError as e:
             send_mail(
                 'Doubt with this review',
-                f'Couldn\'t detect de language of the reported review with ID: {id}, please check it',
+                f'Couldn\'t detect de language of the reported review with ID: {review_id},'
+                f' please check it. Error: {e}',
                 settings.EMAIL_HOST_USER,
                 [settings.EMAIL_HOST_USER],
                 fail_silently=False,
             )
+    else:
+        result = translator.translate(text, src='en', dest='en').text
     return result

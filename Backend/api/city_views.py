@@ -1,8 +1,14 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+
+from django.contrib.gis.geos import GEOSGeometry
+
 from .models import Neighborhood, Level
 from .serializers import LevelSerializer, HistorySerializer
+from .adapters.airmon_adapter import ICQAAirmonAdapter
+
 
 class CityView(APIView):
 
@@ -36,60 +42,48 @@ class CityView(APIView):
 
         return Response(response_data)
 
-    def add_points(self, user, new_points):
-        level = self.get_current_level(user)
-
-        if new_points is not None:
-            level.points_user += new_points
-            level.save()
-
-            level = self.update_level(user)
-
-            level_data = LevelSerializer(level).data
-            return level_data
-        return "No level data"
-
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
         response_data = {}
         if new_points is not None:
-            if new_points < 0:
+            level.points_user += new_points
+            level.save()
+
+            if level.points_user < 0:
+                lvlnb = level.number - 1
                 level.points_user = 0
                 level.save()
-                if level.number > 1:
-                    lvlnb = level.number - 1
+                if lvlnb > 0:
                     previous_level = Level.objects.filter(user=user, number=lvlnb).first()
-                    if previous_level:
-                        level.current = False
-                        level.completed = False
-                        level.save()
-                        previous_level.current = True
-                        previous_level.completed = False
-                        previous_level.save()
-                        response_data = LevelSerializer(previous_level).data
-                    else:
-                        response_data = {"message": "No previous level found"}
+                    level.current = False
+                    level.completed = False
+                    level.save()
+                    previous_level.current = True
+                    previous_level.completed = False
+                    previous_level.save()
+                    response_data = LevelSerializer(previous_level).data
                 else:
                     response_data = LevelSerializer(level).data
-            else:
-                level.points_user = new_points
+
+            elif level.number == 10 and level.points_user >= 1500:
+                level.completed = True
+                level.current = False
                 level.save()
-                if level.number == 10 and new_points >= 1500:
-                    level.completed = True
-                    level.current = False
-                    level.save()
-                    user_data = {
-                        "user_name": user.username,
-                        "is_staff": user.is_staff,
-                        "status": "all_completed"
-                    }
-                    response_data = user_data
+                if user.mastery < 3:
+                    user.mastery += 1
+                    user.save()
+                user_data = {
+                    "user_name": user.username,
+                    "is_staff": user.is_staff,
+                    "status": "all_completed"
+                }
+                response_data = user_data
+            else:
+                next_level = self.update_level(user)
+                if next_level:
+                    response_data = LevelSerializer(next_level).data
                 else:
-                    next_level = self.update_level(user)
-                    if next_level:
-                        response_data = LevelSerializer(next_level).data
-                    else:
-                        response_data = {"message": "Failed to update level"}
+                    response_data = {"message": "Failed to update level"}
 
         levels = Level.objects.filter(user=user)
         all_completed = all(l.completed for l in levels)
@@ -119,7 +113,7 @@ class CityView(APIView):
                 return None
 
         return self.get_current_level(user)
-    
+
     def reset_levels(self, user):
         levels = Level.objects.filter(user=user)
         for level in levels:
@@ -132,7 +126,8 @@ class CityView(APIView):
             first_level = levels.first()
             first_level.current = True
             first_level.save()
-            neighborhood = self.get_neighborhood(first_level)  # Asumiendo que tienes un método para obtener el vecindario del nivel
+            # Asumiendo que tienes un método para obtener el vecindario del nivel
+            neighborhood = self.get_neighborhood(first_level)
             level_data = {
                 'points_user': first_level.points_user,
                 'points_total': first_level.points_total,
@@ -142,8 +137,9 @@ class CityView(APIView):
                     'path': neighborhood.path
                 },
                 'user_name': user.username,  # Incluye el nombre de usuario
-                'is_staff': user.is_staff    # Incluye el estado de staff
+                'is_staff': user.is_staff,   # Incluye el estado de staff
             }
+
         else:
             return Response({
                 "status": "error",
@@ -158,17 +154,18 @@ class CityView(APIView):
 
     def put(self, request):
         user = request.user
-        print(request.data)
         if request.data.get('reset'):
             return self.reset_levels(user)
-        else:
-            new_points = request.data.get('points_user')
-            if new_points is not None:
-                level_data = self.update_points(user, new_points)
-                return Response(level_data)
-            else:
-                return Response({'error': 'No se proporcionaron nuevos puntos o acciones.'},
-                                status=status.HTTP_400_BAD_REQUEST)
+
+        new_points = request.data.get('points_user')
+        if new_points is not None:
+            user.points += new_points
+            user.save()
+            level_data = self.update_points(user, new_points)
+            return Response(level_data)
+
+        return Response({'error': 'No se proporcionaron nuevos puntos o acciones.'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 class NeighborhoodsView(APIView):
 
@@ -177,3 +174,16 @@ class NeighborhoodsView(APIView):
         levels = Level.objects.filter(user=self.request.user).order_by('number')
         serializer = HistorySerializer(levels, many=True)
         return Response(serializer.data)
+
+@api_view(['POST'])
+def get_icqa(request):
+    request = request.data
+    nhood = Neighborhood.objects.get(name=request['name'])
+    coords = nhood.coords.replace('{', '').replace('}', '').split(':')
+
+    parsed_coords = []
+    for coord in coords:
+        pnt = GEOSGeometry(coord)
+        parsed_coords.append({"latitude": pnt.y, "longitude": pnt.x})
+
+    return Response(ICQAAirmonAdapter.get_icqa(parsed_coords), status=status.HTTP_200_OK)

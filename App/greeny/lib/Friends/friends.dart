@@ -106,71 +106,82 @@ class _FriendsPageState extends State<FriendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: getFriends,
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        appBar: AppBar(
-          title: Text(translate('Friends'),
-              style: const TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center),
+    if (userUsername == '') {
+      return const Scaffold(
+        backgroundColor: Color.fromARGB(255, 220, 255, 255),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return RefreshIndicator(
+        onRefresh: getFriends,
+        child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(
-              height: 5,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _friendUsername = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  labelText: translate('Search Profile'),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 20.0),
-                  hintStyle: const TextStyle(fontSize: 16.0),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      searchFriend(_friendUsername);
-                    },
-                    icon: const Icon(Icons.arrow_forward),
+          appBar: AppBar(
+            title: Text(translate('Friends'),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center),
+            backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          ),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(
+                height: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _friendUsername = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    labelText: translate('Search Profile'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 20.0),
+                    hintStyle: const TextStyle(fontSize: 16.0),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        searchFriend(_friendUsername);
+                      },
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(10),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+              const SizedBox(height: 20),
+              Expanded(
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(10),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount:
+                      friendsTotal.length, // Usar la longitud de friendsTotal
+                  itemBuilder: (BuildContext context, int index) {
+                    final String friendUsername =
+                        friendsTotal[index]['username'];
+                    final String image = friendsTotal[index]['image'];
+                    final bool hasSentRequest = friendRequestsUsers.any(
+                        (request) => request['username'] == friendUsername);
+                    return buildFriendCard(
+                        friendUsername, hasSentRequest, image);
+                  },
                 ),
-                itemCount:
-                    friendsTotal.length, // Usar la longitud de friendsTotal
-                itemBuilder: (BuildContext context, int index) {
-                  final String friendUsername = friendsTotal[index]['username'];
-                  final String image = friendsTotal[index]['image'];
-                  final bool hasSentRequest = friendRequestsUsers
-                      .any((request) => request['username'] == friendUsername);
-                  return buildFriendCard(friendUsername, hasSentRequest, image);
-                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   void searchFriend(String username) async {

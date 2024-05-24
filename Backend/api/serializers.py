@@ -73,7 +73,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'first_name', 'email', 'password',
                   'date_joined', 'favorite_stations', 'routes_number', 'reviews_number',
-                  'friends_number', 'level', 'image', 'is_google']
+                  'friends_number', 'level', 'image', 'is_google', 'points', 'mastery']
         extra_kwargs = {'password': {'write_only': True}}
 
 class FriendUserSerializer(serializers.ModelSerializer):
@@ -149,7 +149,7 @@ class StatisticsSerializer(serializers.ModelSerializer):
 class NeighborhoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Neighborhood
-        exclude = ['id']
+        exclude = ['id', 'coords']
 
 class LevelSerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
@@ -169,10 +169,14 @@ class LevelSerializer(serializers.ModelSerializer):
 
 class HistorySerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
+    mastery = serializers.SerializerMethodField()  # Nuevo campo
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'neighborhood']
+        fields = ['number', 'completed', 'current', 'neighborhood', 'mastery']  # Agrega 'mastery' a los fields
+
+    def get_mastery(self, obj):
+        return obj.user.mastery
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()

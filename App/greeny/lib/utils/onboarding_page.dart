@@ -26,12 +26,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
           });
         },
         children: <Widget>[
-          _createPage('assets/icons/appicon.png', translate('Welcome to Greeny!'), translate('Stop being greedy, be Greeny')),
-          _createPage('assets/icons/appicon.png', translate('Purify districts'), translate('Walk or use public transportation to earn points and purify districts')),
-          _createPage('assets/icons/appicon.png', translate('Earn badges'), translate('When you purify a district, you will earn a badge, collect them all')),
-          _createPage('assets/icons/appicon.png', translate('Be the best'), translate('Compete with your friends and other users to climb positions in the ranking')),
-          _createPage('assets/icons/appicon.png', translate('Statistics'), translate('View your statistics and check how you are doing')),
-          _createPage('assets/icons/appicon.png', translate('Share'), translate('Share your achievements and statistics with your acquaintances')),
+          _createPage('assets/onboarding/logo.png', translate('Welcome to Greeny!'), translate('Stop being greedy, be Greeny')),
+          _createPage('assets/onboarding/city.png', translate('Purify districts'), translate('Walk or use public transportation to earn points and purify districts')),
+          _createPage('assets/onboarding/badges.png', translate('Earn badges'), translate('When you purify a district, you will earn a badge, collect them all')),
+          _createPage('assets/onboarding/podium.png', translate('Be the best'), translate('Compete with your friends and other users to climb positions in the ranking')),
+          _createPage('assets/onboarding/statistics.png', translate('Statistics'), translate('View your statistics and check how you are doing')),
+          _createPage('assets/icons/appicon.png', translate('Share statistics'), translate('Share your achievements and statistics with your acquaintances')),
           // Añade más páginas si lo necesitas
         ],
       ),
@@ -48,7 +48,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         onPressed: () {
                           _pageController.animateToPage(5, duration: const Duration(milliseconds: 400), curve: Curves.linear);
                         },
-                        child: const Text('Saltar', style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Skip'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       )
                     : const SizedBox.shrink(), // Si estamos en la última página, no mostramos nada
                 ),
@@ -71,7 +71,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       )
                     : TextButton( // Si estamos en la última página, mostramos el botón 'Empezar'
                         onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage())),
-                        child: const Text('Empezar', style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Start'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       ),
                 ),
               ),
@@ -90,7 +90,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: <Widget>[
           Text(
             title,
-            style: const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 40),

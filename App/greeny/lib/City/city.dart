@@ -3,8 +3,8 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/utils/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -12,6 +12,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -51,7 +52,14 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData().then((newCityData) {
+    getCityData();
+  }
+
+  Future<void> getCityData() async {
+    final response = await httpGet('/api/city/');
+
+    if (response.statusCode == 200) {
+      var newCityData = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
         cityDataNotifier.value = newCityData;
         userName = newCityData['user_name'];
@@ -69,16 +77,9 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           nhoodPath = "all_nhoods.glb";
         }
       });
-    });
-  }
-
-  Future<Map<String, dynamic>> getCityData() async {
-    final response = await httpGet('/api/city/');
-
-    if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
     } else {
-      throw Exception('Failed to load city data');
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('Failed to load city data'));
     }
   }
 
@@ -96,7 +97,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           cityDataNotifier.value =
               newCityData; // Actualiza los datos notificados
           allCompleted = true; // Marca que todos los niveles están completados
-          userPoints = points; // Actualiza los puntos del usuario
+          userPoints = 0; // Actualiza los puntos del usuario
           nhoodName = "all_nhoods";
           nhoodPath = "all_nhoods.glb";
           // Actualiza los datos del usuario y el estado de staff si están disponibles
@@ -132,7 +133,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {
-        print(newCityData);
         cityDataNotifier.value =
             newCityData; // Update the data notifier with the reset response
 
@@ -278,6 +278,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                   try {
                                                     await resetLevels();
                                                     showDialog(
+                                                        // ignore: use_build_context_synchronously
                                                         context: context,
                                                         builder: (BuildContext
                                                             context) {
@@ -298,6 +299,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                             ],
                                                           );
                                                         });
+                                                    // ignore: empty_catches
                                                   } catch (e) {}
                                                 },
                                                 child: Text(translatedtext5),
@@ -513,13 +515,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void addPoints() {
-    updateProgress(userPoints +
+    updateProgress(
         50); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
-    updateProgress(userPoints -
-        50); // Llama a la función para actualizar la barra de progreso
+    updateProgress(
+        -50); // Llama a la función para actualizar la barra de progreso
   }
 }
 
