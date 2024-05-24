@@ -118,14 +118,13 @@ class _ExploreCityState extends State<ExploreCity> {
   }
 
   void showAQIinfo() {
-    final List<String> transportModes = [
-      'Walking',
-      'Bike',
-      'Bus',
-      'Train, Metro, Tram, FGC',
-      'Motorcycle',
-      'Electric Car',
-      'Car'
+    final List<String> icqaOptions = [
+      'Bona',
+      'Raonablement bona',
+      'Regular',
+      'Desfavorable',
+      'Molt desfavorable',
+      'Extremadament desfavorable'
     ];
     showDialog(
       context: context,
@@ -141,8 +140,11 @@ class _ExploreCityState extends State<ExploreCity> {
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold))),
               const SizedBox(height: 20),
-              for (int i = 0; i < transportModes.length; i++)
-                _buildRow(translate(transportModes[i]), _getTransportIcon(i)),
+              for (int i = 0; i < icqaOptions.length; i++)
+                _buildRow(
+                  translate(icqaOptions[i]),
+                  Icons.air,
+                ),
               TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(translate("Exit"))),
@@ -170,7 +172,7 @@ class _ExploreCityState extends State<ExploreCity> {
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                child: Icon(icon),
+                child: Icon(icon, color: getAirQualityColor(name)),
               ),
             ],
           ),
@@ -179,60 +181,22 @@ class _ExploreCityState extends State<ExploreCity> {
     );
   }
 
-  IconData _getTransportIcon(int index) {
-    switch (index) {
-      case 0:
-        return Icons.directions_walk;
-      case 1:
-        return Icons.directions_bike;
-      case 2:
-        return Icons.directions_bus;
-      case 3:
-        return Icons.train;
-      case 4:
-        return Icons.motorcycle;
-      case 5:
-        return Icons.electric_car;
+  Color getAirQualityColor(String icqa) {
+    switch (icqa) {
+      case 'Bona':
+        return Colors.cyan;
+      case 'Raonablement bona':
+        return Colors.green;
+      case 'Regular':
+        return Colors.yellow;
+      case 'Desfavorable':
+        return Colors.red;
+      case 'Molt desfavorable':
+        return const Color.fromARGB(255, 76, 1, 1);
+      case 'Extremadament desfavorable':
+        return Colors.purple;
       default:
-        return Icons.directions_car;
+        return Colors.grey;
     }
-  }
-
-  IconData getTransportIcon(int index) {
-    switch (index) {
-      case 0:
-        return Icons.directions_walk;
-      case 1:
-        return Icons.directions_bike;
-      case 2:
-        return Icons.directions_bus;
-      case 3:
-        return Icons.train;
-      case 4:
-        return Icons.motorcycle;
-      case 5:
-        return Icons.electric_car;
-      default:
-        return Icons.directions_car;
-    }
-  }
-}
-
-Color getAirQualityColor(String icqa) {
-  switch (icqa) {
-    case 'Bona':
-      return Colors.cyan;
-    case 'Raonablement bona':
-      return Colors.green;
-    case 'Regular':
-      return Colors.yellow;
-    case 'Desfavorable':
-      return Colors.red;
-    case 'Molt desfavorable':
-      return const Color.fromARGB(255, 76, 1, 1);
-    case 'Extremadament desfavorable':
-      return Colors.purple;
-    default:
-      return Colors.grey;
   }
 }
