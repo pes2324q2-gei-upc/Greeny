@@ -14,7 +14,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   // ignore: non_constant_identifier_names
-  final int level_aux = 4;
+  int mastery = 0;
 
   List<dynamic> data = [];
   int numNeighborhoods = 0;
@@ -72,7 +72,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             //child: Image.asset(data[index]['completed'] ? 'assets/neighborhoods/nhood_${index+1}.png' : 'assets/neighborhoods/City${1}PNG_BW.png'),
                             child: Stack(
                               children: <Widget>[
-                                data[index]['completed'] 
+                                data[index]['completed'] || mastery > 0
                                   ? Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover) 
                                   : data[index]['current']
                                     ? ColorFiltered(
@@ -88,7 +88,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        data[index]['completed'] || data[index]['current'] ? Text('${data[index]['neighborhood']['name']}') : const Text('???'),
+                        data[index]['completed'] || data[index]['current'] || mastery > 0 ? Text('${data[index]['neighborhood']['name']}') : const Text('???'),
                       ],
                     );
                   }),
@@ -103,7 +103,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   exploreCity(index) {
-    if (data[index]['completed']) {
+    if (data[index]['completed'] || mastery > 0) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -139,5 +139,6 @@ class _HistoryPageState extends State<HistoryPage> {
       data = jsonDecode(body);
     }
     numNeighborhoods = data.length;
+    mastery = data[0]['mastery'];
   }
 }
