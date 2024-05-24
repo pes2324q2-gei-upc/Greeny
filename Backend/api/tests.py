@@ -19,9 +19,9 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from api.transports_views import FetchPublicTransportStations
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                        TransportType, Statistics, Route, Review, Neighborhood, Level)
+                        TransportType, Statistics, Route, Review, Neighborhood, Level, CO2Consumed)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
-
+from .user_views import init_neighborhoods, init_levels
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
@@ -62,7 +62,20 @@ class FinalFormTransports(TestCase):
         response = self.client.post('/api/user/', user_data)
         self.assertEqual(response.status_code, 201)
         self.user = User.objects.get(username='alba')
+        init_neighborhoods()
+        init_levels(self.user)
         self.client.force_authenticate(user=self.user)
+        self.co2_consumed = CO2Consumed.objects.create(
+            kg_CO2_walking_biking_consumed=0.0,
+            kg_CO2_bus_consumed=0.08074,
+            kg_CO2_motorcycle_consumed=0.053,
+            kg_CO2_car_gasoline_consumed=0.143,
+            kg_CO2_electric_car_consumed=0.070,
+            kg_CO2_metro_consumed=0.05013,
+            kg_CO2_tram_consumed=0.08012,
+            kg_CO2_fgc_consumed=0.03577,
+            kg_CO2_train_consumed=0.04688
+        )
 
     def test_post_success(self):
         data = {

@@ -19,7 +19,6 @@ def calculate_co2_consumed(transports, total_distance):
 
     co2 = CO2Consumed.objects.first()
 
-    co2_consumed = 0.0
     transport_to_co2 = {
         'Walking': co2.kg_CO2_walking_biking_consumed,
         'Bike': co2.kg_CO2_walking_biking_consumed,
@@ -33,9 +32,8 @@ def calculate_co2_consumed(transports, total_distance):
         'Electric Car': co2.kg_CO2_electric_car_consumed
     }
 
-    co2_consumed = 0
+    co2_consumed = 0.0
     for transport, percentage in transports.items():
-        print(transport_to_co2.get(transport, 0))
         transport_dist = total_distance * (percentage / 100)
         co2_consumed += transport_to_co2.get(transport, 0) * transport_dist
 
