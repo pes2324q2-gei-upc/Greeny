@@ -21,9 +21,9 @@ class PodiumAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 210,
-      width: 110,
+      width: 120,
       child: Stack(
         children: [
           // Imagen de perfil
@@ -31,7 +31,7 @@ class PodiumAvatar extends StatelessWidget {
             top: 25,
             child: Container(
               width: 110,
-              height: 110,
+              height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
