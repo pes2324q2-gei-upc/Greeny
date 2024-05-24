@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
@@ -108,7 +110,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     flex: 1,
                     child: InfoBox(
                       icon: Icons.cloud,
-                      title: translate('CO2 consumed'),
+                      title: translate('CO2 estimated'),
                       subtitle: translate('If travelled by combustion car'),
                       value: carCO2Consumed.toStringAsFixed(2),
                       unit: 'kg',
@@ -200,7 +202,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             ] else if (selectedOption == 'estimated') ...[
               InfoBox(
                 icon: Icons.cloud,
-                title: translate('CO2 consumed'),
+                title: translate('CO2 estimated'),
                 subtitle: translate('If travelled by combustion car'),
                 value: carCO2Consumed.toStringAsFixed(2),
                 unit: 'kg',
@@ -438,15 +440,37 @@ class InfoBox extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AutoSizeText(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
+                if (title.contains('CO2')) ...[
+                  AutoSizeText.rich(
+                    TextSpan(children: [
+                      const TextSpan(text: 'CO'),
+                      const TextSpan(
+                        text: '2',
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(text: title.split('CO2')[1]),
+                    ]),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    minFontSize: 1,
                   ),
-                  maxLines: 1,
-                  minFontSize: 1,
-                ),
+                ] else ...[
+                  AutoSizeText(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    minFontSize: 1,
+                  ),
+                ],
                 if (subtitle.isNotEmpty)
                   AutoSizeText(
                     subtitle,
