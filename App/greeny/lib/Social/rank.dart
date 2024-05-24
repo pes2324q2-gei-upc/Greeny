@@ -44,94 +44,96 @@ class _RankPageState extends State<RankPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-      appBar: AppBar(
-        title: Text(translate('Ranking'),
-            style: const TextStyle(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center),
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.people_outline_rounded),
-            color: const Color.fromARGB(255, 1, 167, 164),
-            onPressed: () {
-              friends();
-            },
-          )
-        ],
-      ),
-      body: _users.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(),
+        appBar: AppBar(
+          title: Text(translate('Ranking'),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center),
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.people_outline_rounded),
+              color: const Color.fromARGB(255, 1, 167, 164),
+              onPressed: () {
+                friends();
+              },
             )
-          : Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal:
-                        20.0), // Ajusta el valor del margen según sea necesario
-                child: Container(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        // Usuarios en el podio
-                        if (_users.length > 1)
-                          Transform.scale(
-                            scale: 0.65,
-                            child: PodiumAvatar(
-                              profileImage: _users[1].avatar,
-                              rank: 2,
-                              username: _users[1].username,
-                              points: _users[1].points,
-                            ),
-                          ),
-                        if (_users.isNotEmpty)
-                          PodiumAvatar(
-                            profileImage: _users[0].avatar,
-                            rank: 1,
-                            username: _users[0].username,
-                            points: _users[0].points,
-                          ),
-                        if (_users.length > 2)
-                          Transform.scale(
-                            scale: 0.65,
-                            child: PodiumAvatar(
-                              profileImage: _users[2].avatar,
-                              rank: 3,
-                              username: _users[2].username,
-                              points: _users[2].points,
-                            ),
-                          ),
-                        // Agregar más usuarios según sea necesario
-                      ],
-                    ),
+          ],
+        ),
+        body: _users.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal:
+                          20.0), // Ajusta el valor del margen según sea necesario
+                  child: Column(
+                    children: [
+                      // Usuarios en el podio
+                      SizedBox(
+                        height: 200,
+                        width: double.infinity,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              if (_users != null) ...[
+                                if (_users.length > 1)
+                                  Transform.scale(
+                                    scale: 0.65,
+                                    child: PodiumAvatar(
+                                      profileImage: _users[1].avatar,
+                                      rank: 2,
+                                      username: _users[1].username,
+                                      points: _users[1].points,
+                                    ),
+                                  ),
+                                if (_users.isNotEmpty)
+                                  PodiumAvatar(
+                                    profileImage: _users[0].avatar,
+                                    rank: 1,
+                                    username: _users[0].username,
+                                    points: _users[0].points,
+                                  ),
+                                if (_users.length > 2)
+                                  Transform.scale(
+                                    scale: 0.65,
+                                    child: PodiumAvatar(
+                                      profileImage: _users[2].avatar,
+                                      rank: 3,
+                                      username: _users[2].username,
+                                      points: _users[2].points,
+                                    ),
+                                  ),
+                              ],
+                            ]),
+                      ),
+                      SizedBox(
+                          height:
+                              20), // Espacio entre el podio y la lista de usuarios restantes
+
+                      // Lista de usuarios restantes
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _users.length > 3 ? _users.length - 3 : 0,
+                          itemBuilder: (context, index) {
+                            final user = _users[index + 3];
+                            return ListTile(
+                              title: Text(user.username),
+                              subtitle: Text('Points: ${user.points}'),
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(user.avatar),
+                                radius: 25,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
-
-      // body: _users.isEmpty
-      //     ? const Center(
-      //         child: CircularProgressIndicator(),
-      //       )
-      //     : ListView.builder(
-      //         itemCount: _users.length,
-      //         itemBuilder: (context, index) {
-      //           final user = _users[index];
-      //           return ListTile(
-      //             title: Text(user.username),
-      //             subtitle: Text('Points: ${user.points}'),
-      //             // Agregar CircleAvatar para mostrar la foto de perfil
-      //             leading: CircleAvatar(
-      //               backgroundImage: NetworkImage(user.avatar),
-      //               radius:
-      //                   25, // Ajusta el tamaño de la imagen según sea necesario
-      //             ),
-      //           );
-      //         },
-      //       ),
-    );
+              ));
   }
 
   void friends() {

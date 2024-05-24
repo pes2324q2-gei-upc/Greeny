@@ -18,8 +18,8 @@ class PodiumAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
-      width: 120,
+      height: 200,
+      width: 110,
       child: Stack(
         children: [
           // Imagen de perfil
@@ -51,7 +51,7 @@ class PodiumAvatar extends StatelessWidget {
               radius: 12,
               child: Text(
                 rank.toString(),
-                style: TextStyle(fontSize: 10),
+                style: const TextStyle(fontSize: 13),
               ),
             ),
           ),
@@ -62,7 +62,7 @@ class PodiumAvatar extends StatelessWidget {
             child: Text(
               username,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           ),
           Positioned(
@@ -70,7 +70,7 @@ class PodiumAvatar extends StatelessWidget {
             top: 175,
             width: 110,
             child: Text(
-              points.toString(),
+              "${points.toString()} pts",
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 15, color: Colors.grey[600]),
             ),
