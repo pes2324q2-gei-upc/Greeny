@@ -77,8 +77,9 @@ class UsersView(ModelViewSet):
         if image:
             # Delete the old image file
             if user.image:
-                if os.path.isfile(user.image.path):
-                    os.remove(user.image.path)
+                if not user.image.path.endswith(('Default1.png', 'Default2.png', 'Default3.png', 'Default4.png', 'Default5.png')):
+                    if os.path.isfile(user.image.path):
+                        os.remove(user.image.path)
             # Create a new instance of the image file
             image_copy = ContentFile(image.read())
             # Reset the file pointer of the original image
