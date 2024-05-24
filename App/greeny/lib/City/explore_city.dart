@@ -26,8 +26,8 @@ class GradientBarPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final gradient = LinearGradient(
-      colors: const [
+    const gradient = LinearGradient(
+      colors: [
         Colors.blue,
         Colors.green,
         Colors.yellow,
