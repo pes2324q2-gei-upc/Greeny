@@ -454,17 +454,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _showModelViewer = false;
     });
 
-    /*Navigator.push(context,
+    Navigator.push(context,
         MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
       setState(() {
         _showModelViewer = true;
       });
-    });*/
-    Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const OnboardingPage()),
-            (Route<dynamic> route) => false,
-          );
+    });
   }
 
   void finalForm() {
