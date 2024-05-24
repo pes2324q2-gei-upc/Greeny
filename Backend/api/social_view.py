@@ -21,6 +21,7 @@ class RankingViewSet(viewsets.ViewSet):
         if filter_type == 'friends':
             friends = user.friends.all()
             friends = user.friends.all()
+            friends |= User.objects.filter(id=user.id)
             queryset = User.objects.filter(id__in=friends).order_by('-points')[:limit]
         else:
             queryset = User.objects.all().order_by('-points')[:limit]
