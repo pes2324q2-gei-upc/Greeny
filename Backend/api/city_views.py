@@ -45,7 +45,6 @@ class CityView(APIView):
     def update_points(self, user, new_points):
         level = self.get_current_level(user)
         response_data = {}
-        print(new_points)
         if new_points is not None:
             level.points_user += new_points
             level.save()
@@ -54,7 +53,6 @@ class CityView(APIView):
                 lvlnb = level.number - 1
                 level.points_user = 0
                 level.save()
-                print (lvlnb)
                 if lvlnb > 0:
                     previous_level = Level.objects.filter(user=user, number=lvlnb).first()
                     level.current = False
@@ -156,7 +154,6 @@ class CityView(APIView):
 
     def put(self, request):
         user = request.user
-        print(request.data)
         if request.data.get('reset'):
             return self.reset_levels(user)
 
