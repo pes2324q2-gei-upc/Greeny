@@ -75,7 +75,7 @@ class _RankPageState extends State<RankPage> {
                     children: [
                       // Usuarios en el podio
                       SizedBox(
-                        height: 200,
+                        height: 250,
                         width: double.infinity,
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -89,6 +89,8 @@ class _RankPageState extends State<RankPage> {
                                       rank: 2,
                                       username: _users[1].username,
                                       points: _users[1].points,
+                                      mastery: _users[1].mastery,
+                                      level: _users[1].level,
                                     ),
                                   ),
                                 if (_users.isNotEmpty)
@@ -97,6 +99,8 @@ class _RankPageState extends State<RankPage> {
                                     rank: 1,
                                     username: _users[0].username,
                                     points: _users[0].points,
+                                    mastery: _users[0].mastery,
+                                    level: _users[0].level,
                                   ),
                                 if (_users.length > 2)
                                   Transform.scale(
@@ -106,6 +110,8 @@ class _RankPageState extends State<RankPage> {
                                       rank: 3,
                                       username: _users[2].username,
                                       points: _users[2].points,
+                                      mastery: _users[2].mastery,
+                                      level: _users[2].level,
                                     ),
                                   ),
                               ],

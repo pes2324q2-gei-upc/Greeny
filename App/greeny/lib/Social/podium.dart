@@ -6,19 +6,23 @@ class PodiumAvatar extends StatelessWidget {
   final int rank;
   final String username;
   final int points;
+  final int level;
+  final int mastery;
 
   const PodiumAvatar(
       {required this.profileImage,
       required this.rank,
       required this.username,
       required this.points,
+      required this.level,
+      required this.mastery,
       Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
+      height: 210,
       width: 110,
       child: Stack(
         children: [
@@ -75,6 +79,34 @@ class PodiumAvatar extends StatelessWidget {
               style: TextStyle(fontSize: 15, color: Colors.grey[600]),
             ),
           ),
+          Positioned(
+            left: 0,
+            top: 190,
+            width: 110,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.star,
+                  color: Color.fromARGB(255, 255, 238, 0),
+                  size: 15,
+                ),
+                Text(
+                  level.toString(),
+                  style: const TextStyle(fontSize: 15),
+                ),
+                Icon(
+                  Icons.military_tech_rounded,
+                  color: Color.fromARGB(255, 255, 238, 0),
+                  size: 15,
+                ),
+                Text(
+                  toRoman(mastery + 1),
+                  style: const TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+          ),
           if (rank == 1)
             Positioned(
               left: 0,
@@ -90,5 +122,21 @@ class PodiumAvatar extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String toRoman(int number) {
+  // number must be 1, 2, 3 or 4.
+  switch (number) {
+    case 1:
+      return 'I';
+    case 2:
+      return 'II';
+    case 3:
+      return 'III';
+    case 4:
+      return 'IV';
+    default:
+      return '0';
   }
 }
