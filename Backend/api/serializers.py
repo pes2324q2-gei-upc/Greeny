@@ -78,14 +78,23 @@ class UserSerializer(serializers.ModelSerializer):
 
 class FriendUserSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    level = serializers.SerializerMethodField()
 
     def get_image(self, obj):
         request = self.context.get('request')
         return request.build_absolute_uri(obj.image.url)
+    def get_level(self, obj):
+        try:
+            level = Level.objects.filter(user=obj, current=True).first()
+            if level is None:
+                return 1
+            return level.number
+        except Level.DoesNotExist:
+            return 1
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'image', 'points']
+        fields = ['username', 'first_name', 'image', 'points', 'mastery', 'level']
 
 class FriendSerializer(serializers.ModelSerializer):
     friends = serializers.SerializerMethodField()

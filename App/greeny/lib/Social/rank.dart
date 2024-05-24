@@ -6,6 +6,8 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friends.dart';
 import 'package:greeny/Social/podium.dart';
 
+Color greenyColor = const Color.fromARGB(255, 1, 167, 164);
+
 class RankPage extends StatefulWidget {
   const RankPage({super.key});
 
@@ -109,25 +111,101 @@ class _RankPageState extends State<RankPage> {
                               ],
                             ]),
                       ),
-                      SizedBox(
+                      const SizedBox(
                           height:
                               20), // Espacio entre el podio y la lista de usuarios restantes
 
                       // Lista de usuarios restantes
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: _users.length > 3 ? _users.length - 3 : 0,
-                          itemBuilder: (context, index) {
-                            final user = _users[index + 3];
-                            return ListTile(
-                              title: Text(user.username),
-                              subtitle: Text('Points: ${user.points}'),
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(user.avatar),
-                                radius: 25,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount:
+                                    _users.length > 3 ? _users.length - 3 : 0,
+                                itemBuilder: (context, index) {
+                                  final user = _users[index + 3];
+                                  return Card(
+                                    // Tarjeta de usuario
+                                    color: greenyColor,
+                                    elevation: 2,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 5, horizontal: 0),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(children: [
+                                        Text(
+                                          '${index + 1 + 3}.',
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(user.avatar),
+                                          radius: 25,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              user.username,
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.star,
+                                                  color: Colors.grey[600],
+                                                  size: 20,
+                                                ),
+                                                Text(
+                                                  user.level.toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 16),
+                                                ),
+                                                Icon(
+                                                  Icons.military_tech_rounded,
+                                                  color: Colors.grey[600],
+                                                  size: 20,
+                                                ),
+                                                Text(
+                                                  toRoman(user.mastery + 1),
+                                                  style: const TextStyle(
+                                                      fontSize: 16),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .end, // Alineación de los puntos a la derecha
+                                            children: [
+                                              Text(
+                                                '${user.points} pts',
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ]),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -142,18 +220,43 @@ class _RankPageState extends State<RankPage> {
   }
 }
 
+String toRoman(int number) {
+  // number must be 1, 2, 3 or 4.
+  switch (number) {
+    case 1:
+      return 'I';
+    case 2:
+      return 'II';
+    case 3:
+      return 'III';
+    case 4:
+      return 'IV';
+    default:
+      return '0';
+  }
+}
+
 class User {
   final String avatar;
   final String username;
   final int points;
+  final int mastery;
+  final int level;
 
-  User({required this.avatar, required this.username, required this.points});
+  User(
+      {required this.avatar,
+      required this.username,
+      required this.points,
+      required this.mastery,
+      required this.level});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       avatar: json['image'],
       username: json['username'],
       points: json['points'],
+      mastery: json['mastery'],
+      level: json['level'],
     );
   }
 }
