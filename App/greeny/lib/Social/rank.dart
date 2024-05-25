@@ -19,11 +19,31 @@ class _RankPageState extends State<RankPage> {
   List<User> _users = [];
   int _userPosition = 0;
   bool _filterFriends = false;
+  int friendRequestsCount = 0;
 
   @override
   void initState() {
     super.initState();
     _fetchRanking();
+    getFriendsRequests();
+  }
+
+  Future<void> getFriendsRequests() async {
+    friendRequestsCount = 0;
+
+    try {
+      const String endpointRequests = '/api/friend-requests/';
+      final responseRequests = await httpGet(endpointRequests);
+
+      if (responseRequests.statusCode == 200) {
+        final List<dynamic> friendRequestsData =
+            jsonDecode(responseRequests.body);
+        setState(() {
+          friendRequestsCount = friendRequestsData.length;
+        });
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   Future<void> _fetchRanking() async {
@@ -78,7 +98,30 @@ class _RankPageState extends State<RankPage> {
         backgroundColor: const Color.fromARGB(255, 220, 255, 255),
         actions: [
           IconButton(
-            icon: const Icon(Icons.people_outline_rounded),
+            icon: Stack(
+              children: [
+                const Icon(Icons.people_outline_rounded),
+                if (friendRequestsCount > 0)
+                  Positioned(
+                    left: 10,
+                    bottom: 5,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.red,
+                      ),
+                      child: Text(
+                        friendRequestsCount.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
             color: const Color.fromARGB(255, 1, 167, 164),
             onPressed: () {
               friends();
