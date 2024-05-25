@@ -6,6 +6,7 @@ import 'package:greeny/Statistics/routes.dart';
 import 'dart:convert';
 import 'package:greeny/utils/utils.dart';
 import '../utils/info_dialog.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key, required this.sharing});
@@ -15,29 +16,23 @@ class StatisticsPage extends StatefulWidget {
   State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
+class Transport {
+  final String type;
+  final IconData icon;
+  final double km;
+  final double co2;
+
+  Transport(this.type, this.icon, this.km, this.co2);
+}
+
 class _StatisticsPageState extends State<StatisticsPage> {
   double co2Consumed = 0;
   double carCO2Consumed = 0;
   double kmTotal = 0;
-  double kmWalked = 0;
-  double kmBiked = 0;
-  double kmElectricCar = 0;
-  double kmPublicTransport = 0;
-  double kmBus = 0;
-  double kmMotorcycle = 0;
-  double kmCar = 0;
+
+  List<Transport> transports = [];
 
   String selectedOption = 'all';
-
-  Map<IconData, double> co2Consumption = {
-    Icons.directions_walk: 0,
-    Icons.directions_bike: 0,
-    Icons.electric_car: 0,
-    Icons.train: 0,
-    Icons.directions_bus: 0,
-    Icons.motorcycle: 0,
-    Icons.directions_car: 0,
-  };
 
   @override
   void initState() {
@@ -60,31 +55,48 @@ class _StatisticsPageState extends State<StatisticsPage> {
           co2Consumed = statsData['kg_CO2_consumed'].toDouble();
           carCO2Consumed = statsData['kg_CO2_car_consumed'].toDouble();
           kmTotal = statsData['km_Totals'].toDouble();
-          kmWalked = statsData['km_Walked'].toDouble();
-          kmBiked = statsData['km_Biked'].toDouble();
-          kmElectricCar = statsData['km_ElectricCar'].toDouble();
-          kmPublicTransport = statsData['km_PublicTransport'].toDouble();
-          kmBus = statsData['km_Bus'].toDouble();
-          kmMotorcycle = statsData['km_Motorcycle'].toDouble();
-          kmCar = statsData['km_Car'].toDouble();
 
-          co2Consumption[Icons.directions_walk] =
-              co2Consumption[Icons.directions_bike] =
-                  co2Data['kg_CO2_walking_biking_consumed'].toDouble();
-          co2Consumption[Icons.electric_car] =
-              co2Data['kg_CO2_electric_car_consumed'].toDouble();
-          co2Consumption[Icons.train] =
-              (co2Data['kg_CO2_train_consumed'].toDouble() +
-                      co2Data['kg_CO2_metro_consumed'].toDouble() +
-                      co2Data['kg_CO2_tram_consumed'].toDouble() +
-                      co2Data['kg_CO2_fgc_consumed'].toDouble()) /
-                  4;
-          co2Consumption[Icons.directions_bus] =
-              co2Data['kg_CO2_bus_consumed'].toDouble();
-          co2Consumption[Icons.motorcycle] =
-              co2Data['kg_CO2_motorcycle_consumed'].toDouble();
-          co2Consumption[Icons.directions_car] =
-              co2Data['kg_CO2_car_gasoline_consumed'].toDouble();
+          transports = [
+            Transport(
+                'Walked',
+                Icons.directions_walk,
+                statsData['km_Walked'].toDouble(),
+                co2Data['kg_CO2_walking_biking_consumed'].toDouble()),
+            Transport(
+                'Biked',
+                Icons.directions_bike,
+                statsData['km_Biked'].toDouble(),
+                co2Data['kg_CO2_walking_biking_consumed'].toDouble()),
+            Transport(
+                'Electric Car',
+                Icons.electric_car,
+                statsData['km_ElectricCar'].toDouble(),
+                co2Data['kg_CO2_electric_car_consumed'].toDouble()),
+            Transport(
+                'Public Transport',
+                Icons.train,
+                statsData['km_PublicTransport'].toDouble(),
+                (co2Data['kg_CO2_train_consumed'].toDouble() +
+                        co2Data['kg_CO2_metro_consumed'].toDouble() +
+                        co2Data['kg_CO2_tram_consumed'].toDouble() +
+                        co2Data['kg_CO2_fgc_consumed'].toDouble()) /
+                    4),
+            Transport(
+                'Bus',
+                Icons.directions_bus,
+                statsData['km_Bus'].toDouble(),
+                co2Data['kg_CO2_bus_consumed'].toDouble()),
+            Transport(
+                'Motorcycle',
+                Icons.motorcycle,
+                statsData['km_Motorcycle'].toDouble(),
+                co2Data['kg_CO2_motorcycle_consumed'].toDouble()),
+            Transport(
+                'Car',
+                Icons.directions_car,
+                statsData['km_Car'].toDouble(),
+                co2Data['kg_CO2_car_gasoline_consumed'].toDouble()),
+          ];
         });
       }
     } else {
@@ -284,13 +296,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               _buildRoutesButton(),
               if ((selectedOption == 'all' || selectedOption == 'real')) ...[
                 const SizedBox(height: 20),
-                _buildProgressBar(Icons.directions_walk, kmWalked),
-                _buildProgressBar(Icons.directions_bike, kmBiked),
-                _buildProgressBar(Icons.electric_car, kmElectricCar),
-                _buildProgressBar(Icons.train, kmPublicTransport),
-                _buildProgressBar(Icons.directions_bus, kmBus),
-                _buildProgressBar(Icons.motorcycle, kmMotorcycle),
-                _buildProgressBar(Icons.directions_car, kmCar),
+                TransportationPieChart(transports),
               ],
             ]
           ],
@@ -365,148 +371,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  // Widget to display a progress bar
-  Widget _buildProgressBar(IconData icon, double value) {
-    return GestureDetector(
-        onTap: () {
-          _showProgressInfoDialog(context, icon, value);
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 5.0),
-          child: ProgressBar(
-            icon: icon,
-            percentage: kmTotal != 0 ? value / kmTotal : 0,
-          ),
-        ));
-  }
-
-  void _showProgressInfoDialog(
-      BuildContext context, IconData icon, double value) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(icon),
-              const SizedBox(width: 8),
-              Expanded(
-                child: AutoSizeText(
-                  translate('Detailed info'),
-                  minFontSize: 1,
-                  maxFontSize: 20,
-                  maxLines: 1,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AutoSizeText(
-                '${translate('Distance traveled')}:',
-              ),
-              AutoSizeText(
-                '${value.toStringAsFixed(2)} km',
-                minFontSize: 20,
-                maxFontSize: 100,
-              ),
-              const SizedBox(height: 10),
-              AutoSizeText.rich(
-                TextSpan(children: [
-                  const TextSpan(text: 'CO'),
-                  const TextSpan(
-                    text: '2',
-                    style: TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(text: translate('CO2 consumed').split('CO2')[1]),
-                ]),
-              ),
-              AutoSizeText(
-                '${(value * co2Consumption[icon]!)} kg',
-                minFontSize: 20,
-                maxFontSize: 100,
-              ),
-              const SizedBox(height: 10),
-              AutoSizeText.rich(
-                TextSpan(children: [
-                  const TextSpan(text: 'CO'),
-                  const TextSpan(
-                    text: '2',
-                    style: TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(text: translate('CO2 saved').split('CO2')[1]),
-                ]),
-              ),
-              AutoSizeText(
-                '${(value * co2Consumption[Icons.directions_car]! - value * co2Consumption[icon]!)} kg',
-                minFontSize: 20,
-                maxFontSize: 100,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(translate('Sortir')),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   // Method to navigate to routes page
   void routes() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const RoutesPage()),
-    );
-  }
-}
-
-// Custom progress bar widget
-class ProgressBar extends StatelessWidget {
-  final IconData icon;
-  final double percentage;
-
-  const ProgressBar({super.key, required this.icon, required this.percentage});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon),
-          const SizedBox(width: 10),
-          Expanded(
-            child: LinearProgressIndicator(
-              value: percentage,
-              borderRadius: BorderRadius.circular(10),
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color.fromARGB(255, 1, 167, 164),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            '${(percentage * 100).toStringAsFixed(2)}%',
-            style: const TextStyle(fontSize: 12.0, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -613,5 +482,150 @@ class InfoBox extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class TransportationPieChart extends StatelessWidget {
+  final List<Transport> transports;
+  final Map<String, Color> colorList = {
+    'Walked': const Color(0xFF4A4BA2),
+    'Biked': const Color(0xFF4C87B9),
+    'Electric Car': const Color(0xFFC26C85),
+    'Public Transport': const Color(0xFFF67180),
+    'Bus': const Color(0xFFF8B195),
+    'Motorcycle': const Color(0xFF75B49A),
+    'Car': const Color(0xFF00A7B4),
+  };
+
+  TransportationPieChart(this.transports, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var data = transports;
+    return Column(
+      children: [
+        SfCircularChart(
+          legend: const Legend(isVisible: false),
+          series: <PieSeries<Transport, String>>[
+            PieSeries<Transport, String>(
+              dataSource: transports,
+              xValueMapper: (Transport data, _) => data.type,
+              yValueMapper: (Transport data, _) => data.km,
+              dataLabelMapper: (Transport data, _) => '${data.km}km',
+              dataLabelSettings: const DataLabelSettings(isVisible: true),
+              pointColorMapper: (Transport data, _) => colorList[data.type],
+            ),
+          ],
+        ),
+        ...data.map((e) => ListTile(
+            leading: Icon(Icons.circle,
+                color: colorList[e.type]), // replace with your color
+            title: Text(e.type),
+            onTap: () => showProgressInfoDialog(context, e)))
+      ],
+    );
+  }
+
+  void showProgressInfoDialog(BuildContext context, Transport t) {
+    Transport carTransport = transports.firstWhere((t) => t.type == 'Car');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: _buildDialogTitle(t),
+          content: _buildDialogContent(t, carTransport),
+          actions: _buildDialogActions(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogTitle(Transport t) {
+    return Row(
+      children: [
+        Icon(t.icon),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            translate('Detailed info'),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            maxLines: 1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDialogContent(Transport t, Transport carTransport) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildDistanceTraveled(t),
+        const SizedBox(height: 10),
+        _buildCO2Consumed(t),
+        const SizedBox(height: 10),
+        _buildCO2Saved(t, carTransport),
+      ],
+    );
+  }
+
+  Widget _buildDistanceTraveled(Transport t) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${translate('Distance traveled')}: ',
+          style: const TextStyle(fontSize: 12),
+        ),
+        Text(
+          '${t.km.toStringAsFixed(2)} km',
+          style: const TextStyle(fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCO2Consumed(Transport t) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'CO2 ${translate('CO2 consumed').split('CO2')[1]}:',
+          style: const TextStyle(fontSize: 12),
+        ),
+        Text(
+            '${(t.km * t.co2).toStringAsFixed(2)} kg',
+          style: const TextStyle(fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCO2Saved(Transport t, Transport carTransport) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'CO2 ${translate('CO2 saved').split('CO2')[1]}:',
+          style: const TextStyle(fontSize: 12),
+        ),
+        Text(
+          '${(t.km * carTransport.co2 - t.km * t.co2).toStringAsFixed(2)} kg',
+          style: const TextStyle(fontSize: 20),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildDialogActions(BuildContext context) {
+    return [
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: Text(translate('Sortir')),
+      ),
+    ];
   }
 }

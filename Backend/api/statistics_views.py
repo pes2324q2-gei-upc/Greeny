@@ -31,6 +31,4 @@ class StatisticsViewSet(ModelViewSet):
             'first_co2_consumed': co2_consumed_serializer.data
         }
         
-        print(combined_data)
-        
         return Response(combined_data)
