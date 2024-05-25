@@ -74,6 +74,7 @@ class PodiumAvatar extends StatelessWidget {
               width: 110,
               child: Text(
                 username,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20),
               ),
