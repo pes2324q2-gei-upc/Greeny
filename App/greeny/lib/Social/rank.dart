@@ -5,6 +5,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friends.dart';
 import 'package:greeny/Social/podium.dart';
+import 'package:http/http.dart';
 
 Color greenyColor = const Color.fromARGB(255, 1, 167, 164);
 
@@ -318,8 +319,10 @@ class _RankPageState extends State<RankPage> {
   }
 
   void friends() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const FriendsPage()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const FriendsPage())).then((_) {
+      getFriendsRequests();
+    });
   }
 }
 
