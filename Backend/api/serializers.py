@@ -182,7 +182,8 @@ class HistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'current', 'neighborhood', 'mastery']  # Agrega 'mastery' a los fields
+        fields = ['number', 'completed', 'current',
+                  'neighborhood', 'mastery']  # Agrega 'mastery' a los fields
 
     def get_mastery(self, obj):
         return obj.user.mastery

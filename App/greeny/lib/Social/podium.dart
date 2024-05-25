@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:greeny/Friends/friend_profile.dart';
 
 class PodiumAvatar extends StatelessWidget {
   final String profileImage;
@@ -22,8 +21,7 @@ class PodiumAvatar extends StatelessWidget {
       required this.mastery,
       required this.clickUserCallback,
       required this.toRoman,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +95,7 @@ class PodiumAvatar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.star,
                     color: Color.fromARGB(255, 255, 238, 0),
                     size: 15,
@@ -106,7 +104,7 @@ class PodiumAvatar extends StatelessWidget {
                     level.toString(),
                     style: const TextStyle(fontSize: 15),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.military_tech_rounded,
                     color: Color.fromARGB(255, 255, 238, 0),
                     size: 15,

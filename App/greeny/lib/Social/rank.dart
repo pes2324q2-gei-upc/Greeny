@@ -6,7 +6,7 @@ import 'package:greeny/API/requests.dart';
 import 'package:greeny/Friends/friend_profile.dart';
 import 'package:greeny/Friends/friends.dart';
 import 'package:greeny/Social/podium.dart';
-import 'package:http/http.dart';
+import 'package:greeny/utils/utils.dart';
 
 Color greenyColor = const Color.fromARGB(255, 1, 167, 164);
 
@@ -80,7 +80,7 @@ class _RankPageState extends State<RankPage> {
         throw Exception('Failed to load ranking');
       }
     } catch (error) {
-      print('Error fetching ranking: $error');
+      if (mounted) showMessage(context, translate("Error loading ranking"));
     }
   }
 
@@ -269,53 +269,47 @@ class _RankPageState extends State<RankPage> {
                                             ),
                                             const SizedBox(width: 10),
                                             Expanded(
-                                              child: Container(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      user.username,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    user.username,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.star,
+                                                        color: Colors.grey[300],
+                                                        size: 20,
                                                       ),
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons.star,
-                                                          color:
-                                                              Colors.grey[300],
-                                                          size: 20,
-                                                        ),
-                                                        Text(
-                                                          user.level.toString(),
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 16),
-                                                        ),
-                                                        Icon(
-                                                          Icons
-                                                              .military_tech_rounded,
-                                                          color:
-                                                              Colors.grey[300],
-                                                          size: 20,
-                                                        ),
-                                                        Text(
-                                                          toRoman(
-                                                              user.mastery + 1),
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 16),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
+                                                      Text(
+                                                        user.level.toString(),
+                                                        style: const TextStyle(
+                                                            fontSize: 16),
+                                                      ),
+                                                      Icon(
+                                                        Icons
+                                                            .military_tech_rounded,
+                                                        color: Colors.grey[300],
+                                                        size: 20,
+                                                      ),
+                                                      Text(
+                                                        toRoman(
+                                                            user.mastery + 1),
+                                                        style: const TextStyle(
+                                                            fontSize: 16),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                             const SizedBox(width: 10),

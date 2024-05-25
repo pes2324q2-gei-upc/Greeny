@@ -181,5 +181,6 @@
     "Start": "Començar",
     "Air Quality": "Qualitat de l'aire",
     "Routes": "Rutes",
-    "All your routes will be saved, take a look at them": "Es desaran totes les teves rutes, fes-hi una ullada"
+    "All your routes will be saved, take a look at them": "Es desaran totes les teves rutes, fes-hi una ullada",
+    "Error loading ranking": "Error en carregar el ranking"
 }
