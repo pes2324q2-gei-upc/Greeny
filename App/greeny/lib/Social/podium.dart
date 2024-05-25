@@ -9,8 +9,9 @@ class PodiumAvatar extends StatelessWidget {
   final int points;
   final int level;
   final int mastery;
-  final Function fetchRankingCallback;
-  final Function getFriendRequestsCallback;
+  final Function
+      clickUserCallback; //Funció que porta al perfil de l'usuari clicat
+  final Function toRoman;
 
   const PodiumAvatar(
       {required this.profileImage,
@@ -19,8 +20,8 @@ class PodiumAvatar extends StatelessWidget {
       required this.points,
       required this.level,
       required this.mastery,
-      required this.fetchRankingCallback,
-      required this.getFriendRequestsCallback,
+      required this.clickUserCallback,
+      required this.toRoman,
       Key? key})
       : super(key: key);
 
@@ -31,7 +32,7 @@ class PodiumAvatar extends StatelessWidget {
       width: 120,
       child: GestureDetector(
         onTap: () {
-          clickUser(context, username);
+          clickUserCallback(username);
         },
         child: Stack(
           children: [
@@ -117,6 +118,7 @@ class PodiumAvatar extends StatelessWidget {
                 ],
               ),
             ),
+            //Si es el primer classificat, posar corona
             if (rank == 1)
               Positioned(
                 left: 0,
@@ -133,35 +135,5 @@ class PodiumAvatar extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void clickUser(BuildContext context, String username) {
-    // Navegar a la página de perfil del usuario
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => FriendProfilePage(
-            friendUsername: username,
-          ),
-        )).then((_) {
-      getFriendRequestsCallback();
-      fetchRankingCallback();
-    });
-  }
-}
-
-String toRoman(int number) {
-  // number must be 1, 2, 3 or 4.
-  switch (number) {
-    case 1:
-      return 'I';
-    case 2:
-      return 'II';
-    case 3:
-      return 'III';
-    case 4:
-      return 'IV';
-    default:
-      return '0';
   }
 }

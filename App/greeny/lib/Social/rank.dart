@@ -26,8 +26,7 @@ class _RankPageState extends State<RankPage> {
   @override
   void initState() {
     super.initState();
-    _fetchRanking();
-    getFriendsRequests();
+    refresh();
   }
 
   Future<void> getFriendsRequests() async {
@@ -46,6 +45,11 @@ class _RankPageState extends State<RankPage> {
       }
       // ignore: empty_catches
     } catch (e) {}
+  }
+
+  void refresh() {
+    getFriendsRequests();
+    _fetchRanking();
   }
 
   Future<void> _fetchRanking() async {
@@ -175,7 +179,7 @@ class _RankPageState extends State<RankPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            if (_users != null) ...[
+                            ...[
                               if (_users.length > 1)
                                 Transform.scale(
                                   scale: 0.65,
@@ -186,9 +190,8 @@ class _RankPageState extends State<RankPage> {
                                     points: _users[1].points,
                                     mastery: _users[1].mastery,
                                     level: _users[1].level,
-                                    fetchRankingCallback: _fetchRanking,
-                                    getFriendRequestsCallback:
-                                        getFriendsRequests,
+                                    clickUserCallback: clickUser,
+                                    toRoman: toRoman,
                                   ),
                                 ),
                               if (_users.isNotEmpty)
@@ -199,8 +202,8 @@ class _RankPageState extends State<RankPage> {
                                   points: _users[0].points,
                                   mastery: _users[0].mastery,
                                   level: _users[0].level,
-                                  fetchRankingCallback: _fetchRanking,
-                                  getFriendRequestsCallback: getFriendsRequests,
+                                  clickUserCallback: clickUser,
+                                  toRoman: toRoman,
                                 ),
                               if (_users.length > 2)
                                 Transform.scale(
@@ -212,9 +215,8 @@ class _RankPageState extends State<RankPage> {
                                     points: _users[2].points,
                                     mastery: _users[2].mastery,
                                     level: _users[2].level,
-                                    fetchRankingCallback: _fetchRanking,
-                                    getFriendRequestsCallback:
-                                        getFriendsRequests,
+                                    clickUserCallback: clickUser,
+                                    toRoman: toRoman,
                                   ),
                                 ),
                             ],
@@ -242,8 +244,8 @@ class _RankPageState extends State<RankPage> {
                                 itemBuilder: (context, index) {
                                   final user = _users[index + 3];
                                   return GestureDetector(
-                                    onTap: () => clickCard(user
-                                        .username), // Llama a la función clickCard con el usuario correspondiente
+                                    onTap: () => clickUser(user
+                                        .username), // Llama a la función clickUser con el usuario correspondiente
                                     child: Card(
                                       color: greenyColor,
                                       elevation: 2,
@@ -341,16 +343,17 @@ class _RankPageState extends State<RankPage> {
     );
   }
 
+  // Funció que porta a la pàgina d'amics
   void friends() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const FriendsPage())).then((_) {
-      getFriendsRequests();
-      _fetchRanking();
+      refresh();
     });
   }
 
-  void clickCard(String username) {
-    // Navegar a la página de perfil del usuario
+  // Funció que porta a la pàgina de perfil d'un usuari identificat per username
+  void clickUser(String username) {
+    // Navegar a la pàgina de perfil de l'usuari
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -358,12 +361,13 @@ class _RankPageState extends State<RankPage> {
             friendUsername: username,
           ),
         )).then((_) {
-      getFriendsRequests();
-      _fetchRanking();
+      //Refresca la pàgina quan es tanca la pàgina de perfil de l'usuari
+      refresh();
     });
   }
 }
 
+// Funció que converteix un número en un nombre romà
 String toRoman(int number) {
   // number must be 1, 2, 3 or 4.
   switch (number) {
