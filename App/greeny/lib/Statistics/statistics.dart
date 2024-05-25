@@ -390,7 +390,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
             children: [
               Icon(icon),
               const SizedBox(width: 8),
-              const Text("Progress Info"),
+              Expanded(
+                child: AutoSizeText(
+                  translate('Detailed info'),
+                  minFontSize: 1,
+                  maxFontSize: 20,
+                  maxLines: 1,
+                ),
+              ),
             ],
           ),
           content: Column(
@@ -407,39 +414,39 @@ class _StatisticsPageState extends State<StatisticsPage> {
               ),
               const SizedBox(height: 10),
               AutoSizeText.rich(
-                    TextSpan(children: [
-                      const TextSpan(text: 'CO'),
-                      const TextSpan(
-                        text: '2',
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(text: translate('CO2 consumed').split('CO2')[1]),
-                    ]),
+                TextSpan(children: [
+                  const TextSpan(text: 'CO'),
+                  const TextSpan(
+                    text: '2',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(text: translate('CO2 consumed').split('CO2')[1]),
+                ]),
               ),
               AutoSizeText(
-                '${(value*co2Consumption[icon]!)} kg',
+                '${(value * co2Consumption[icon]!)} kg',
                 minFontSize: 20,
                 maxFontSize: 100,
               ),
               const SizedBox(height: 10),
               AutoSizeText.rich(
-                    TextSpan(children: [
-                      const TextSpan(text: 'CO'),
-                      const TextSpan(
-                        text: '2',
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(text: translate('CO2 saved').split('CO2')[1]),
-                    ]),
+                TextSpan(children: [
+                  const TextSpan(text: 'CO'),
+                  const TextSpan(
+                    text: '2',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(text: translate('CO2 saved').split('CO2')[1]),
+                ]),
               ),
               AutoSizeText(
-                '${(value*co2Consumption[Icons.directions_car]! - value*co2Consumption[icon]!)} kg',
+                '${(value * co2Consumption[Icons.directions_car]! - value * co2Consumption[icon]!)} kg',
                 minFontSize: 20,
                 maxFontSize: 100,
               ),

@@ -190,5 +190,6 @@
     "CO2 estimated": "CO2 estimado",
     "co2_estimated": "CO2 estimado: CO2 consumido si hubieras hecho todos tus trayectos en coche de combustión",
     "unfelled_trees": "Árboles no talados: Número de árboles que no hay que talar gracias al CO2 que has ahorrado",
-    "families_supplied": "Familias abastecidas: Número de familias que se pueden abastecer con la energía que has ahorrado"
+    "families_supplied": "Familias abastecidas: Número de familias que se pueden abastecer con la energía que has ahorrado",
+    "Detailed info": "Información detallada"
 }
