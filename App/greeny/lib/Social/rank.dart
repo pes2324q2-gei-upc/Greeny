@@ -186,6 +186,9 @@ class _RankPageState extends State<RankPage> {
                                     points: _users[1].points,
                                     mastery: _users[1].mastery,
                                     level: _users[1].level,
+                                    fetchRankingCallback: _fetchRanking,
+                                    getFriendRequestsCallback:
+                                        getFriendsRequests,
                                   ),
                                 ),
                               if (_users.isNotEmpty)
@@ -196,6 +199,8 @@ class _RankPageState extends State<RankPage> {
                                   points: _users[0].points,
                                   mastery: _users[0].mastery,
                                   level: _users[0].level,
+                                  fetchRankingCallback: _fetchRanking,
+                                  getFriendRequestsCallback: getFriendsRequests,
                                 ),
                               if (_users.length > 2)
                                 Transform.scale(
@@ -207,6 +212,9 @@ class _RankPageState extends State<RankPage> {
                                     points: _users[2].points,
                                     mastery: _users[2].mastery,
                                     level: _users[2].level,
+                                    fetchRankingCallback: _fetchRanking,
+                                    getFriendRequestsCallback:
+                                        getFriendsRequests,
                                   ),
                                 ),
                             ],
@@ -337,6 +345,7 @@ class _RankPageState extends State<RankPage> {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const FriendsPage())).then((_) {
       getFriendsRequests();
+      _fetchRanking();
     });
   }
 
@@ -345,9 +354,12 @@ class _RankPageState extends State<RankPage> {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FriendProfilePage(friendUsername: username),
+          builder: (context) => FriendProfilePage(
+            friendUsername: username,
+          ),
         )).then((_) {
       getFriendsRequests();
+      _fetchRanking();
     });
   }
 }

@@ -9,6 +9,8 @@ class PodiumAvatar extends StatelessWidget {
   final int points;
   final int level;
   final int mastery;
+  final Function fetchRankingCallback;
+  final Function getFriendRequestsCallback;
 
   const PodiumAvatar(
       {required this.profileImage,
@@ -17,6 +19,8 @@ class PodiumAvatar extends StatelessWidget {
       required this.points,
       required this.level,
       required this.mastery,
+      required this.fetchRankingCallback,
+      required this.getFriendRequestsCallback,
       Key? key})
       : super(key: key);
 
@@ -136,8 +140,13 @@ class PodiumAvatar extends StatelessWidget {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FriendProfilePage(friendUsername: username),
-        ));
+          builder: (context) => FriendProfilePage(
+            friendUsername: username,
+          ),
+        )).then((_) {
+      getFriendRequestsCallback();
+      fetchRankingCallback();
+    });
   }
 }
 
