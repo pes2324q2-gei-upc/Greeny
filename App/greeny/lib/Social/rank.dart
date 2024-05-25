@@ -58,9 +58,9 @@ class _RankPageState extends State<RankPage> {
     }
   }
 
-  void _toggleFilter() {
+  void _toggleFilter(bool filterFriends) {
     setState(() {
-      _filterFriends = !_filterFriends;
+      _filterFriends = filterFriends;
       _fetchRanking();
     });
   }
@@ -84,11 +84,6 @@ class _RankPageState extends State<RankPage> {
               friends();
             },
           ),
-          IconButton(
-            icon: Icon(_filterFriends ? Icons.group : Icons.public),
-            color: const Color.fromARGB(255, 1, 167, 164),
-            onPressed: _toggleFilter,
-          ),
         ],
       ),
       body: _users.isEmpty
@@ -102,6 +97,30 @@ class _RankPageState extends State<RankPage> {
                         20.0), // Ajusta el valor del margen según sea necesario
                 child: Column(
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => _toggleFilter(false),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _filterFriends
+                                ? Colors.grey[300]
+                                : const Color.fromARGB(255, 1, 167, 164),
+                          ),
+                          child: const Text('All'),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: () => _toggleFilter(true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _filterFriends
+                                ? const Color.fromARGB(255, 1, 167, 164)
+                                : Colors.grey[300],
+                          ),
+                          child: const Text('Friends'),
+                        ),
+                      ],
+                    ),
                     // Usuarios en el podio
                     SizedBox(
                       height: 250,
@@ -208,7 +227,7 @@ class _RankPageState extends State<RankPage> {
                                                   children: [
                                                     Icon(
                                                       Icons.star,
-                                                      color: Colors.grey[600],
+                                                      color: Colors.grey[300],
                                                       size: 20,
                                                     ),
                                                     Text(
@@ -219,7 +238,7 @@ class _RankPageState extends State<RankPage> {
                                                     Icon(
                                                       Icons
                                                           .military_tech_rounded,
-                                                      color: Colors.grey[600],
+                                                      color: Colors.grey[300],
                                                       size: 20,
                                                     ),
                                                     Text(
