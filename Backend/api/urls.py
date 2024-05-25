@@ -19,6 +19,7 @@ from api.transports_views import (
 from api.friend_view import FriendRequestViewSet, FriendViewSet
 from api.routes_views import RoutesView
 from api.city_views import CityView, NeighborhoodsView, get_icqa
+from api.social_view import RankingViewSet
 from api.ping_view import ping
 
 router = DefaultRouter()
@@ -52,5 +53,6 @@ urlpatterns = [
     path('forgot_password/', forgot_password, name='forgot_password'),
     path('verify_forgotten_password/', verify_forgotten_password, name='verify_forgotten_password'),
     path('reset_password/', reset_password, name='reset_password'),
-    path('get-icqa/', get_icqa, name='icqa')
+    path('get-icqa/', get_icqa, name='icqa'),
+    path('ranking/', RankingViewSet.as_view({'get': 'list'})),
 ]

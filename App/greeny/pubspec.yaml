@@ -71,6 +71,7 @@ dependencies:
   path_provider: any
   flutter_charts: ^0.5.2
   syncfusion_flutter_charts: ^25.2.5
+  flutter_svg: any
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_test:
@@ -106,6 +107,7 @@ flutter:
   - assets/neighborhoods/
   - assets/badges/
   - assets/onboarding/
+  - assets/svg/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

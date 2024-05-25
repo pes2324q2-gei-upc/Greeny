@@ -6,7 +6,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'Map/map.dart';
 import 'City/city.dart';
-import 'Friends/friends.dart';
+import 'Social/rank.dart';
 import 'Profile/profile.dart';
 import 'Statistics/statistics.dart';
 import 'package:greeny/utils/utils.dart';
@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
       body: <Widget>[
         const CityPage(),
         const MapPage(),
-        const FriendsPage(),
+        const RankPage(),
         const StatisticsPage(
           sharing: false,
         ),
@@ -91,7 +91,7 @@ class _MainPageState extends State<MainPage> {
           NavigationDestination(
             selectedIcon: Stack(
               children: [
-                const Icon(Icons.people_rounded),
+                const Icon(Icons.emoji_events_rounded),
                 if (friendRequestsCount > 0)
                   Positioned(
                     left: 10,
@@ -115,7 +115,7 @@ class _MainPageState extends State<MainPage> {
             ),
             icon: Stack(
               children: [
-                const Icon(Icons.people_outline_rounded),
+                const Icon(Icons.emoji_events_outlined),
                 if (friendRequestsCount > 0)
                   Positioned(
                     left: 10,
@@ -137,7 +137,7 @@ class _MainPageState extends State<MainPage> {
                   ),
               ],
             ),
-            label: translate('Friends'),
+            label: translate('Ranking'),
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.table_chart),

@@ -29,9 +29,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
           _createPage('assets/onboarding/logo.png', translate('Welcome to Greeny!'), translate('Stop being greedy, be Greeny')),
           _createPage('assets/onboarding/city.png', translate('Purify districts'), translate('Walk or use public transportation to earn points and purify districts')),
           _createPage('assets/onboarding/badges.png', translate('Earn badges'), translate('When you purify a district, you will earn a badge, collect them all')),
+          _createPage('assets/onboarding/routes.png', translate('Routes'), translate('All your routes will be saved, take a look at them')),
           _createPage('assets/onboarding/podium.png', translate('Be the best'), translate('Compete with your friends and other users to climb positions in the ranking')),
           _createPage('assets/onboarding/statistics.png', translate('Statistics'), translate('View your statistics and check how you are doing')),
-          _createPage('assets/icons/appicon.png', translate('Share statistics'), translate('Share your achievements and statistics with your acquaintances')),
+          _createPage('assets/onboarding/share_user.png', translate('Share statistics'), translate('Share your achievements and statistics with your acquaintances')),
           // Añade más páginas si lo necesitas
         ],
       ),
@@ -43,12 +44,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Expanded(
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: _currentPage != 5 // Si no estamos en la última página, mostramos el botón 'Saltar'
+                  child: _currentPage != 6 // Si no estamos en la última página, mostramos el botón 'Saltar'
                     ? TextButton(
                         onPressed: () {
-                          _pageController.animateToPage(5, duration: const Duration(milliseconds: 400), curve: Curves.linear);
+                          _pageController.animateToPage(6, duration: const Duration(milliseconds: 400), curve: Curves.linear);
                         },
-                        child: Text(translate('Skip'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Skip'), style: const TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       )
                     : const SizedBox.shrink(), // Si estamos en la última página, no mostramos nada
                 ),
@@ -56,13 +57,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  for (int i = 0; i < 6; i++) i == _currentPage ? _buildPageIndicator(true, i) : _buildPageIndicator(false, i)
+                  for (int i = 0; i < 7; i++) i == _currentPage ? _buildPageIndicator(true, i) : _buildPageIndicator(false, i)
                 ],
               ),
               Expanded(
                 child: Align(
                   alignment: Alignment.centerRight,
-                  child: _currentPage != 5 // Si no estamos en la última página, mostramos la flecha
+                  child: _currentPage != 6 // Si no estamos en la última página, mostramos la flecha
                     ? TextButton(
                         onPressed: () {
                           _pageController.animateToPage(_currentPage + 1, duration: const Duration(milliseconds: 400), curve: Curves.linear);
@@ -71,7 +72,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       )
                     : TextButton( // Si estamos en la última página, mostramos el botón 'Empezar'
                         onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage())),
-                        child: Text(translate('Start'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Start'), style: const TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       ),
                 ),
               ),
@@ -120,8 +121,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 2.0),
-        height: isCurrentPage ? 10.0 : 6.0,
-        width: isCurrentPage ? 10.0 : 6.0,
+        height: isCurrentPage ? 10.0 : 7.0,
+        width: isCurrentPage ? 10.0 : 7.0,
         decoration: BoxDecoration(
           color: isCurrentPage ? const Color.fromARGB(255, 1, 167, 164) : Colors.grey,
           borderRadius: BorderRadius.circular(12),
