@@ -143,9 +143,8 @@ class _RankPageState extends State<RankPage> {
               onRefresh: getFriendsRequests,
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal:
-                          20.0), // Ajusta el valor del margen según sea necesario
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20,
+                      10), // Ajusta el valor del margen según sea necesario
                   child: Column(
                     children: [
                       Row(
@@ -155,10 +154,15 @@ class _RankPageState extends State<RankPage> {
                             onPressed: () => _toggleFilter(false),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _filterFriends
-                                  ? Colors.grey[300]
+                                  ? null
                                   : const Color.fromARGB(255, 1, 167, 164),
                             ),
-                            child: Text(translate('All')),
+                            child: Text(
+                              translate('All'),
+                              style: TextStyle(
+                                  color:
+                                      (_filterFriends ? null : Colors.white)),
+                            ),
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
@@ -166,9 +170,13 @@ class _RankPageState extends State<RankPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _filterFriends
                                   ? const Color.fromARGB(255, 1, 167, 164)
-                                  : Colors.grey[300],
+                                  : null,
                             ),
-                            child: Text(translate('Friends')),
+                            child: Text(translate('Friends'),
+                                style: TextStyle(
+                                    color: (!_filterFriends
+                                        ? null
+                                        : Colors.white))),
                           ),
                         ],
                       ),
@@ -223,6 +231,7 @@ class _RankPageState extends State<RankPage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 15),
                       Center(
                         child: Text(
                           '${translate('Congrats, you are in position')} #$_userPosition!',

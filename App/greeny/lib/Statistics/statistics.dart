@@ -129,12 +129,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
               ],
             ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
         child: ListView(
           children: [
             if (!widget.sharing) ...[
               _buildSelectionButtons(),
             ],
+            const SizedBox(height: 20),
             if (selectedOption == 'all') ...[
               InfoBox(
                 icon: Icons.route,
@@ -295,7 +296,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               const SizedBox(height: 20),
               _buildRoutesButton(),
               if ((selectedOption == 'all' || selectedOption == 'real')) ...[
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 TransportationPieChart(transports),
               ],
             ]
@@ -319,37 +320,22 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buildSelectionButton(String value, String text) {
-    return Flexible(
-      child: ElevatedButton(
+    return ElevatedButton(
         onPressed: () {
           setState(() {
             selectedOption = value;
           });
         },
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-          backgroundColor: selectedOption == value
-              ? Theme.of(context).colorScheme.inversePrimary
-              : Colors.white,
-          foregroundColor:
-              selectedOption == value ? Colors.white : Colors.black,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-            side: BorderSide(
-              color: selectedOption == value
-                  ? Theme.of(context).colorScheme.inversePrimary
-                  : Colors.black,
-            ),
-          ),
+          backgroundColor: selectedOption != value
+              ? null
+              : const Color.fromARGB(255, 1, 167, 164),
         ),
-        child: AutoSizeText(
+        child: Text(
           text,
-          style: const TextStyle(fontSize: 10),
-          minFontSize: 1,
-          maxLines: 1,
-        ),
-      ),
-    );
+          style:
+              TextStyle(color: (selectedOption != value ? null : Colors.white)),
+        ));
   }
 
   // Widget for the "My Routes" button
@@ -461,13 +447,13 @@ class InfoBox extends StatelessWidget {
                   AutoSizeText(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 6,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
                     minFontSize: 1,
                   ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 AutoSizeText(
                   '$value $unit',
                   style: const TextStyle(
