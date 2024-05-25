@@ -595,7 +595,7 @@ class TransportationPieChart extends StatelessWidget {
           style: const TextStyle(fontSize: 12),
         ),
         Text(
-            '${(t.km * t.co2).toStringAsFixed(2)} kg',
+          '${(t.km * t.co2).toStringAsFixed(2)} kg',
           style: const TextStyle(fontSize: 20),
         ),
       ],

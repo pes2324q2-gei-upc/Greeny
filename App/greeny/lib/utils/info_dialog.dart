@@ -27,11 +27,9 @@ void showInformationDialog(BuildContext context) {
             const SizedBox(height: 20),
             for (int i = 0; i < transportModes.length; i++)
               _buildRow(translate(transportModes[i]), _getTransportIcon(i)),
-
             _buildRowNoIcon(translate("co2_estimated")),
             _buildRowNoIcon(translate("unfelled_trees")),
             _buildRowNoIcon(translate("families_supplied")),
-
             TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(translate("Exit"))),
@@ -68,32 +66,31 @@ Widget _buildRow(String name, IconData icon) {
   );
 }
 
-
 Widget _buildRowNoIcon(String name) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: <Widget>[
-          const SizedBox(height: 5),
-          Container(height: 2, color: const Color.fromARGB(255, 0, 0, 0)),
-          const SizedBox(height: 5),
-          Row(
-            children: <Widget>[
-              const SizedBox(width: 16),
-              Expanded(
-                child: AutoSizeText(
-                  name,
-                  maxLines: 3,
-                  minFontSize: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    child: Column(
+      children: <Widget>[
+        const SizedBox(height: 5),
+        Container(height: 2, color: const Color.fromARGB(255, 0, 0, 0)),
+        const SizedBox(height: 5),
+        Row(
+          children: <Widget>[
+            const SizedBox(width: 16),
+            Expanded(
+              child: AutoSizeText(
+                name,
+                maxLines: 3,
+                minFontSize: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
 IconData _getTransportIcon(int index) {
   switch (index) {
