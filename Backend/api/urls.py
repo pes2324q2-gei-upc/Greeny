@@ -9,7 +9,7 @@ from api.user_views import (UsersView, verify_registration, cancel_registration,
                             forgot_password, verify_forgotten_password, reset_password,
                             obtain_token, refresh_token)
 
-from api.statistics_views import StatisticsView
+from api.statistics_views import StatisticsViewSet
 from api.review_views import ReviewsViews, profanity_filter
 from api.transports_views import (
     FetchPublicTransportStations,
@@ -28,7 +28,7 @@ router.register(r'friend-requests', FriendRequestViewSet, basename='friend-reque
 router.register(r'friends', FriendViewSet, basename='friend')
 router.register(r'stations/(?P<station_id>\d+)/reviews', ReviewsViews, basename='station-reviews')
 router.register(r'user', UsersView, basename="user")
-router.register(r'statistics', StatisticsView, basename="statistics")
+router.register(r'statistics', StatisticsViewSet, basename="statistics")
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -188,5 +188,13 @@
     "Air Quality": "Calidad del Aire",
     "Routes": "Rutas",
     "All your routes will be saved, take a look at them": "Todas tus rutas se guardarán, échales un vistazo",
-    "Error loading ranking": "Error cargando el ranking"
+    "Error loading ranking": "Error cargando el ranking",
+    "Real data": "Datos reales",
+    "Estimated data": "Datos estimados",
+    "CO2 estimated": "CO2 estimado",
+    "co2_estimated": "CO2 estimado: CO2 consumido si hubieras hecho todos tus trayectos en coche de combustión",
+    "unfelled_trees": "Árboles no talados: Número de árboles que no hay que talar gracias al CO2 que has ahorrado",
+    "families_supplied": "Familias abastecidas: Número de familias que se pueden abastecer con la energía que has ahorrado",
+    "Detailed info": "Información detallada",
+    "Public Transport": "Transporte público"
 }

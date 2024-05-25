@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import (Station, User, PublicTransportStation,
                     Stop, TransportType, BusStation, ChargingStation,
                     BicingStation, Statistics, FriendRequest, Review,
-                     Route, Neighborhood, Level, FavoriteStation)
+                     Route, Neighborhood, Level, FavoriteStation,
+                     CO2Consumed)
 
 class StationSerializer(serializers.ModelSerializer):
     latitude = serializers.SerializerMethodField()
@@ -249,3 +250,8 @@ class PublicTransportStationSimpleSerializer(StationSimpleSerializer):
         stops = Stop.objects.filter(station=obj)
         serializer = StopSimpleSerializer(stops, many=True)
         return serializer.data
+
+class CO2ConsumedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CO2Consumed
+        fields = '__all__'

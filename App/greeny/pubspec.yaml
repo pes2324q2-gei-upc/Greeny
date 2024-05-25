@@ -63,11 +63,14 @@ dependencies:
   firebase_core: ^2.31.0
   firebase_ui_auth: ^1.14.0
   auto_size_text: ^3.0.0
+  fl_chart: ^0.40.0
 
   #introduction_screen: ^2.1.0
 
 
   path_provider: any
+  flutter_charts: ^0.5.2
+  syncfusion_flutter_charts: ^25.2.5
   flutter_svg: any
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1

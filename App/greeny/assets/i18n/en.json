@@ -1,11 +1,13 @@
 {
     "user with this username already exists.": "User with this username already exists",
     "user with this email already exists.": "User with this email already exists",
-    "co2_consumed_combustion_car": "of CO2 consumed if you had\ntravelled by combustion car",
     "Bona": "Good",
     "Raonablement bona": "Reasonably good",
     "Regular": "Regular",
     "Desfavorable": "Unfavorable",
     "Molt desfavorable": "Very unfavorable",
-    "Extremadament desfavorable": "Extremely unfavorable"
+    "Extremadament desfavorable": "Extremely unfavorable",
+    "co2_estimated": "CO2 estimated: CO2 consumed if you had made all your journeys by combustion car",
+    "unfelled_trees": "Unfelled trees: Number of trees that do not need to be cut down thanks to the CO2 you have saved",
+    "families_supplied": "Families supplied: Number of families that can be supplied with the energy you have saved"
 }
