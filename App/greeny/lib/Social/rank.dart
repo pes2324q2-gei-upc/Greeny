@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/Friends/friend_profile.dart';
 import 'package:greeny/Friends/friends.dart';
 import 'package:greeny/Social/podium.dart';
 import 'package:http/http.dart';
@@ -232,81 +233,89 @@ class _RankPageState extends State<RankPage> {
                                     _users.length > 3 ? _users.length - 3 : 0,
                                 itemBuilder: (context, index) {
                                   final user = _users[index + 3];
-                                  return Card(
-                                    color: greenyColor,
-                                    elevation: 2,
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 5, horizontal: 0),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '${index + 4}',
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          CircleAvatar(
-                                            backgroundImage:
-                                                NetworkImage(user.avatar),
-                                            radius: 25,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Container(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    user.username,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                  return GestureDetector(
+                                    onTap: () => clickCard(user
+                                        .username), // Llama a la función clickCard con el usuario correspondiente
+                                    child: Card(
+                                      color: greenyColor,
+                                      elevation: 2,
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 0),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              '${index + 4}',
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            CircleAvatar(
+                                              backgroundImage:
+                                                  NetworkImage(user.avatar),
+                                              radius: 25,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Container(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      user.username,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.star,
-                                                        color: Colors.grey[300],
-                                                        size: 20,
-                                                      ),
-                                                      Text(
-                                                        user.level.toString(),
-                                                        style: const TextStyle(
-                                                            fontSize: 16),
-                                                      ),
-                                                      Icon(
-                                                        Icons
-                                                            .military_tech_rounded,
-                                                        color: Colors.grey[300],
-                                                        size: 20,
-                                                      ),
-                                                      Text(
-                                                        toRoman(
-                                                            user.mastery + 1),
-                                                        style: const TextStyle(
-                                                            fontSize: 16),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.star,
+                                                          color:
+                                                              Colors.grey[300],
+                                                          size: 20,
+                                                        ),
+                                                        Text(
+                                                          user.level.toString(),
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 16),
+                                                        ),
+                                                        Icon(
+                                                          Icons
+                                                              .military_tech_rounded,
+                                                          color:
+                                                              Colors.grey[300],
+                                                          size: 20,
+                                                        ),
+                                                        Text(
+                                                          toRoman(
+                                                              user.mastery + 1),
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 16),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Text(
-                                            '${user.points} pts',
-                                            style:
-                                                const TextStyle(fontSize: 16),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 10),
+                                            Text(
+                                              '${user.points} pts',
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   );
@@ -327,6 +336,17 @@ class _RankPageState extends State<RankPage> {
   void friends() {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const FriendsPage())).then((_) {
+      getFriendsRequests();
+    });
+  }
+
+  void clickCard(String username) {
+    // Navegar a la página de perfil del usuario
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => FriendProfilePage(friendUsername: username),
+        )).then((_) {
       getFriendsRequests();
     });
   }
