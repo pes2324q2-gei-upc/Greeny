@@ -29,6 +29,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   String selectedOption = 'all';
 
+  Map<IconData, double> co2Consumption = {
+    Icons.directions_walk: 0,
+    Icons.directions_bike: 0,
+    Icons.electric_car: 0,
+    Icons.train: 0,
+    Icons.directions_bus: 0,
+    Icons.motorcycle: 0,
+    Icons.directions_car: 0,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +49,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
     final response = await httpGet('/api/statistics/');
 
     if (response.statusCode == 200) {
-      List<dynamic> statsDataList = json.decode(response.body);
+      Map<String, dynamic> responseData = json.decode(response.body);
 
-      if (statsDataList.isNotEmpty) {
-        Map<String, dynamic> statsData = statsDataList[0];
+      if (responseData.containsKey('statistics') &&
+          responseData['statistics'].isNotEmpty) {
+        Map<String, dynamic> statsData = responseData['statistics'][0];
+        Map<String, dynamic> co2Data = responseData['first_co2_consumed'];
 
         setState(() {
           co2Consumed = statsData['kg_CO2_consumed'].toDouble();
@@ -55,6 +67,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
           kmBus = statsData['km_Bus'].toDouble();
           kmMotorcycle = statsData['km_Motorcycle'].toDouble();
           kmCar = statsData['km_Car'].toDouble();
+
+          co2Consumption[Icons.directions_walk] =
+              co2Consumption[Icons.directions_bike] =
+                  co2Data['kg_CO2_walking_biking_consumed'].toDouble();
+          co2Consumption[Icons.electric_car] =
+              co2Data['kg_CO2_electric_car_consumed'].toDouble();
+          co2Consumption[Icons.train] =
+              (co2Data['kg_CO2_train_consumed'].toDouble() +
+                      co2Data['kg_CO2_metro_consumed'].toDouble() +
+                      co2Data['kg_CO2_tram_consumed'].toDouble() +
+                      co2Data['kg_CO2_fgc_consumed'].toDouble()) /
+                  4;
+          co2Consumption[Icons.directions_bus] =
+              co2Data['kg_CO2_bus_consumed'].toDouble();
+          co2Consumption[Icons.motorcycle] =
+              co2Data['kg_CO2_motorcycle_consumed'].toDouble();
+          co2Consumption[Icons.directions_car] =
+              co2Data['kg_CO2_car_gasoline_consumed'].toDouble();
         });
       }
     } else {
@@ -337,12 +367,94 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   // Widget to display a progress bar
   Widget _buildProgressBar(IconData icon, double value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5.0),
-      child: ProgressBar(
-        icon: icon,
-        percentage: kmTotal != 0 ? value / kmTotal : 0,
-      ),
+    return GestureDetector(
+        onTap: () {
+          _showProgressInfoDialog(context, icon, value);
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          child: ProgressBar(
+            icon: icon,
+            percentage: kmTotal != 0 ? value / kmTotal : 0,
+          ),
+        ));
+  }
+
+  void _showProgressInfoDialog(
+      BuildContext context, IconData icon, double value) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(icon),
+              const SizedBox(width: 8),
+              const Text("Progress Info"),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AutoSizeText(
+                '${translate('Distance traveled')}:',
+              ),
+              AutoSizeText(
+                '${value.toStringAsFixed(2)} km',
+                minFontSize: 20,
+                maxFontSize: 100,
+              ),
+              const SizedBox(height: 10),
+              AutoSizeText.rich(
+                    TextSpan(children: [
+                      const TextSpan(text: 'CO'),
+                      const TextSpan(
+                        text: '2',
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(text: translate('CO2 consumed').split('CO2')[1]),
+                    ]),
+              ),
+              AutoSizeText(
+                '${(value*co2Consumption[icon]!)} kg',
+                minFontSize: 20,
+                maxFontSize: 100,
+              ),
+              const SizedBox(height: 10),
+              AutoSizeText.rich(
+                    TextSpan(children: [
+                      const TextSpan(text: 'CO'),
+                      const TextSpan(
+                        text: '2',
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(text: translate('CO2 saved').split('CO2')[1]),
+                    ]),
+              ),
+              AutoSizeText(
+                '${(value*co2Consumption[Icons.directions_car]! - value*co2Consumption[icon]!)} kg',
+                minFontSize: 20,
+                maxFontSize: 100,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(translate('Sortir')),
+            ),
+          ],
+        );
+      },
     );
   }
 
