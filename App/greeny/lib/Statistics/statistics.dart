@@ -58,22 +58,22 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
           transports = [
             Transport(
-                'Walked',
+                translate('Walking'),
                 Icons.directions_walk,
                 statsData['km_Walked'].toDouble(),
                 co2Data['kg_CO2_walking_biking_consumed'].toDouble()),
             Transport(
-                'Biked',
+                translate('Bike'),
                 Icons.directions_bike,
                 statsData['km_Biked'].toDouble(),
                 co2Data['kg_CO2_walking_biking_consumed'].toDouble()),
             Transport(
-                'Electric Car',
+                translate('Electric Car'),
                 Icons.electric_car,
                 statsData['km_ElectricCar'].toDouble(),
                 co2Data['kg_CO2_electric_car_consumed'].toDouble()),
             Transport(
-                'Public Transport',
+                translate('Public Transport'),
                 Icons.train,
                 statsData['km_PublicTransport'].toDouble(),
                 (co2Data['kg_CO2_train_consumed'].toDouble() +
@@ -82,17 +82,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         co2Data['kg_CO2_fgc_consumed'].toDouble()) /
                     4),
             Transport(
-                'Bus',
+                translate('Bus'),
                 Icons.directions_bus,
                 statsData['km_Bus'].toDouble(),
                 co2Data['kg_CO2_bus_consumed'].toDouble()),
             Transport(
-                'Motorcycle',
+                translate('Motorcycle'),
                 Icons.motorcycle,
                 statsData['km_Motorcycle'].toDouble(),
                 co2Data['kg_CO2_motorcycle_consumed'].toDouble()),
             Transport(
-                'Car',
+                translate('Car'),
                 Icons.directions_car,
                 statsData['km_Car'].toDouble(),
                 co2Data['kg_CO2_car_gasoline_consumed'].toDouble()),
@@ -488,13 +488,13 @@ class InfoBox extends StatelessWidget {
 class TransportationPieChart extends StatelessWidget {
   final List<Transport> transports;
   final Map<String, Color> colorList = {
-    'Walked': const Color(0xFF4A4BA2),
-    'Biked': const Color(0xFF4C87B9),
-    'Electric Car': const Color(0xFFC26C85),
-    'Public Transport': const Color(0xFFF67180),
-    'Bus': const Color(0xFFF8B195),
-    'Motorcycle': const Color(0xFF75B49A),
-    'Car': const Color(0xFF00A7B4),
+    translate('Walking'): const Color(0xFF4A4BA2),
+    translate('Bike'): const Color(0xFF4C87B9),
+    translate('Electric Car'): const Color(0xFFC26C85),
+    translate('Public Transport'): const Color(0xFFF67180),
+    translate('Bus'): const Color(0xFFF8B195),
+    translate('Motorcycle'): const Color(0xFF75B49A),
+    translate('Car'): const Color(0xFF00A7B4),
   };
 
   TransportationPieChart(this.transports, {super.key});
@@ -527,7 +527,8 @@ class TransportationPieChart extends StatelessWidget {
   }
 
   void showProgressInfoDialog(BuildContext context, Transport t) {
-    Transport carTransport = transports.firstWhere((t) => t.type == 'Car');
+    Transport carTransport =
+        transports.firstWhere((t) => t.type == translate('Car'));
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -549,7 +550,7 @@ class TransportationPieChart extends StatelessWidget {
           child: Text(
             translate('Detailed info'),
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            maxLines: 1,
+            maxLines: 2,
           ),
         ),
       ],
@@ -590,9 +591,22 @@ class TransportationPieChart extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'CO2 ${translate('CO2 consumed').split('CO2')[1]}:',
-          style: const TextStyle(fontSize: 12),
+        RichText(
+          text: TextSpan(
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            children: [
+              const TextSpan(text: 'CO'),
+              const WidgetSpan(
+                child: Text(
+                  '2',
+                  style: TextStyle(fontSize: 8),
+                ),
+              ),
+              TextSpan(
+                text: ' ${translate('CO2 consumed').split('CO2')[1]}:',
+              ),
+            ],
+          ),
         ),
         Text(
           '${(t.km * t.co2).toStringAsFixed(2)} kg',
@@ -606,9 +620,22 @@ class TransportationPieChart extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'CO2 ${translate('CO2 saved').split('CO2')[1]}:',
-          style: const TextStyle(fontSize: 12),
+        RichText(
+          text: TextSpan(
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            children: [
+              const TextSpan(text: 'CO'),
+              const WidgetSpan(
+                child: Text(
+                  '2',
+                  style: TextStyle(fontSize: 8),
+                ),
+              ),
+              TextSpan(
+                text: ' ${translate('CO2 saved').split('CO2')[1]}:',
+              ),
+            ],
+          ),
         ),
         Text(
           '${(t.km * carTransport.co2 - t.km * t.co2).toStringAsFixed(2)} kg',
@@ -624,7 +651,7 @@ class TransportationPieChart extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: Text(translate('Sortir')),
+        child: Text(translate('Exit')),
       ),
     ];
   }
