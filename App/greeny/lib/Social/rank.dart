@@ -18,6 +18,7 @@ class RankPage extends StatefulWidget {
 class _RankPageState extends State<RankPage> {
   List<User> _users = [];
   int _userPosition = 0;
+  bool _filterFriends = false;
 
   @override
   void initState() {
@@ -27,8 +28,12 @@ class _RankPageState extends State<RankPage> {
 
   Future<void> _fetchRanking() async {
     try {
-      // Hacer la solicitud a la API
-      final response = await httpGet('/api/ranking/');
+      final Map<String, String> queryParams = {
+        'filter': _filterFriends ? 'friends' : 'all',
+      };
+
+      // Hacer la solicitud a la API utilizando httpGetParams
+      final response = await httpGetParams('/api/ranking/', queryParams);
       if (response.statusCode == 200) {
         // Analizar la respuesta JSON
         final jsonData = json.decode(response.body);
@@ -53,6 +58,13 @@ class _RankPageState extends State<RankPage> {
     }
   }
 
+  void _toggleFilter() {
+    setState(() {
+      _filterFriends = !_filterFriends;
+      _fetchRanking();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +83,12 @@ class _RankPageState extends State<RankPage> {
             onPressed: () {
               friends();
             },
-          )
+          ),
+          IconButton(
+            icon: Icon(_filterFriends ? Icons.group : Icons.public),
+            color: const Color.fromARGB(255, 1, 167, 164),
+            onPressed: _toggleFilter,
+          ),
         ],
       ),
       body: _users.isEmpty
