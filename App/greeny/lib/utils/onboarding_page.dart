@@ -49,7 +49,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         onPressed: () {
                           _pageController.animateToPage(6, duration: const Duration(milliseconds: 400), curve: Curves.linear);
                         },
-                        child: Text(translate('Skip'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Skip'), style: const TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       )
                     : const SizedBox.shrink(), // Si estamos en la última página, no mostramos nada
                 ),
@@ -72,7 +72,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       )
                     : TextButton( // Si estamos en la última página, mostramos el botón 'Empezar'
                         onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainPage())),
-                        child: Text(translate('Start'), style: TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
+                        child: Text(translate('Start'), style: const TextStyle(color:  Color.fromARGB(255, 1, 167, 164), fontWeight: FontWeight.w600, fontSize: 18)),
                       ),
                 ),
               ),

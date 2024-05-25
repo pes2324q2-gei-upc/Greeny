@@ -175,6 +175,8 @@
     "Mastery:": "Maestría:",
     "Badges": "Insignias",
     "Share statistics": "Compartir estadísticas",
+    "Congrats, you are in position": "Felicidades, estás en la posición",
+    "All": "Todos",
     "Skip": "Saltar",
     "Start": "Empezar",
     "Bona": "Buena",
@@ -185,5 +187,6 @@
     "Extremadament desfavorable": "Extremadamente desfavorable",
     "Air Quality": "Calidad del Aire",
     "Routes": "Rutas",
-    "All your routes will be saved, take a look at them": "Todas tus rutas se guardarán, échales un vistazo"
+    "All your routes will be saved, take a look at them": "Todas tus rutas se guardarán, échales un vistazo",
+    "Error loading ranking": "Error cargando el ranking"
 }
