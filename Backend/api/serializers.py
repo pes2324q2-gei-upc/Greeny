@@ -158,7 +158,7 @@ class StatisticsSerializer(serializers.ModelSerializer):
 class NeighborhoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Neighborhood
-        exclude = ['id']
+        exclude = ['id', 'coords']
 
 class LevelSerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
@@ -178,10 +178,14 @@ class LevelSerializer(serializers.ModelSerializer):
 
 class HistorySerializer(serializers.ModelSerializer):
     neighborhood = NeighborhoodSerializer()
+    mastery = serializers.SerializerMethodField()  # Nuevo campo
 
     class Meta:
         model = Level
-        fields = ['number', 'completed', 'neighborhood']
+        fields = ['number', 'completed', 'current', 'neighborhood', 'mastery']  # Agrega 'mastery' a los fields
+
+    def get_mastery(self, obj):
+        return obj.user.mastery
 
 class ReviewSerializer(serializers.ModelSerializer):
     author_username = serializers.SerializerMethodField()

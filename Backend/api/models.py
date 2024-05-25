@@ -1,11 +1,12 @@
 import random
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.gis.db import models
+from django.contrib.gis.db import models as gis_models
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
-    location = models.PointField()
+    location = gis_models.PointField()
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
@@ -50,7 +51,7 @@ class CO2Consumed(models.Model):
         if not self.pk and CO2Consumed.objects.exists():
             # if the objects exists, then update the first one found
             self.pk = CO2Consumed.objects.first().pk
-        super(CO2Consumed, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "CO2Consumed"
@@ -146,6 +147,7 @@ class FavoriteStation(models.Model):
 class Neighborhood(models.Model):
     name = models.CharField(max_length=50)
     path = models.CharField(max_length=100)
+    coords = ArrayField(gis_models.PointField(), blank=False, default=list)
 
 class Level(models.Model):
     number = models.IntegerField()

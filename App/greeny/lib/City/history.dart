@@ -14,7 +14,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   // ignore: non_constant_identifier_names
-  final int level_aux = 4;
+  int mastery = 0;
 
   List<dynamic> data = [];
   int numNeighborhoods = 0;
@@ -56,8 +56,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     return Column(
                       children: <Widget>[
                         SizedBox(
-                          height: 125, // Set the height and width to the same value
-                          width: 125, // Set the height and width to the same value
+                          height: 125, 
+                          width: 125, 
                           child: ElevatedButton(
                             onPressed: () => exploreCity(index),
                             style: ElevatedButton.styleFrom(
@@ -70,16 +70,25 @@ class _HistoryPageState extends State<HistoryPage> {
                               shadowColor: Colors.transparent,
                             ),
                             //child: Image.asset(data[index]['completed'] ? 'assets/neighborhoods/nhood_${index+1}.png' : 'assets/neighborhoods/City${1}PNG_BW.png'),
-                            child: data[index]['completed'] 
-                                ? Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover) 
-                                : ColorFiltered(
-                                    colorFilter: const ColorFilter.mode(Colors.black, BlendMode.modulate),
-                                    child: Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover),
+                            child: Stack(
+                              children: <Widget>[
+                                data[index]['completed'] || mastery > 0
+                                  ? Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover) 
+                                  : data[index]['current']
+                                    ? ColorFiltered(
+                                        colorFilter: const ColorFilter.mode(Color.fromARGB(255, 1, 167, 164), BlendMode.modulate),
+                                        child: Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover),
+                                      )
+                                    : ColorFiltered(
+                                        colorFilter: const ColorFilter.mode(Colors.black, BlendMode.modulate),
+                                        child: Image.asset('assets/neighborhoods/nhood_${index+1}.png', fit: BoxFit.cover),
+                                      ),
+                              ],
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
-                        Text('${data[index]['neighborhood']['name']}'),
+                        const SizedBox(height: 20),
+                        data[index]['completed'] || data[index]['current'] || mastery > 0 ? Text('${data[index]['neighborhood']['name']}') : const Text('???'),
                       ],
                     );
                   }),
@@ -94,7 +103,7 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   exploreCity(index) {
-    if (data[index]['completed']) {
+    if (data[index]['completed'] || mastery > 0) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -130,5 +139,6 @@ class _HistoryPageState extends State<HistoryPage> {
       data = jsonDecode(body);
     }
     numNeighborhoods = data.length;
+    mastery = data[0]['mastery'];
   }
 }
