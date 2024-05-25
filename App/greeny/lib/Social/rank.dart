@@ -153,7 +153,7 @@ class _RankPageState extends State<RankPage> {
                                   ? Colors.grey[300]
                                   : const Color.fromARGB(255, 1, 167, 164),
                             ),
-                            child: const Text('All'),
+                            child: Text(translate('All')),
                           ),
                           const SizedBox(width: 10),
                           ElevatedButton(
@@ -163,7 +163,7 @@ class _RankPageState extends State<RankPage> {
                                   ? const Color.fromARGB(255, 1, 167, 164)
                                   : Colors.grey[300],
                             ),
-                            child: const Text('Friends'),
+                            child: Text(translate('Friends')),
                           ),
                         ],
                       ),
@@ -214,7 +214,7 @@ class _RankPageState extends State<RankPage> {
                       ),
                       Center(
                         child: Text(
-                          'Congrats, you are in position #$_userPosition!',
+                          '${translate('Congrats, you are in position')} #$_userPosition!',
                           style: const TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
