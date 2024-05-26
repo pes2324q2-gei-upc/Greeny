@@ -94,6 +94,38 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           }
         });
         if (previousLevelJustPassed) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
+                        width: 24, // Puedes ajustar el tamaño como necesites
+                        height: 24, // Puedes ajustar el tamaño como necesites
+                      ),
+                      const SizedBox(width: 10),
+                      Text(translate('Congratulations!')),
+                    ],
+                  ),
+                  content: Text(
+                      translate('You have decontaminated the district of ') +
+                          previousLevelName +
+                          translate(', your city is now more Greeny!')),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
           showDialog(
             context: context,
             builder: (BuildContext context) {

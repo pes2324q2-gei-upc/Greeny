@@ -224,7 +224,7 @@ class _FormFinalPageState extends State<FormFinalPage> {
       },
     );
 
-    var response = await httpPost(
+    await httpPost(
         'api/send-form-transports',
         jsonEncode({
           'totalDistance': widget.totalDistance,
