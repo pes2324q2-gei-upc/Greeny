@@ -226,7 +226,7 @@ class _MapPageState extends State<MapPage> {
         builder: (context, appState, child) {
           return Scaffold(
             appBar: AppBar(
-              title: Text(translate('Filter'),
+              title: Text(translate('Map'),
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(kToolbarHeight),
