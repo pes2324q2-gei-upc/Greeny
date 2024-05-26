@@ -85,6 +85,7 @@ class PodiumAvatar extends StatelessWidget {
               width: 110,
               child: Text(
                 "${points.toString()} pts",
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, color: Colors.grey[600]),
               ),
