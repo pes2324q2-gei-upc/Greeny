@@ -488,28 +488,27 @@ class TransportationPieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var data = transports;
-    return Column(
-      children: [
-        SfCircularChart(
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SfCircularChart(
+          margin: EdgeInsets.zero,
           legend: const Legend(isVisible: false),
           series: <PieSeries<Transport, String>>[
             PieSeries<Transport, String>(
               dataSource: transports,
               xValueMapper: (Transport data, _) => data.type,
               yValueMapper: (Transport data, _) => data.km,
-              dataLabelMapper: (Transport data, _) =>
-                  '${(data.km).toStringAsFixed(2)}km',
-              dataLabelSettings: const DataLabelSettings(isVisible: true),
+              dataLabelMapper: (Transport data, _) => data.type,
+              dataLabelSettings: const DataLabelSettings(
+                  isVisible: true,
+                  labelPosition: ChartDataLabelPosition.outside),
               pointColorMapper: (Transport data, _) => colorList[data.type],
+              onPointTap: (pointInteractionDetails) => showProgressInfoDialog(
+                  context, data[pointInteractionDetails.pointIndex!]),
             ),
           ],
-        ),
-        ...data.map((e) => ListTile(
-            leading: Icon(Icons.circle,
-                color: colorList[e.type]), // replace with your color
-            title: Text(e.type),
-            onTap: () => showProgressInfoDialog(context, e)))
-      ],
+        );
+      },
     );
   }
 
