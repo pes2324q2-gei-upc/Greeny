@@ -145,7 +145,7 @@ class CityView(APIView):
                 next_level.save()
             except Level.DoesNotExist:
                 return None
-        return self.get_current_level(user)        
+        return self.get_current_level(user)
 
     def reset_levels(self, user):
         levels = Level.objects.filter(user=user)
