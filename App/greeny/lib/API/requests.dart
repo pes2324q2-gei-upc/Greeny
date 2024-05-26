@@ -33,7 +33,7 @@ Future<String> getToken() async {
       Map json = jsonDecode(response.body);
       await SecureStorage().writeSecureData('access_token', json['access']);
       return json['access'];
-    } else if (response.statusCode == 401) {
+    } else if (response.statusCode == 423) {
       return 'banned';
     } else {
       return '';
@@ -273,7 +273,9 @@ httpUpdateAccount({
 }
 
 bool checkForBan(response) {
-  if (response.statusCode == 401) {
+  if (response.statusCode == 423 ||
+      (response.statusCode == 401 &&
+          jsonDecode(response.body)['detail'] == 'User is inactive')) {
     bannedUserController.add(true);
     return true;
   }

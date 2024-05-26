@@ -354,7 +354,7 @@ def obtain_token(request):
                         status=status.HTTP_400_BAD_REQUEST)
 
     if user.is_active is False:
-        return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'error': 'User is banned'}, status=status.HTTP_423_LOCKED)
 
     refresh = RefreshToken.for_user(user)
     info = {
@@ -381,7 +381,7 @@ def refresh_token(request):
 
         # Check if the user is banned
         if user.is_active is False:
-            return Response({'error': 'User is banned'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'User is banned'}, status=status.HTTP_423_LOCKED)
 
     except TokenError:
         return Response({'error': 'Invalid refresh token'}, status=status.HTTP_400_BAD_REQUEST)
