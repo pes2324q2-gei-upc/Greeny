@@ -23,9 +23,9 @@ class CityView(APIView):
         return Neighborhood.objects.get(id=level.neighborhood_id)
 
     def get(self, request):
+        previous_level_number = 0
         user = request.user
         levels = Level.objects.filter(user=user)
-
         all_completed = all(level.completed for level in levels)
         if all_completed:
             current_level_number = Level.objects.filter(user=user).last().number
@@ -70,8 +70,8 @@ class CityView(APIView):
 
     def update_points(self, user, new_points):
         if user.previous_lvl_just_passed:
-                user.previous_lvl_just_passed = False
-                user.save()
+            user.previous_lvl_just_passed = False
+            user.save()
         user.points += new_points
         user.save()
         level = self.get_current_level(user)
@@ -145,7 +145,6 @@ class CityView(APIView):
                 next_level.save()
             except Level.DoesNotExist:
                 return None
-
         return self.get_current_level(user)        
 
     def reset_levels(self, user):

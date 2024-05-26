@@ -12,7 +12,6 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
-import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
