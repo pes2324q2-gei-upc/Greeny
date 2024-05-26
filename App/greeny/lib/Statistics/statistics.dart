@@ -297,7 +297,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
               _buildRoutesButton(),
               if ((selectedOption == 'all' || selectedOption == 'real')) ...[
                 const SizedBox(height: 10),
-                TransportationPieChart(transports),
+                if (transports.any((transport) => transport.km != 0.00))
+                  TransportationPieChart(transports),
               ],
             ]
           ],

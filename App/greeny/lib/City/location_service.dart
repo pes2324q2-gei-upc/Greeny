@@ -26,11 +26,14 @@ class LocationService {
   Future<void> startLocationUpdates(BuildContext context) async {
     AppState appState = context.read<AppState>(); // estat de l'aplicació
     // ignore: unused_local_variable
-    positionStream = Geolocator.getPositionStream(
-      desiredAccuracy: LocationAccuracy.high,
-      distanceFilter:
-          10, // filtre per els metres que han de pasar per actualitzar els km
-    ).listen((Position position) {
+    // filtre per els metres que han de pasar per actualitzar els km
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position position) {
       if (appState.previousPosition != null) {
         double distanceInMeters = Geolocator.distanceBetween(
           appState.previousPosition!.latitude,
