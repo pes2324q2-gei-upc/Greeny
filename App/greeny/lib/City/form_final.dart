@@ -232,10 +232,6 @@ class _FormFinalPageState extends State<FormFinalPage> {
           'transportPercentages': transportPercentages,
         }),
         'application/json');
-
-    print("Response Status: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(

@@ -105,7 +105,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                       width: 24, // Puedes ajustar el tamaño como necesites
                       height: 24, // Puedes ajustar el tamaño como necesites
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Text(translate('Congratulations!')),
                   ],
                 ),
@@ -178,7 +178,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         width: 24, // Puedes ajustar el tamaño como necesites
                         height: 24, // Puedes ajustar el tamaño como necesites
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(translate('Congratulations!')),
                     ],
                   ),
@@ -357,7 +357,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                     ),
                                                   ),
                                                   Text(
-                                                    toRoman(mastery + 1) + ' !',
+                                                    '${toRoman(mastery + 1)} !',
                                                     style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
