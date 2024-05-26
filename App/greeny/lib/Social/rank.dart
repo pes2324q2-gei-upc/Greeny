@@ -47,7 +47,7 @@ class _RankPageState extends State<RankPage> {
     } catch (e) {}
   }
 
-  void refresh() {
+  Future<void> refresh() async {
     getFriendsRequests();
     _fetchRanking();
   }
@@ -140,7 +140,7 @@ class _RankPageState extends State<RankPage> {
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-              onRefresh: getFriendsRequests,
+              onRefresh: refresh,
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 20,
