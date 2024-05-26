@@ -146,6 +146,14 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> getLocation() async {
+    if (camposition.target.latitude != 0 || camposition.target.longitude != 0) {
+      if (mounted) {
+        setState(() {
+          gettingLocation = false;
+        });
+        return;
+      }
+    }
     bool islocationEnabled = await LocationService.instance.comprovarUbicacio();
     if (!islocationEnabled) {
       // ignore: use_build_context_synchronously
