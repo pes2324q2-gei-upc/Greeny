@@ -28,9 +28,12 @@ class ReviewsViews(ModelViewSet):
     def update_station_rating(self, station):
         reviews = Review.objects.filter(station=station)
         total = 0
-        for review in reviews:
-            total += review.puntuation
-        station.rating = round((total / len(reviews)), 2)
+        if len(reviews) != 0:
+            for review in reviews:
+                total += review.puntuation
+            station.rating = round((total / len(reviews)), 2)
+        else:
+            station.rating = 0
         station.save()
 
     def get_queryset(self):
