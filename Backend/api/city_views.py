@@ -25,24 +25,56 @@ class CityView(APIView):
     def get(self, request):
         user = request.user
         levels = Level.objects.filter(user=user)
+
         all_completed = all(level.completed for level in levels)
         if all_completed:
+            current_level_number = Level.objects.filter(user=user).last().number
+            previous_level_number = current_level_number - 1
+            previous_level_name = None
+            if previous_level_number > 0:
+                previous_level = Level.objects.get(user=user, number=previous_level_number)
+                if previous_level:
+                    previous_level_name = self.get_neighborhood(previous_level).name
             user_data = {
                 "user_name": user.username,
                 "is_staff": user.is_staff,
-                "status": "all_completed"
+                "status": "all_completed",
+                "previous_lvl_just_passed": user.previous_lvl_just_passed,
+                "previous_level_name": previous_level_name
             }
+            if user.previous_lvl_just_passed:
+                user.previous_lvl_just_passed = False  
+                user.save()
             return Response(user_data)
 
         level = self.get_current_level(user)
         if level is None:
             response_data = {"message": "No current level"}
         else:
-            response_data = LevelSerializer(level).data
-
+            level_data = LevelSerializer(level).data
+            previous_level_number = level.number - 1
+            previous_level_name = None
+            if previous_level_number > 0:
+                previous_level = Level.objects.filter(user=user, number=previous_level_number).first()
+                if previous_level:
+                    previous_level_name = self.get_neighborhood(previous_level).name
+            response_data = {
+                **level_data,
+                "previous_lvl_just_passed": user.previous_lvl_just_passed,
+                "previous_level_name": previous_level_name
+            }
+            if user.previous_lvl_just_passed:
+                user.previous_lvl_just_passed = False  
+                user.save()
+            
         return Response(response_data)
 
     def update_points(self, user, new_points):
+        if user.previous_lvl_just_passed:
+                user.previous_lvl_just_passed = False  
+                user.save()
+        user.points += new_points
+        user.save()
         level = self.get_current_level(user)
         response_data = {}
         if new_points is not None:
@@ -71,11 +103,13 @@ class CityView(APIView):
                 level.save()
                 if user.mastery < 3:
                     user.mastery += 1
-                    user.save()
+                user.previous_lvl_just_passed = True
+                user.save()
                 user_data = {
                     "user_name": user.username,
                     "is_staff": user.is_staff,
-                    "status": "all_completed"
+                    "status": "all_completed",
+                    "mastery": user.mastery,
                 }
                 response_data = user_data
             else:
@@ -100,6 +134,8 @@ class CityView(APIView):
     def update_level(self, user):
         current_level = self.get_current_level(user)
         if current_level.points_user >= current_level.points_total:
+            user.previous_lvl_just_passed = True
+            user.save()
             current_level.completed = True
             current_level.current = False
             current_level.points_user = current_level.points_total
@@ -112,7 +148,7 @@ class CityView(APIView):
             except Level.DoesNotExist:
                 return None
 
-        return self.get_current_level(user)
+        return self.get_current_level(user)        
 
     def reset_levels(self, user):
         levels = Level.objects.filter(user=user)
@@ -159,9 +195,10 @@ class CityView(APIView):
 
         new_points = request.data.get('points_user')
         if new_points is not None:
-            user.points += new_points
-            user.save()
             level_data = self.update_points(user, new_points)
+            if user.previous_lvl_just_passed:
+                user.previous_lvl_just_passed = False  
+                user.save()
             return Response(level_data)
 
         return Response({'error': 'No se proporcionaron nuevos puntos o acciones.'},

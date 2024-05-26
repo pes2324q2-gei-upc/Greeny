@@ -27,6 +27,7 @@ class User(AbstractUser):
     reports = models.IntegerField(default=0)
     mastery = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    previous_lvl_just_passed = models.BooleanField(default=False)
 
 class Blacklist(models.Model):
     email = models.EmailField(unique=True)

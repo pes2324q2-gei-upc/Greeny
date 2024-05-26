@@ -33,8 +33,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int levelNumber = 1;
   String nhoodName = '';
   String nhoodPath = '';
+  String previousNhoodName = '';
+  String previousLevelName = '';
+  int previousLevelNumber = -1;
   bool allCompleted = false;
-
+  int mastery = 1;
+  bool previousLevelJustPassed = false;
   String userName = '';
   bool isStaff = false;
 
@@ -60,23 +64,69 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
 
     if (response.statusCode == 200) {
       var newCityData = jsonDecode(utf8.decode(response.bodyBytes));
-      setState(() {
-        cityDataNotifier.value = newCityData;
-        userName = newCityData['user_name'];
-        isStaff = newCityData['is_staff'];
-        allCompleted = newCityData.containsKey('status') &&
-            newCityData['status'] == 'all_completed';
-        if (!allCompleted) {
-          userPoints = newCityData['points_user'];
-          levelPoints = newCityData['points_total'];
-          levelNumber = newCityData['number'];
-          nhoodName = newCityData['neighborhood']['name'];
-          nhoodPath = newCityData['neighborhood']['path'];
-        } else {
-          nhoodName = "all_nhoods";
-          nhoodPath = "all_nhoods.glb";
+      if (newCityData != null) {
+        setState(() {
+          cityDataNotifier.value = newCityData;
+          userName = newCityData['user_name'];
+          isStaff = newCityData['is_staff'];
+          allCompleted = newCityData.containsKey('status') &&
+              newCityData['status'] == 'all_completed';
+
+          if (newCityData['neighborhood'] != null) {
+            String newNhoodName = newCityData['neighborhood']['name'];
+            String newPath = newCityData['neighborhood']['path'];
+            if (!allCompleted) {
+              nhoodName = newNhoodName;
+              nhoodPath = newPath;
+            } else {
+              nhoodName = "all_nhoods";
+              nhoodPath = "all_nhoods.glb";
+            }
+          }
+
+          previousLevelJustPassed = newCityData['previous_lvl_just_passed'];
+          if (newCityData['previous_level_name'] != null) {
+            previousLevelName = newCityData['previous_level_name'];
+          }
+          if (!allCompleted) {
+            userPoints = newCityData['points_user'];
+            levelPoints = newCityData['points_total'];
+            levelNumber = newCityData['number'];
+          }
+        });
+        if (previousLevelJustPassed) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Row(
+                  children: [
+                    Image.asset(
+                      'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
+                      width: 24, // Puedes ajustar el tamaño como necesites
+                      height: 24, // Puedes ajustar el tamaño como necesites
+                    ),
+                    SizedBox(width: 10),
+                    Text(translate('Congratulations!')),
+                  ],
+                ),
+                content: Text(
+                    translate('You have decontaminated the district of ') +
+                        previousLevelName +
+                        translate(', your city is now more Greeny!')),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
         }
-      });
+      }
     } else {
       // ignore: use_build_context_synchronously
       showMessage(context, translate('Failed to load city data'));
@@ -104,15 +154,51 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
           userName = newCityData['user_name'] ??
               userName; // Utiliza el operador ?? para mantener el valor anterior si no viene uno nuevo
           isStaff = newCityData['is_staff'] ?? isStaff;
+          mastery = newCityData['mastery'] ?? mastery;
         });
       } else {
         setState(() {
+          previousLevelNumber = levelNumber;
+          previousNhoodName = nhoodName;
           cityDataNotifier.value = newCityData;
           userPoints = newCityData['points_user'];
           levelPoints = newCityData['points_total'];
           levelNumber = newCityData['number'];
           nhoodName = newCityData['neighborhood']['name'];
           nhoodPath = newCityData['neighborhood']['path'];
+
+          if (levelNumber > previousLevelNumber) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
+                        width: 24, // Puedes ajustar el tamaño como necesites
+                        height: 24, // Puedes ajustar el tamaño como necesites
+                      ),
+                      SizedBox(width: 10),
+                      Text(translate('Congratulations!')),
+                    ],
+                  ),
+                  content: Text(
+                      translate('You have decontaminated the district of ') +
+                          previousNhoodName +
+                          translate(', your city is getting more Greeny!')),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         });
       }
     } else {
@@ -168,6 +254,22 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     await updateCityData(points);
   }
 
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (userName == '') {
@@ -189,7 +291,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('$userName\'s City',
+                    Text(translate('City of ') + userName,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 25.0)),
                     const SizedBox(height: 20),
@@ -217,7 +319,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                     var translatedtext1 =
                                         translate('Congratulations, you have');
                                     var translatedtext2 =
-                                        translate('achieved Mastery I !');
+                                        translate('achieved Mastery ');
                                     var translatedtext3 =
                                         translate('Game restarted');
                                     var translatedtext4 =
@@ -242,13 +344,28 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                                   fontSize: 20.0,
                                                 ),
                                               ),
-                                              Text(
-                                                translatedtext2,
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20.0,
-                                                ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    translatedtext2,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20.0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    toRoman(mastery + 1) + ' !',
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -257,7 +374,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                           debugLogging: false,
                                           key: Key(nhoodName),
                                           src:
-                                              'assets/neighborhoods/$nhoodPath',
+                                              'assets/neighborhoods/all_nhoods.glb',
                                           autoRotate: true,
                                           disableZoom: true,
                                           rotationPerSecond: "25deg",
@@ -393,33 +510,32 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             ),
           ],
         ),
-        appBar: allCompleted
-            ? null
-            : AppBar(
-                backgroundColor: const Color.fromARGB(255, 220, 255, 255),
-                leading: IconButton(
-                    onPressed: viewHistory,
-                    icon: const Icon(Icons.restore),
-                    color: const Color.fromARGB(255, 1, 167, 164)),
-                actions: isStaff
-                    ? [
-                        IconButton(
-                          onPressed: () {
-                            addPoints();
-                          },
-                          icon: const Icon(Icons.add),
-                          color: const Color.fromARGB(255, 1, 167, 164),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            removePoints();
-                          },
-                          icon: const Icon(Icons.remove),
-                          color: const Color.fromARGB(255, 1, 167, 164),
-                        ),
-                      ]
-                    : [],
-              ),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 220, 255, 255),
+          leading: IconButton(
+            onPressed: viewHistory,
+            icon: const Icon(Icons.restore),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          actions: !allCompleted && isStaff
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      addPoints();
+                    },
+                    icon: const Icon(Icons.add),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      removePoints();
+                    },
+                    icon: const Icon(Icons.remove),
+                    color: const Color.fromARGB(255, 1, 167, 164),
+                  ),
+                ]
+              : [],
+        ),
       );
     }
   }

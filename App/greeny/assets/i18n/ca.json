@@ -166,7 +166,7 @@
     "Level": "Nivell",
     "Points:": "Punts:",
     "Congratulations, you have": "Felicitats, has",
-    "achieved Mastery I !": "aconseguit Mestratge I !",
+    "achieved Mastery ": "aconseguit Mestratge ",
     "Game restarted": "Joc reiniciat",
     "Levels have been restarted": "Els nivells s'han reiniciat",
     "Restart game": "Reiniciar joc",
@@ -190,5 +190,9 @@
     "unfelled_trees": "Arbres no talats: Número d'arbres que no cal talar gràcies al CO2 que has estalviat",
     "families_supplied": "Famílies subministrades: Número de famílies que es poden abastir amb l'energia que has estalviat",
     "Detailed info": "Informació detallada",
-    "Public transport": "Transport públic"
+    "Public transport": "Transport públic",
+    "You have decontaminated the district of ": "Has descontaminat el districte de ",
+    ", your city is now more Greeny!": ", la teva ciutat ara és més Greeny!",
+    "City of ": "Ciutat de ",
+    "Congratulations!": "Felicitats!"
 }
