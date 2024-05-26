@@ -497,7 +497,8 @@ class TransportationPieChart extends StatelessWidget {
               dataSource: transports,
               xValueMapper: (Transport data, _) => data.type,
               yValueMapper: (Transport data, _) => data.km,
-              dataLabelMapper: (Transport data, _) => '${data.km}km',
+              dataLabelMapper: (Transport data, _) =>
+                  '${(data.km).toStringAsFixed(2)}km',
               dataLabelSettings: const DataLabelSettings(isVisible: true),
               pointColorMapper: (Transport data, _) => colorList[data.type],
             ),
