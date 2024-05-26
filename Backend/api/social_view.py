@@ -26,13 +26,16 @@ class RankingViewSet(viewsets.ViewSet):
         else:
             queryset = User.objects.all().order_by('-points')
 
-        # Obtener la posición del usuario que hace la solicitud en el ranking
-        user_position = queryset.filter(points__gte=user.points).count()
-
         queryset = queryset[:limit]
 
         serializer = FriendUserSerializer(queryset, many=True, context={'request': request})
         data = serializer.data
+
+        # Obtener la posición del usuario que hace la solicitud en el ranking
+        for index, item in enumerate(data):
+            if str(item['username']) == user.username:
+                user_position = index + 1
+                break
 
         response_data = {
             'ranking': data,
