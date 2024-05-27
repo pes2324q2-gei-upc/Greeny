@@ -4,15 +4,18 @@ import json
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-BASE_URL = 'https://fgc.cat'
-LINES_URL = 'https://www.fgc.cat/es/red-fgc/l-'
+BASE_URL_FGC = 'https://fgc.cat'
+LINES_URL_FGC = 'https://www.fgc.cat/es/red-fgc/l-'
 ZONES = ['barcelona-valles', 'llobregat-anoia']
+
+BASE_URL_RENFE = 'https://rodalies.gencat.cat'
 
 class LineStationUtils: 
 
     def __init__(self):
         self.lines_stations = {}
-        self.fetch_station_lines()
+        self.fetch_station_lines_fgc()
+        self.fetch_station_lines_renfe()
 
     def add_station(self, lines_tot, names):
         for station, lines in zip(names, lines_tot):
@@ -23,18 +26,18 @@ class LineStationUtils:
                 else:
                     self.lines_stations[line] = [station]
 
-    def fetch_station_lines(self):
+    def fetch_station_lines_fgc(self):
 
         for zone in ZONES:
             #obtenemos las linas de cada zona
-            response = requests.get(LINES_URL+zone)
+            response = requests.get(LINES_URL_FGC+zone)
             soup = BeautifulSoup(response.content, 'html.parser')
 
             #iteramos sobre las linias para obtener cada parada
             for line in tqdm(soup.select('a.w-text-h'), desc=f'Fetching lines from {zone}'):
 
                 link = line.get('href')
-                response_line = requests.get(BASE_URL+link)
+                response_line = requests.get(BASE_URL_FGC+link)
                 soup_2 = BeautifulSoup(response_line.content, 'html.parser')
                 
                 names = []
@@ -68,6 +71,52 @@ class LineStationUtils:
                     lines_tot += [lines_aux]
 
                 self.add_station(lines_tot, names)
-                
 
-                
+    def fetch_station_lines_renfe(self):
+
+        response = requests.get(BASE_URL_RENFE+'/es/linies_estacions_i_trens/')
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        for i, line in tqdm(enumerate(soup.select('.linia')), desc="Fetching RENFE lines"):
+            if i > 5:
+                break
+
+            line_link = line.select_one('a').get('href')
+            line_name = line.select_one('div.linia-info div.info h3').text.split(' ')[1]
+
+            line_response = requests.get(BASE_URL_RENFE+line_link)
+            soup2 = BeautifulSoup(line_response.content, 'html.parser')
+
+            names = []
+
+            for name in soup2.select('div.timeline-title'):
+                name = name.text.replace('Barcelona-', '')
+                name = name.replace('-Meridiana', '')
+
+                if 'Bellvitge' in name.split(' '):
+                    names.append("Bellvitge")
+                elif name == 'Sants':
+                    names.append('Sants Estació')
+                elif name == 'EL CLOT':
+                    names.append('CLOT')
+                else:
+                    names.append(name)
+
+            serveis_divs = soup2.find_all('div', class_='serveis')
+
+            all_alt_lists = []
+
+            for serveis_div in serveis_divs:
+                first_ul = serveis_div.find('ul')
+                alt_list = []
+
+                if first_ul:
+                    for li in first_ul.find_all('li'):
+                        for img in li.find_all('img'):
+                            alt = img.get('alt')
+                            if alt:
+                                alt_list.append(alt)
+                if alt_list:
+                    all_alt_lists.append(alt_list)
+
+            self.add_station(all_alt_lists, names)

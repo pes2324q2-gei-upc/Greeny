@@ -21,8 +21,6 @@ from .serializers import (PublicTransportStationSerializer, BusStationSerializer
                           PublicTransportStationSimpleSerializer, StationSimpleSerializer)
 from .line_station_utils import LineStationUtils
 
-#from .data.neighborhood_data import lines
-
 headers_OD = {"X-App-Token": settings.APP_ID}
 headers_AJT = {"Authorization": settings.API_TOKEN_AJT, "Accept": "application/json"}
 
@@ -194,6 +192,9 @@ class FetchPublicTransportStations(View):
             except IndexError:
                 return None
 
+        if station_name == "DE FRANÇA":
+            station_name = "ESTACIO DE FRANÇA"
+
         station = self.get_public_transport_station(station_name)
         trans_type = self.get_type(TransportType.TTransport.RENFE)
 
@@ -232,6 +233,11 @@ class FetchPublicTransportStations(View):
         similarity = fuzz.ratio(name1.lower(), name2.lower())
         return similarity > threshold
 
+    def add_line(self, stop, line):
+        if line not in stop.lines:
+            stop.lines = stop.lines + [line]
+            stop.save()
+
     def get_transport_lines(self):
 
         stops = Stop.objects.all()
@@ -244,11 +250,12 @@ class FetchPublicTransportStations(View):
                 for line, stations in lines.items():
                     if any(self.is_similar(stop.station.name, station) for station in stations):
                         if stop.transport_type.type == "FGC" and line[0] != 'R':
-                            stop.lines = stop.lines + [line]
-                            stop.save()
+                            self.add_line(stop, line)
                         elif stop.transport_type.type == "RENFE" and line[0] not in ['S', 'L']:
-                            stop.lines = stop.lines + [line]
-                            stop.save()
+                            self.add_line(stop, line)
+
+        stops = Stop.objects.filter(lines__len=0).delete()
+
     def get(self, request):
 
         self.fetch_public_stations()
