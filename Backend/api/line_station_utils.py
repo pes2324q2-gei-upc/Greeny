@@ -2,6 +2,7 @@ import requests
 import json
 
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 
 BASE_URL = 'https://fgc.cat'
 LINES_URL = 'https://www.fgc.cat/es/red-fgc/l-'
@@ -30,7 +31,7 @@ class LineStationUtils:
             soup = BeautifulSoup(response.content, 'html.parser')
 
             #iteramos sobre las linias para obtener cada parada
-            for line in soup.select('a.w-text-h'):
+            for line in tqdm(soup.select('a.w-text-h'), desc=f'Fetching lines from {zone}'):
 
                 link = line.get('href')
                 response_line = requests.get(BASE_URL+link)
@@ -38,8 +39,12 @@ class LineStationUtils:
                 
                 names = []
                 for name in soup_2.select('a.w-text-h span.w-text-value'):
-                    if name.text != "Calcular":
+                    name.text.replace('Av. T', 'Avinguda')
+                    if name.text == "Plaça Catalunya":
+                        names.append("Catalunya")
+                    elif name.text != "Calcular":
                         names.append(name.text)
+
                 if zone == 'barcelona-valles':
                     names = names[:-4]
                 else:
@@ -61,6 +66,8 @@ class LineStationUtils:
                                     lines_aux.append(part)
                             
                     lines_tot += [lines_aux]
+
+                self.add_station(lines_tot, names)
                 
 
                 
