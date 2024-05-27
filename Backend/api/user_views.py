@@ -325,7 +325,7 @@ def google_auth(request):
         if response.status_code == 200:
             image_content = ContentFile(response.content)
             image_filename = f'{username}.jpg'
-            user = User.objects.create(email=email, first_name=name, username=username, 
+            user = User.objects.create(email=email, first_name=name, username=username,
                                        password='!')
             user.image.save(image_filename, image_content, save=True)
             user.set_unusable_password()
