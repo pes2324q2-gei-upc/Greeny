@@ -12,6 +12,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -126,36 +127,6 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
               },
             );
           }
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Row(
-                  children: [
-                    Image.asset(
-                      'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
-                      width: 24, // Puedes ajustar el tamaño como necesites
-                      height: 24, // Puedes ajustar el tamaño como necesites
-                    ),
-                    const SizedBox(width: 10),
-                    Text(translate('Congratulations!')),
-                  ],
-                ),
-                content: Text(
-                    translate('You have decontaminated the district of ') +
-                        previousLevelName +
-                        translate(', your city is now more Greeny!')),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              );
-            },
-          );
         }
       }
     } else {
