@@ -96,6 +96,9 @@ class Statistics(models.Model):
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
 
+    class Meta:
+        verbose_name_plural = "Statistics"
+
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
         User, related_name='from_user', on_delete=models.CASCADE)

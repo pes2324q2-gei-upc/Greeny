@@ -41,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
     is_google = serializers.SerializerMethodField()
 
     def get_is_google(self, obj):
-        return obj.password == ''
+        return not obj.has_usable_password()
 
     def get_level(self, obj):
         try:
