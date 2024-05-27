@@ -121,23 +121,3 @@ def translate(text, review_id):
     else:
         result = translator.translate(text, src='en', dest='en').text
     return result
-
-def fetch_station_lines():
-    data = {'barcelona-valles': ['l6-barcelona-placa-catalunya-sarria', 'l7-barcelona-placa-catalunya-aviguda-tibidabo', 'l12-sarria-reina-elisenda', 's1-barcelona-placa-catalunya-terrassa', 's2-barcelona-placa-catalunya-sabadell']}
-    base_url = 'https://fgc.cat'
-    lines_url = 'https://www.fgc.cat/es/red-fgc/l'
-    zones = {'barcelona-valles'}
-
-    for zone in zones:
-        response = requests.get(lines_url+zone)
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        for line in soup.select('a.w-text-h'):
-            link = line.get('href')
-            response_line = requests.get(base_url+link)
-            soup_2 = BeautifulSoup(response_line.content, 'html.parser')
-
-            for stations in soup_2.select('.barcelona_valles_linie'):
-                print(stations)
-
-fetch_station_lines()
