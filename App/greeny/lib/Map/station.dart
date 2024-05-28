@@ -338,7 +338,7 @@ class _StationPageState extends State<StationPage> {
         child: Row(
           children: stop['lines']
               .map<Widget>((line) => RawMaterialButton(
-                  constraints: BoxConstraints.tight(const Size(40, 40)),
+                  constraints: BoxConstraints.tight(const Size(45, 45)),
                   onPressed: () => onTapTmb(line),
                   shape: const RoundedRectangleBorder(),
                   fillColor: getColorTmb(line),
@@ -412,6 +412,8 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 1, 95, 38);
       case 'R3':
         return const Color.fromARGB(255, 212, 66, 52);
+      case 'R5':
+        return const Color.fromARGB(255, 0, 149, 166);
       case 'R4':
         return const Color.fromARGB(255, 234, 166, 73);
       case 'R7':
@@ -445,7 +447,7 @@ class _StationPageState extends State<StationPage> {
       case 'T':
         return const Color.fromARGB(255, 61, 139, 121);
       case 'R':
-        return const Color.fromARGB(255, 242, 162, 46);
+        return const Color.fromARGB(255, 111, 110, 110);
       case 'S':
         return const Color.fromARGB(255, 151, 215, 0);
     }
@@ -507,8 +509,9 @@ class _StationPageState extends State<StationPage> {
         }
       case 'R':
         {
+          var lineLower = line.toLowerCase();
           Uri tmbUri = Uri.parse(
-              'https://rodalies.gencat.cat/es/linies_estacions_i_trens/index.html?linia=$line');
+              'https://rodalies.gencat.cat/es/linies_estacions_i_trens/index.html?linia=$lineLower');
           if (await canLaunchUrl(tmbUri)) {
             await launchUrl(tmbUri);
           } else {
