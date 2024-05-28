@@ -67,7 +67,7 @@ class TransportType(models.Model):
 class Stop(models.Model):
     station = models.ForeignKey(PublicTransportStation, on_delete=models.CASCADE)
     transport_type = models.ForeignKey(TransportType, on_delete=models.CASCADE)
-    lines = ArrayField(models.CharField(max_length=2), blank=False)
+    lines = ArrayField(models.CharField(max_length=5), blank=False)
 
 class BusStation(Station):
     lines = ArrayField(models.CharField(max_length=5), blank=False)
