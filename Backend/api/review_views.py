@@ -68,7 +68,7 @@ def profanity_filter(request, station_id, review_id):
 
         if check_for_ban(user):
             # redirect to BAN Screen
-            return Response({'message': 'User has been banned'}, status=status.HTTP_423_LOCKED)
+            return Response({'message': 'User has been banned'}, status=status.HTTP_200_OK)
 
         return Response({'message': 'Review has been deleted due to profanity'},
                         status=status.HTTP_200_OK)
