@@ -27,6 +27,23 @@ El nostre projecte consisteix en una aplicació mòbil que té com a idea princi
 
 La proposta del nostre projecte ofereix una experiència lúdica única, on els usuaris no només reben informació sobre punts de recàrrega elèctrica, estacions de Bicing i parades de transport públic, sinó que també es converteixen en protagonistes de la transformació d'una ciutat contaminada en un entorn més saludable i sostenible. Amb una combinació de gamificació, geolocalització i interacció social, aspirem a crear una plataforma que no només entretingui, sinó que també eduqui i motivi els usuaris a adoptar hàbits de vida més respectuosos amb el medi ambient. Així, el nostre projecte no només és una aplicació mòbil, sinó una iniciativa per a la conscienciació i la millora de la sostenibilitat urbana.
 
+## Com es calculen els teus punts?
+
+Utilitzant aquesta fórmula:
+```py
+def calculate_points(co2_consumed, car_co2_consumed):
+    # Calculate the points earned by the user
+    alpha = 1 if co2_consumed == 0 else car_co2_consumed / co2_consumed
+    co2_saved = max(0, car_co2_consumed - co2_consumed)
+    total_points = co2_saved * alpha
+
+    multiplier = 20
+
+    return int(round(total_points * multiplier))
+```
+La fórmula calcula la **diferència entre el CO2 consumit i el CO2 que hauries consumit** fent la ruta en un cotxe de combustió.
+> En conseqüència en fer una ruta en cotxe de combustió no es guanyaran punts, ja que no s'ha estalviat CO2.
+
 ## Instruccions per executar el projecte
 
 ### Backend
@@ -122,6 +139,7 @@ flutter run --release
 │   ├── docker-compose.yml  #Arxiu amb la configuració dels contenidors
 │   ├── greeny
 │   ├── manage.py
+│   ├── uploads/imatges     #Directori amb les fotos de peril dels usuaris registrats
 │   └── requirements.txt    #Dependencies del Backend
 └── README.md
 ```
