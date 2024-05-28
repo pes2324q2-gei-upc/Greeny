@@ -44,6 +44,10 @@ def calculate_points(co2_consumed, car_co2_consumed):
 La fórmula calcula la **diferència entre el CO2 consumit i el CO2 que hauries consumit** fent la ruta en un cotxe de combustió.
 > En conseqüència en fer una ruta en cotxe de combustió no es guanyaran punts, ja que no s'ha estalviat CO2.
 
+## Instalar release APK a dispositius ANDROID
+
+Instalar l'arxiu [Greeny.apk](https://github.com/pes2324q2-gei-upc/Greeny/blob/main/Greeny.apk) al teu dispositiu.
+
 ## Instruccions per executar el projecte
 
 ### Backend
@@ -141,5 +145,7 @@ flutter run --release
 │   ├── manage.py
 │   ├── uploads/imatges     #Directori amb les fotos de perfil dels usuaris registrats
 │   └── requirements.txt    #Dependencies del Backend
-└── README.md
+├── Greeny.apk              #APK de Greeny per dispositius Android
+├── LICENSE.md              #Apache License del repositori
+└── README.md               #README del repositori
 ```
