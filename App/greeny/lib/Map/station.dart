@@ -394,6 +394,8 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 119, 117, 180);
       case 'L7':
         return const Color.fromARGB(255, 160, 75, 9);
+      case 'L8':
+        return const Color.fromARGB(255, 231, 150, 191);
       case 'L9':
         return const Color.fromARGB(255, 234, 146, 53);
       case 'L9N':
@@ -404,6 +406,14 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 236, 103, 8);
       case 'S2':
         return const Color.fromARGB(255, 136, 189, 37);
+      case 'S3':
+        return const Color.fromARGB(255, 68, 142, 153);
+      case 'S4':
+        return const Color.fromARGB(255, 155, 130, 2);
+      case 'S8':
+        return const Color.fromARGB(255, 60, 186, 220);
+      case 'S9':
+        return const Color.fromARGB(255, 235, 75, 111);
       case 'R1':
         return const Color.fromARGB(255, 120, 179, 224);
       case 'R2':
@@ -436,6 +446,10 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 163, 36, 55);
       case 'R17':
         return const Color.fromARGB(255, 217, 120, 45);
+      case 'R50':
+        return const Color.fromARGB(255, 38, 126, 150);
+      case 'R60':
+        return const Color.fromARGB(255, 80, 83, 92);
       case 'RG1':
         return const Color.fromARGB(255, 48, 111, 199);
       case 'RT1':
