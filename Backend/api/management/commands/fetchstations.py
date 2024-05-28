@@ -13,7 +13,10 @@ class Command(BaseCommand):
                 factory = RequestFactory()
                 request = factory.get('/dummy-url')
 
+                self.stdout.write('Fetching stations, this might take a while...')
+
                 fetch_view = FetchPublicTransportStations.as_view()
+
                 response = fetch_view(request)
 
                 self.stdout.write(self.style.SUCCESS('Stations inititilized successfully'))        

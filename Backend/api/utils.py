@@ -2,6 +2,7 @@ from googletrans import Translator
 
 from django.core.mail import send_mail
 from django.conf import settings
+
 from .models import CO2Consumed, Blacklist
 
 
