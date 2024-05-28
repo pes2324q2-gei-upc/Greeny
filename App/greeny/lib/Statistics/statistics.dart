@@ -308,15 +308,18 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buildSelectionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        _buildSelectionButton('all', translate('All')),
-        const SizedBox(width: 8),
-        _buildSelectionButton('real', translate('Real data')),
-        const SizedBox(width: 8),
-        _buildSelectionButton('estimated', translate('Estimated data')),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildSelectionButton('all', translate('All')),
+          const SizedBox(width: 8),
+          _buildSelectionButton('real', translate('Real data')),
+          const SizedBox(width: 8),
+          _buildSelectionButton('estimated', translate('Estimated data')),
+        ],
+      ),
     );
   }
 
