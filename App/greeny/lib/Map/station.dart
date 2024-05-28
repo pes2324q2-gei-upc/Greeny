@@ -379,10 +379,6 @@ class _StationPageState extends State<StationPage> {
   }
 
   Color? getColorTmb(line) {
-    switch (line[0]) {
-      case 'T':
-        return const Color.fromARGB(255, 61, 139, 121);
-    }
     switch (line) {
       case 'L1':
         return const Color.fromARGB(255, 205, 61, 62);
@@ -394,8 +390,60 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 242, 192, 66);
       case 'L5':
         return const Color.fromARGB(255, 51, 117, 183);
+      case 'L6':
+        return const Color.fromARGB(255, 119, 117, 180);
+      case 'L7':
+        return const Color.fromARGB(255, 160, 75, 9);
       case 'L9':
         return const Color.fromARGB(255, 234, 146, 53);
+      case 'L12':
+        return const Color.fromARGB(255, 191, 190, 224);
+      case 'S1':
+        return const Color.fromARGB(255, 236, 103, 8);
+      case 'S2':
+        return const Color.fromARGB(255, 136, 189, 37);
+      case 'R1':
+        return const Color.fromARGB(255, 120, 179, 224);
+      case 'R2':
+        return const Color.fromARGB(255, 0, 150, 64);
+      case 'R3':
+        return const Color.fromARGB(255, 212, 66, 52);
+      case 'R4':
+        return const Color.fromARGB(255, 234, 166, 73);
+      case 'R7':
+        return const Color.fromARGB(255, 182, 130, 178);
+      case 'R8':
+        return const Color.fromARGB(255, 123, 22, 97);
+      case 'R11':
+        return const Color.fromARGB(255, 41, 98, 162);
+      case 'R12':
+        return const Color.fromARGB(255, 249, 222, 75);
+      case 'R13':
+        return const Color.fromARGB(255, 214, 67, 136);
+      case 'R14':
+        return const Color.fromARGB(255, 102, 81, 152);
+      case 'R15':
+        return const Color.fromARGB(255, 152, 140, 120);
+      case 'R16':
+        return const Color.fromARGB(255, 163, 36, 55);
+      case 'R17':
+        return const Color.fromARGB(255, 217, 120, 45);
+      case 'RG':
+        return const Color.fromARGB(255, 48, 111, 199);
+      case 'RT1':
+        return const Color.fromARGB(255, 88, 193, 179);
+      case 'RT2':
+        return const Color.fromARGB(255, 215, 125, 199);
+      case 'RL3':
+        return const Color.fromARGB(255, 149, 147, 45);
+    }
+    switch (line[0]) {
+      case 'T':
+        return const Color.fromARGB(255, 61, 139, 121);
+      case 'R':
+        return const Color.fromARGB(255, 242, 162, 46);
+      case 'S':
+        return const Color.fromARGB(255, 151, 215, 0);
     }
     return null;
   }
@@ -443,10 +491,20 @@ class _StationPageState extends State<StationPage> {
             throw 'Could not launch $tmbUri';
           }
         }
-      default:
+      case 'L':
         {
           Uri tmbUri = Uri.parse(
               'https://www.tmb.cat/ca/barcelona/metro/-/lineametro/$line');
+          if (await canLaunchUrl(tmbUri)) {
+            await launchUrl(tmbUri);
+          } else {
+            throw 'Could not launch $tmbUri';
+          }
+        }
+      case 'R':
+        {
+          Uri tmbUri = Uri.parse(
+              'https://rodalies.gencat.cat/es/linies_estacions_i_trens/index.html?linia=$line');
           if (await canLaunchUrl(tmbUri)) {
             await launchUrl(tmbUri);
           } else {
