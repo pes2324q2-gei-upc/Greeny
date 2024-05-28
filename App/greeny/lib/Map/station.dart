@@ -407,9 +407,9 @@ class _StationPageState extends State<StationPage> {
       case 'R2':
         return const Color.fromARGB(255, 0, 150, 64);
       case 'R2N':
-        return const Color.fromARGB(255, 0, 150, 64);
+        return const Color.fromARGB(255, 162, 198, 22);
       case 'R2S':
-        return const Color.fromARGB(255, 0, 150, 64);
+        return const Color.fromARGB(255, 1, 95, 38);
       case 'R3':
         return const Color.fromARGB(255, 212, 66, 52);
       case 'R4':
