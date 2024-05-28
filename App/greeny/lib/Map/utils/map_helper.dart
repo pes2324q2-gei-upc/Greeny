@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -114,8 +116,7 @@ class MapHelper {
     List<MapMarker> markers,
     int minZoom,
     int maxZoom,
-  )
-  async {
+  ) async {
     return Fluster<MapMarker>(
       minZoom: minZoom,
       maxZoom: maxZoom,
