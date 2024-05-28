@@ -23,6 +23,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   File? _pickedImage;
   String defaultImage = '';
   bool isGoogle = false;
+  ValueNotifier<bool> hasDataChanged = ValueNotifier<bool>(false);
 
   final updateProfileForm = GlobalKey<FormState>();
 
@@ -142,9 +143,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             const SizedBox(
                               height: 20,
                             ),
-                            ElevatedButton(
-                              onPressed: updateAccount,
-                              child: Text(translate("Update Profile")),
+                            ValueListenableBuilder(
+                              valueListenable: hasDataChanged,
+                              builder: (context, bool value, child) {
+                                if (value) {
+                                  return ElevatedButton(
+                                    onPressed: updateAccount,
+                                    child: Text(translate("Update Profile")),
+                                  );
+                                } else {
+                                  return Container(); // return an empty container when there's no change
+                                }
+                              },
                             ),
                             const SizedBox(
                               height: 20,
@@ -268,7 +278,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     getInfoUser();
+
     super.initState();
+    usernameController.addListener(() {
+      if (usernameController.text != oldUsername) {
+        hasDataChanged.value = true;
+      }
+    });
+    currentPasswordController.addListener(() {
+      hasDataChanged.value = true;
+    });
+    newPasswordController.addListener(() {
+      hasDataChanged.value = true;
+    });
+    passwordConfirmController.addListener(() {
+      hasDataChanged.value = true;
+    });
+    nameController.addListener(() {
+      if (nameController.text != oldName) {
+        hasDataChanged.value = true;
+      }
+    });
   }
 
   @override
