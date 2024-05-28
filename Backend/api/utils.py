@@ -1,11 +1,9 @@
-import requests
 from googletrans import Translator
 
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import CO2Consumed, Blacklist
 
-from bs4 import BeautifulSoup
+from .models import CO2Consumed, Blacklist
 
 
 def calculate_co2_consumed(transports, total_distance):
