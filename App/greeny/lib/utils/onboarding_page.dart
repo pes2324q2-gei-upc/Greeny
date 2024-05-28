@@ -27,11 +27,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
         },
         children: <Widget>[
           _createPage('assets/onboarding/logo.png', translate('Welcome to Greeny!'), translate('Stop being greedy, be Greeny')),
-          _createPage('assets/onboarding/city.png', translate('Purify districts'), translate('Walk or use public transportation to earn points and purify districts')),
+          _createPage('assets/onboarding/city.png', translate('Purify districts'), translate('Walk or use sostenible vehicles to earn points and purify districts')),
           _createPage('assets/onboarding/badges.png', translate('Earn badges'), translate('When you purify a district, you will earn a badge, collect them all')),
           _createPage('assets/onboarding/routes.png', translate('Routes'), translate('All your routes will be saved, take a look at them')),
           _createPage('assets/onboarding/podium.png', translate('Be the best'), translate('Compete with your friends and other users to climb positions in the ranking')),
-          _createPage('assets/onboarding/statistics.png', translate('Statistics'), translate('View your statistics and check how you are doing')),
+          _createPage('assets/onboarding/user_statistics.png', translate('Statistics'), translate('View your statistics and check how you are doing')),
           _createPage('assets/onboarding/share_user.png', translate('Share statistics'), translate('Share your achievements and statistics with your acquaintances')),
           // Añade más páginas si lo necesitas
         ],

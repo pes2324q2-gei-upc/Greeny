@@ -188,7 +188,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   content: Text(
                       translate('You have decontaminated the district of ') +
                           previousNhoodName +
-                          translate(', your city is now more Greeny!')),
+                          translate(', your city is getting more Greeny!')),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
