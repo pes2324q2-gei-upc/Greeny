@@ -139,7 +139,7 @@ flutter run --release
 │   ├── docker-compose.yml  #Arxiu amb la configuració dels contenidors
 │   ├── greeny
 │   ├── manage.py
-│   ├── uploads/imatges     #Directori amb les fotos de peril dels usuaris registrats
+│   ├── uploads/imatges     #Directori amb les fotos de perfil dels usuaris registrats
 │   └── requirements.txt    #Dependencies del Backend
 └── README.md
 ```
