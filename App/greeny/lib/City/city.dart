@@ -14,8 +14,6 @@ import 'package:greeny/API/requests.dart';
 import 'dart:convert';
 import 'package:greeny/utils/utils.dart';
 
-import 'package:greeny/utils/onboarding_page.dart';
-
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
 
@@ -190,7 +188,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                   content: Text(
                       translate('You have decontaminated the district of ') +
                           previousNhoodName +
-                          translate(', your city is now more Greeny!')),
+                          translate(', your city is getting more Greeny!')),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () {
@@ -575,17 +573,12 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
       _showModelViewer = false;
     });
 
-    /*Navigator.push(context,
+    Navigator.push(context,
         MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
       setState(() {
         _showModelViewer = true;
       });
-    });*/
-    Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const OnboardingPage()),
-            (Route<dynamic> route) => false,
-          );
+    });
   }
 
   void finalForm() {
