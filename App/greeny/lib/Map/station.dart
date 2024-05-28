@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/API/user_auth.dart';
+import 'package:greeny/Friends/friend_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:greeny/Map/add_review.dart';
 import 'package:greeny/utils/utils.dart';
@@ -27,6 +29,8 @@ class _StationPageState extends State<StationPage> {
   Map<String, dynamic> station = {};
   List<dynamic> reviewsList = [];
 
+  String currentUsername = '';
+
   @override
   void initState() {
     getInfo();
@@ -43,18 +47,24 @@ class _StationPageState extends State<StationPage> {
         ),
       );
     } else {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(station['name']),
-          ),
-          body: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                rating(),
-                specificInfo(),
-                reviews(),
-              ],
+      return RefreshIndicator(
+          onRefresh: getInfo,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(station['name']),
+            ),
+            body: SingleChildScrollView(
+              // Add this
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    rating(),
+                    specificInfo(),
+                    reviews(),
+                  ],
+                ),
+              ),
             ),
           ));
     }
@@ -72,6 +82,11 @@ class _StationPageState extends State<StationPage> {
               const SizedBox(width: 5),
               Text(
                 station['rating'].toString(),
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '(${reviewsList.length.toString()})',
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
@@ -250,13 +265,30 @@ class _StationPageState extends State<StationPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('@${review['author_username']}',
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FriendProfilePage(
+                                    friendUsername: review['author_username']),
+                              ));
+                        },
+                        child: Text(
+                          '@${review['author_username']}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
                       const Spacer(),
                       Text(review['puntuation'].toString(),
                           style: const TextStyle(fontWeight: FontWeight.bold)),
                       const SizedBox(width: 5),
                       const Icon(Icons.star, color: Colors.yellow),
+                      if (currentUsername != review['author_username'])
+                        IconButton(
+                          onPressed: () => _showConfirmDialog(review),
+                          icon: const Icon(Icons.report),
+                        )
                     ],
                   ),
                 ),
@@ -347,10 +379,6 @@ class _StationPageState extends State<StationPage> {
   }
 
   Color? getColorTmb(line) {
-    switch (line[0]) {
-      case 'T':
-        return const Color.fromARGB(255, 61, 139, 121);
-    }
     switch (line) {
       case 'L1':
         return const Color.fromARGB(255, 205, 61, 62);
@@ -362,8 +390,60 @@ class _StationPageState extends State<StationPage> {
         return const Color.fromARGB(255, 242, 192, 66);
       case 'L5':
         return const Color.fromARGB(255, 51, 117, 183);
+      case 'L6':
+        return const Color.fromARGB(255, 119, 117, 180);
+      case 'L7':
+        return const Color.fromARGB(255, 160, 75, 9);
       case 'L9':
         return const Color.fromARGB(255, 234, 146, 53);
+      case 'L12':
+        return const Color.fromARGB(255, 191, 190, 224);
+      case 'S1':
+        return const Color.fromARGB(255, 236, 103, 8);
+      case 'S2':
+        return const Color.fromARGB(255, 136, 189, 37);
+      case 'R1':
+        return const Color.fromARGB(255, 120, 179, 224);
+      case 'R2':
+        return const Color.fromARGB(255, 0, 150, 64);
+      case 'R3':
+        return const Color.fromARGB(255, 212, 66, 52);
+      case 'R4':
+        return const Color.fromARGB(255, 234, 166, 73);
+      case 'R7':
+        return const Color.fromARGB(255, 182, 130, 178);
+      case 'R8':
+        return const Color.fromARGB(255, 123, 22, 97);
+      case 'R11':
+        return const Color.fromARGB(255, 41, 98, 162);
+      case 'R12':
+        return const Color.fromARGB(255, 249, 222, 75);
+      case 'R13':
+        return const Color.fromARGB(255, 214, 67, 136);
+      case 'R14':
+        return const Color.fromARGB(255, 102, 81, 152);
+      case 'R15':
+        return const Color.fromARGB(255, 152, 140, 120);
+      case 'R16':
+        return const Color.fromARGB(255, 163, 36, 55);
+      case 'R17':
+        return const Color.fromARGB(255, 217, 120, 45);
+      case 'RG':
+        return const Color.fromARGB(255, 48, 111, 199);
+      case 'RT1':
+        return const Color.fromARGB(255, 88, 193, 179);
+      case 'RT2':
+        return const Color.fromARGB(255, 215, 125, 199);
+      case 'RL3':
+        return const Color.fromARGB(255, 149, 147, 45);
+    }
+    switch (line[0]) {
+      case 'T':
+        return const Color.fromARGB(255, 61, 139, 121);
+      case 'R':
+        return const Color.fromARGB(255, 242, 162, 46);
+      case 'S':
+        return const Color.fromARGB(255, 151, 215, 0);
     }
     return null;
   }
@@ -411,10 +491,20 @@ class _StationPageState extends State<StationPage> {
             throw 'Could not launch $tmbUri';
           }
         }
-      default:
+      case 'L':
         {
           Uri tmbUri = Uri.parse(
               'https://www.tmb.cat/ca/barcelona/metro/-/lineametro/$line');
+          if (await canLaunchUrl(tmbUri)) {
+            await launchUrl(tmbUri);
+          } else {
+            throw 'Could not launch $tmbUri';
+          }
+        }
+      case 'R':
+        {
+          Uri tmbUri = Uri.parse(
+              'https://rodalies.gencat.cat/es/linies_estacions_i_trens/index.html?linia=$line');
           if (await canLaunchUrl(tmbUri)) {
             await launchUrl(tmbUri);
           } else {
@@ -425,6 +515,7 @@ class _StationPageState extends State<StationPage> {
   }
 
   Future<void> getInfo() async {
+    currentUsername = await UserAuth().getUserInfo('username');
     var responseStation = await httpGet('api/stations/$stationId');
     if (responseStation.statusCode == 200) {
       String body = utf8.decode(responseStation.bodyBytes);
@@ -460,5 +551,43 @@ class _StationPageState extends State<StationPage> {
     if (mounted) {
       showMessage(context, translate('Error loading station'));
     }
+  }
+
+  void _sendReport(review) async {
+    var reviewID = review['id'];
+    var res = await httpPost(
+        'api/stations/$stationId/reviews/$reviewID/profanity-filter',
+        jsonEncode({}),
+        'application/json');
+    if (res.statusCode == 200) {
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('The review has been reported'));
+    }
+  }
+
+  void _showConfirmDialog(review) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(translate("Are you sure?")),
+        content: Text(
+            translate(
+              "Are you sure you want to report this review?",
+            ),
+            textAlign: TextAlign.justify),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => _sendReport(review),
+            child: Text(translate("Ok")),
+          ),
+          TextButton(
+            child: Text(translate("Cancel")),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+    );
   }
 }

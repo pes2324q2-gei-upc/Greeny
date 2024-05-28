@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
+import 'package:greeny/Profile/badges.dart';
 import 'package:intl/intl.dart';
 import 'package:greeny/utils/utils.dart';
+import 'package:greeny/API/user_auth.dart';
 
 class FriendProfilePage extends StatefulWidget {
   final String friendUsername;
@@ -21,12 +23,16 @@ class FriendProfilePage extends StatefulWidget {
 class _FriendProfilePageState extends State<FriendProfilePage> {
   String friendName = '';
   String dateJoined = '';
+  String imagePath = '';
   int level = 0;
   int friends = 0;
   int trips = 0;
   int reviews = 0;
   int friendId = 0;
+  int points = 0;
+  int mastery = 0;
   bool isFriend = false;
+  String currentUsername = '';
 
   @override
   void initState() {
@@ -38,6 +44,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
   //Obtener información del usuario a visitar
   Future<void> getInfoUser() async {
     Map<String, dynamic> userData = {};
+    currentUsername = await UserAuth().getUserInfo('username');
 
     final String endpoint = '/api/user/${widget.friendUsername}/';
     if (mounted) {
@@ -45,7 +52,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
 
       if (response.statusCode == 200) {
         setState(() {
-          userData = json.decode(response.body);
+          userData = json.decode(utf8.decode(response.bodyBytes));
           friendName = userData['first_name'];
           dateJoined = DateFormat('dd-MM-yyyy')
               .format(DateTime.parse(userData['date_joined']));
@@ -54,6 +61,9 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
           trips = userData['routes_number'];
           reviews = userData['reviews_number'];
           friendId = userData['id'];
+          imagePath = userData['image'];
+          mastery = userData['mastery'];
+          points = userData['points'];
         });
       } else {
         if (mounted) {
@@ -75,7 +85,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     final response = await httpGet(endpoint);
 
     if (response.statusCode == 200) {
-      final List<dynamic> friendsData = jsonDecode(response.body);
+      final List<dynamic> friendsData =
+          jsonDecode(utf8.decode(response.bodyBytes));
       userFriends = friendsData.map((friend) => friend['username']).toList();
     } else {
       // ignore: use_build_context_synchronously
@@ -136,11 +147,6 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                         decoration: BoxDecoration(
                           shape: BoxShape
                               .circle, // Establece la forma como un círculo
-                          border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 1, 167, 164), // Color del borde
-                            width: 5, // Ancho del borde
-                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
@@ -152,14 +158,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                             ),
                           ],
                         ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              60), // Radio de borde igual a la mitad del ancho/alto
-                          child: Image.asset(
-                            'assets/images/blank-profile.jpg',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                        child: CircleAvatar(
+                            backgroundImage: NetworkImage(imagePath)),
                       ),
                     ],
                   ),
@@ -179,6 +179,22 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.emoji_events_outlined,
+                            color: FriendProfilePage.titolColor),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: buildBadges(level - 1, mastery),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(
@@ -294,6 +310,74 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                               ),
                             ),
                             const SizedBox(height: 10),
+                            //Mastery
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: FriendProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.military_tech_rounded,
+                                    color: FriendProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Mastery:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: FriendProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    toRoman(mastery + 1),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            //Points
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: FriendProfilePage.smallCardColor),
+                              padding: const EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.score_rounded,
+                                    color: FriendProfilePage.titolColor,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    translate('Points:'),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: FriendProfilePage.titolColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    points.toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             //Amics
                             Container(
                               decoration: BoxDecoration(
@@ -401,26 +485,43 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  if (!isFriend) // Verifica si no es amigo
-                    ElevatedButton(
-                      onPressed: () {
-                        sendFriendRequest(friendId);
-                      },
-                      child: Text(translate('Send Friend Request')),
-                    )
-                  else // Si es amigo
-                    ElevatedButton(
-                      onPressed: () {
-                        deleteFriend();
-                      },
-                      child: Text(translate('Delete Friend')),
-                    ),
+                  if (currentUsername != widget.friendUsername)
+                    if (!isFriend) // Verifica si no es amigo
+                      ElevatedButton(
+                        onPressed: () {
+                          sendFriendRequest(friendId);
+                        },
+                        child: Text(translate('Send Friend Request')),
+                      )
+                    else // Si es amigo
+                      ElevatedButton(
+                        onPressed: () {
+                          deleteFriend();
+                        },
+                        child: Text(translate('Delete Friend')),
+                      ),
                 ],
               ),
             ),
           ),
         ),
       );
+    }
+  }
+
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
     }
   }
 
@@ -492,5 +593,100 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
     }
   }
 
-  void share() {}
+  void clickBadge(List<Widget> badges, int level, int maxLevel) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BadgesPage(
+                badges: badges,
+                level: level,
+                maxLevel: maxLevel,
+                mastery: mastery)));
+  }
+
+  Widget buildBadges(int level, int mastery) {
+    List<Widget> badges = []; // Lista para almacenar las medallas
+    if (mastery < 3) {
+      // Bucle para generar medallas basadas en el nivel
+      for (int i = 0; i < level; i++) {
+        int maxlevel;
+        if (mastery == 0) {
+          maxlevel = level - 1;
+        } else {
+          maxlevel = 9;
+        }
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, level, maxlevel);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/$i$mastery.png',
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      if (mastery > 0) {
+        for (int i = level; i < 10; i++) {
+          badges.add(
+            Positioned(
+              left: i * 25.0, // Espacio horizontal entre las medallas
+              child: GestureDetector(
+                onTap: () {
+                  clickBadge(badges, level, 9);
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(60),
+                  child: Image.asset(
+                    'assets/badges/$i${mastery - 1}.png',
+                    width: 40, // Ancho deseado
+                    height: 40, // Alto deseado
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+    } else {
+      for (int i = 0; i < 10; i++) {
+        badges.add(
+          Positioned(
+            left: i * 25.0, // Espacio horizontal entre las medallas
+            child: GestureDetector(
+              onTap: () {
+                clickBadge(badges, level, 9);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.asset(
+                  'assets/badges/${i}2.png',
+                  width: 40, // Ancho deseado
+                  height: 40, // Alto deseado
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+
+    return SizedBox(
+      height: 40,
+      child: Stack(
+        children: badges,
+      ),
+    );
+  }
 }

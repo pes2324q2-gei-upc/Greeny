@@ -20,9 +20,12 @@ services:
       - -c
       - |
         python manage.py fetchstations
+        python manage.py fetch_lines
+        python manage.py fill_co2_consumed
         python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+      - ./uploads:/code/uploads
     ports:
       - "8000:8000"
     depends_on:
@@ -51,4 +54,3 @@ services:
       - .:/code
     env_file:
       - ./.env
-

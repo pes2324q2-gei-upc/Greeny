@@ -26,11 +26,14 @@ class LocationService {
   Future<void> startLocationUpdates(BuildContext context) async {
     AppState appState = context.read<AppState>(); // estat de l'aplicació
     // ignore: unused_local_variable
-    positionStream = Geolocator.getPositionStream(
-      desiredAccuracy: LocationAccuracy.high,
-      distanceFilter:
-          10, // filtre per els metres que han de pasar per actualitzar els km
-    ).listen((Position position) {
+    // filtre per els metres que han de pasar per actualitzar els km
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    positionStream =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((Position position) {
       if (appState.previousPosition != null) {
         double distanceInMeters = Geolocator.distanceBetween(
           appState.previousPosition!.latitude,
@@ -51,5 +54,30 @@ class LocationService {
   void stopLocationUpdates(BuildContext context) {
     positionStream?.cancel();
     context.read<AppState>().previousPosition = null;
+  }
+
+  // comprova que els servieis dúbicació estan activats i tenen permissos
+  Future<bool> comprovarUbicacio() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
+        return false;
+      }
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

@@ -3,9 +3,8 @@ import 'dart:math';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:greeny/City/location_service.dart';
 import 'package:greeny/City/history.dart';
+import 'package:greeny/City/location_service.dart';
 import 'package:greeny/utils/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
@@ -13,6 +12,7 @@ import 'form_final.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'dart:convert';
+import 'package:greeny/utils/utils.dart';
 
 class CityPage extends StatefulWidget {
   const CityPage({super.key});
@@ -33,10 +33,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   int levelNumber = 1;
   String nhoodName = '';
   String nhoodPath = '';
-  bool first = true;
-
+  String previousNhoodName = '';
+  String previousLevelName = '';
+  int previousLevelNumber = -1;
+  bool allCompleted = false;
+  int mastery = 1;
+  bool previousLevelJustPassed = false;
   String userName = '';
   bool isStaff = false;
+
+  bool _showModelViewer = true;
 
   ValueNotifier<Map<String, dynamic>?> cityDataNotifier = ValueNotifier(null);
   @override
@@ -50,51 +56,192 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         setState(() {});
       });
     }
-    getCityData().then((data) {
-      setState(() {
-        cityDataNotifier.value = data;
-        userPoints = data['points_user'];
-        levelPoints = data['points_total'];
-        levelNumber = data['number'];
-        nhoodName = data['neighborhood']['name'];
-        nhoodPath = data['neighborhood']['path'];
-        userName = data['user_name'];
-        isStaff = data['is_staff'];
-      });
-    });
+    getCityData();
   }
 
-  Future<Map<String, dynamic>> getCityData() async {
+  Future<void> getCityData() async {
     final response = await httpGet('/api/city/');
 
     if (response.statusCode == 200) {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      var newCityData = jsonDecode(utf8.decode(response.bodyBytes));
+      if (newCityData != null) {
+        setState(() {
+          cityDataNotifier.value = newCityData;
+          userName = newCityData['user_name'];
+          isStaff = newCityData['is_staff'];
+          allCompleted = newCityData.containsKey('status') &&
+              newCityData['status'] == 'all_completed';
+
+          if (newCityData['neighborhood'] != null) {
+            String newNhoodName = newCityData['neighborhood']['name'];
+            String newPath = newCityData['neighborhood']['path'];
+            if (!allCompleted) {
+              nhoodName = newNhoodName;
+              nhoodPath = newPath;
+            } else {
+              nhoodName = "all_nhoods";
+              nhoodPath = "all_nhoods.glb";
+            }
+          }
+
+          previousLevelJustPassed = newCityData['previous_lvl_just_passed'];
+          if (newCityData['previous_level_name'] != null) {
+            previousLevelName = newCityData['previous_level_name'];
+          }
+          if (!allCompleted) {
+            userPoints = newCityData['points_user'];
+            levelPoints = newCityData['points_total'];
+            levelNumber = newCityData['number'];
+          }
+        });
+        if (previousLevelJustPassed) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
+                        width: 24, // Puedes ajustar el tamaño como necesites
+                        height: 24, // Puedes ajustar el tamaño como necesites
+                      ),
+                      const SizedBox(width: 10),
+                      Text(translate('Congratulations!')),
+                    ],
+                  ),
+                  content: Text(
+                      translate('You have decontaminated the district of ') +
+                          previousLevelName +
+                          translate(', your city is now more Greeny!')),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        }
+      }
     } else {
-      throw Exception('Failed to load city data');
+      // ignore: use_build_context_synchronously
+      showMessage(context, translate('Failed to load city data'));
     }
   }
 
   Future<void> updateCityData(int points) async {
     final response = await httpPut(
-      '/api/city/',
-      jsonEncode({'points_user': points}),
-    );
+        '/api/city/', jsonEncode({'points_user': points}), 'application/json'
+        // Add the missing positional argument
+        );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> newCityData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      if (newCityData.containsKey('status') &&
+          newCityData['status'] == 'all_completed') {
+        setState(() {
+          cityDataNotifier.value =
+              newCityData; // Actualiza los datos notificados
+          allCompleted = true; // Marca que todos los niveles están completados
+          userPoints = 0; // Actualiza los puntos del usuario
+          nhoodName = "all_nhoods";
+          nhoodPath = "all_nhoods.glb";
+          // Actualiza los datos del usuario y el estado de staff si están disponibles
+          userName = newCityData['user_name'] ??
+              userName; // Utiliza el operador ?? para mantener el valor anterior si no viene uno nuevo
+          isStaff = newCityData['is_staff'] ?? isStaff;
+          mastery = newCityData['mastery'] ?? mastery;
+        });
+      } else {
+        setState(() {
+          previousLevelNumber = levelNumber;
+          previousNhoodName = nhoodName;
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+
+          if (levelNumber > previousLevelNumber) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/neighborhoods/green_leafs.webp', // Reemplaza esto con la ruta de tu ícono
+                        width: 24, // Puedes ajustar el tamaño como necesites
+                        height: 24, // Puedes ajustar el tamaño como necesites
+                      ),
+                      const SizedBox(width: 10),
+                      Text(translate('Congratulations!')),
+                    ],
+                  ),
+                  content: Text(
+                      translate('You have decontaminated the district of ') +
+                          previousNhoodName +
+                          translate(', your city is now more Greeny!')),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        });
+      }
+    } else {
+      throw Exception('Failed to update city data');
+    }
+  }
+
+  Future<void> resetLevels() async {
+    final response = await httpPut(
+        '/api/city/', // Assuming '/api/city/reset' is the endpoint for resetting levels
+        jsonEncode({
+          'reset': true
+        }), // Assuming your API requires a body to initiate reset
+        'application/json' // Set the content type as JSON
+        );
 
     if (response.statusCode == 200) {
       Map<String, dynamic> newCityData =
           jsonDecode(utf8.decode(response.bodyBytes));
-
       setState(() {
-        // Aquí actualizas el estado de tu aplicación con los nuevos datos de la ciudad
-        cityDataNotifier.value = newCityData;
-        userPoints = newCityData['points_user'];
-        levelPoints = newCityData['points_total'];
-        levelNumber = newCityData['number'];
-        nhoodName = newCityData['neighborhood']['name'];
-        nhoodPath = newCityData['neighborhood']['path'];
+        cityDataNotifier.value =
+            newCityData; // Update the data notifier with the reset response
+
+        if (newCityData.containsKey('status') &&
+            newCityData['status'] == 'levels_reset') {
+          cityDataNotifier.value = newCityData;
+          userPoints = newCityData['points_user'];
+          levelPoints = newCityData['points_total'];
+          levelNumber = newCityData['number'];
+          nhoodName = newCityData['neighborhood']['name'];
+          nhoodPath = newCityData['neighborhood']['path'];
+          userName = newCityData['user_name'];
+          isStaff = newCityData['is_staff'];
+          allCompleted = false; // Mark all levels as not completed
+        } else {
+          throw Exception(
+              'Failed to reset levels properly: Status not confirmed');
+        }
       });
     } else {
-      throw Exception('Failed to update city data');
+      throw Exception('Failed to reset levels: ${response.statusCode}');
     }
   }
 
@@ -105,11 +252,24 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void updateProgress(int points) {
-    updateCityData(points);
-    setState(() {
-      userPoints = points;
-    });
+  void updateProgress(int points) async {
+    await updateCityData(points);
+  }
+
+  String toRoman(int number) {
+    // number must be 1, 2, 3 or 4.
+    switch (number) {
+      case 1:
+        return 'I';
+      case 2:
+        return 'II';
+      case 3:
+        return 'III';
+      case 4:
+        return 'IV';
+      default:
+        return '';
+    }
   }
 
   @override
@@ -117,9 +277,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
     if (userName == '') {
       return const Scaffold(
         backgroundColor: Color.fromARGB(255, 220, 255, 255),
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     } else {
       double opct = max(min(0.75, 1.0 - (userPoints / levelPoints)), 0.0);
@@ -135,7 +293,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('$userName\'s City',
+                    Text(translate('City of ') + userName,
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 25.0)),
                     const SizedBox(height: 20),
@@ -144,34 +302,134 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                         height: MediaQuery.of(context).size.width * 0.9,
                         child: Stack(
                           children: [
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
-                            ),
                             ValueListenableBuilder<Map<String, dynamic>?>(
                               valueListenable: cityDataNotifier,
                               builder: (BuildContext context,
                                   Map<String, dynamic>? cityData,
                                   Widget? child) {
-                                if (cityData == null) {
+                                if (cityData == null || !_showModelViewer) {
                                   // Los datos aún no están disponibles, muestra un indicador de carga.
                                   return const Center(
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                      ),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
                                     ),
                                   );
                                 } else {
-                                  if (first) {
-                                    // Los datos están disponibles, construye el ModelViewer.
+                                  if (cityData.containsKey('status') &&
+                                      cityData['status'] == 'all_completed') {
+                                    // Todos los niveles están completados, muestra un botón de reinicio.
+                                    var translatedtext1 =
+                                        translate('Congratulations, you have');
+                                    var translatedtext2 =
+                                        translate('achieved Mastery ');
+                                    var translatedtext3 =
+                                        translate('Game restarted');
+                                    var translatedtext4 =
+                                        translate('Levels have been restarted');
+                                    var translatedtext5 =
+                                        translate('Restart game');
+                                    return Stack(
+                                      children: [
+                                        Positioned(
+                                          top: 5,
+                                          left: 0,
+                                          right: 0,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                translatedtext1,
+                                                textAlign: TextAlign.center,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20.0,
+                                                ),
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    translatedtext2,
+                                                    textAlign: TextAlign.center,
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20.0,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '${toRoman(mastery + 1)} !',
+                                                    style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        ModelViewer(
+                                          debugLogging: false,
+                                          key: Key(nhoodName),
+                                          src:
+                                              'assets/neighborhoods/all_nhoods.glb',
+                                          autoRotate: true,
+                                          disableZoom: true,
+                                          rotationPerSecond: "25deg",
+                                          autoRotateDelay: 1000,
+                                          cameraControls: false,
+                                        ),
+                                        Positioned(
+                                          bottom: 20,
+                                          left: 0,
+                                          right: 0,
+                                          child: Center(
+                                            // Asegura que el SizedBox esté centrado horizontalmente
+                                            child: SizedBox(
+                                              width:
+                                                  200, // Establece el ancho del botón
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  try {
+                                                    await resetLevels();
+                                                    showDialog(
+                                                        // ignore: use_build_context_synchronously
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: Text(
+                                                                translatedtext3),
+                                                            content: Text(
+                                                                translatedtext4),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                  onPressed: () =>
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop(),
+                                                                  child:
+                                                                      const Text(
+                                                                          "OK"))
+                                                            ],
+                                                          );
+                                                        });
+                                                    // ignore: empty_catches
+                                                  } catch (e) {}
+                                                },
+                                                child: Text(translatedtext5),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    );
+                                  } else {
+                                    // Los datos están disponibles, construye el ModelViewer y las imágenes de niebla.
                                     userPoints = cityData['points_user'];
                                     levelPoints = cityData['points_total'];
                                     levelNumber = cityData['number'];
@@ -179,35 +437,48 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                                         cityData['neighborhood']['name'];
                                     nhoodPath =
                                         cityData['neighborhood']['path'];
-                                    first = false;
-                                  }
 
-                                  return ModelViewer(
-                                    debugLogging: false,
-                                    key: Key(nhoodName),
-                                    src: 'assets/neighborhoods/$nhoodPath',
-                                    autoRotate: true,
-                                    disableZoom: true,
-                                    rotationPerSecond: "25deg",
-                                    autoRotateDelay: 1000,
-                                    cameraControls: false,
-                                  );
+                                    return Stack(
+                                      children: [
+                                        Opacity(
+                                          opacity:
+                                              opct, // Calcula la opacidad basada en los puntos
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                        ModelViewer(
+                                          debugLogging: false,
+                                          key: Key(nhoodName),
+                                          src:
+                                              'assets/neighborhoods/$nhoodPath',
+                                          autoRotate: true,
+                                          disableZoom: true,
+                                          rotationPerSecond: "25deg",
+                                          autoRotateDelay: 1000,
+                                          cameraControls: false,
+                                        ),
+                                        Opacity(
+                                          opacity:
+                                              opct, // Repite la opacidad para la segunda imagen de niebla
+                                          child: Image.asset(opct > 0.66
+                                              ? 'assets/neighborhoods/fog1.png'
+                                              : opct > 0.33
+                                                  ? 'assets/neighborhoods/fog2.png'
+                                                  : 'assets/neighborhoods/fog3.png'),
+                                        ),
+                                      ],
+                                    );
+                                  }
                                 }
                               },
-                            ),
-                            Opacity(
-                              opacity:
-                                  opct /*max(min(75, 100 - (userPoints / levelPoints) * 100),0) / 100*/, // //min(75, puntuació_màxima_ciutat-puntuació_jugador)/puntuació_màxima_ciutat
-                              child: Image.asset(opct > 0.66
-                                  ? 'assets/neighborhoods/fog1.png'
-                                  : opct > 0.33
-                                      ? 'assets/neighborhoods/fog2.png'
-                                      : 'assets/neighborhoods/fog3.png'),
                             ),
                           ],
                         )),
                     const SizedBox(height: 20),
-                    if (!appState.isPlaying)
+                    if (!appState.isPlaying && !allCompleted)
                       SizedBox(
                         height: 300,
                         width: 300,
@@ -226,7 +497,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                           ],
                         ),
                       )
-                    else
+                    else if (!allCompleted)
                       SizedBox(
                           height: 300,
                           width: 300,
@@ -244,10 +515,11 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
         appBar: AppBar(
           backgroundColor: const Color.fromARGB(255, 220, 255, 255),
           leading: IconButton(
-              onPressed: viewHistory,
-              icon: const Icon(Icons.restore),
-              color: const Color.fromARGB(255, 1, 167, 164)),
-          actions: isStaff
+            onPressed: viewHistory,
+            icon: const Icon(Icons.restore),
+            color: const Color.fromARGB(255, 1, 167, 164),
+          ),
+          actions: !allCompleted && isStaff
               ? [
                   IconButton(
                     onPressed: () {
@@ -297,8 +569,16 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void viewHistory() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const HistoryPage()));
+    setState(() {
+      _showModelViewer = false;
+    });
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const HistoryPage())).then((_) {
+      setState(() {
+        _showModelViewer = true;
+      });
+    });
   }
 
   void finalForm() {
@@ -329,7 +609,7 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
             // Si está reproduciendo, pausar
             pause();
           } else {
-            bool ubiActiva = await comprovarUbicacio();
+            bool ubiActiva = await LocationService.instance.comprovarUbicacio();
             if (!ubiActiva) return;
             // Si no está reproduciendo, reproducir
             play();
@@ -353,19 +633,13 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
   }
 
   void addPoints() {
-    setState(() {
-      userPoints += 10;
-    });
     updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+        50); // Llama a la función para actualizar la barra de progreso
   }
 
   void removePoints() {
-    setState(() {
-      userPoints -= 10;
-    });
     updateProgress(
-        userPoints); // Llama a la función para actualizar la barra de progreso
+        -50); // Llama a la función para actualizar la barra de progreso
   }
 }
 
@@ -425,31 +699,6 @@ class KmTravelled extends StatelessWidget {
   }
 } */
 
-// comprova que els servieis dúbicació estan activats i tenen permissos
-Future<bool> comprovarUbicacio() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await Geolocator.openLocationSettings();
-    if (!serviceEnabled) {
-      return false;
-    }
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission != LocationPermission.whileInUse &&
-        permission != LocationPermission.always) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 class BarraProgres extends StatelessWidget {
   final int userPoints;
   final Function(int) onProgressChanged;
@@ -476,11 +725,12 @@ class BarraProgres extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
+              var translatedtext = translate('Level');
               return Container(
                 alignment: Alignment.centerRight,
                 //margin: const EdgeInsets.symmetric(horizontal: 110.0),
                 child: Text(
-                  "Nivell $levelNumber - $nhoodName",
+                  "$translatedtext $levelNumber - $nhoodName",
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );
@@ -506,12 +756,13 @@ class BarraProgres extends StatelessWidget {
           const SizedBox(height: 5.0),
           LayoutBuilder(
             builder: (context, constraints) {
+              var translatedtext = translate('Points:');
               return Container(
                 alignment: Alignment.centerLeft,
                 // margin: const EdgeInsets.symmetric(
                 //     horizontal: MediaQuery.of(context).size.width * 0.1),
                 child: Text(
-                  'Punts: $userPoints/$levelPoints',
+                  '$translatedtext $userPoints/$levelPoints',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               );

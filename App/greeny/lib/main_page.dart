@@ -6,7 +6,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:greeny/API/requests.dart';
 import 'Map/map.dart';
 import 'City/city.dart';
-import 'Friends/friends.dart';
+import 'Social/rank.dart';
 import 'Profile/profile.dart';
 import 'Statistics/statistics.dart';
 import 'package:greeny/utils/utils.dart';
@@ -22,14 +22,14 @@ class _MainPageState extends State<MainPage> {
   int currentPageIndex = 0;
   int friendRequestsCount = 0;
 
-  Timer _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
+  Timer _timer = Timer.periodic(const Duration(seconds: 60), (timer) {});
 
   @override
   void initState() {
     getFriends();
     super.initState();
     _timer =
-        Timer.periodic(const Duration(seconds: 5), (timer) => getFriends());
+        Timer.periodic(const Duration(seconds: 10), (timer) => getFriends());
   }
 
   @override
@@ -41,20 +41,23 @@ class _MainPageState extends State<MainPage> {
   Future<void> getFriends() async {
     friendRequestsCount = 0;
 
-    const String endpointRequests = '/api/friend-requests/';
-    final responseRequests = await httpGet(endpointRequests);
+    try {
+      const String endpointRequests = '/api/friend-requests/';
+      final responseRequests = await httpGet(endpointRequests);
 
-    if (responseRequests.statusCode == 200) {
-      final List<dynamic> friendRequestsData =
-          jsonDecode(responseRequests.body);
-      setState(() {
-        friendRequestsCount = friendRequestsData.length;
-      });
-    } else {
-      final bodyReq = jsonDecode(responseRequests.body);
-      // ignore: use_build_context_synchronously
-      showMessage(context, translate(bodyReq['message']));
-    }
+      if (responseRequests.statusCode == 200) {
+        final List<dynamic> friendRequestsData =
+            jsonDecode(responseRequests.body);
+        setState(() {
+          friendRequestsCount = friendRequestsData.length;
+        });
+      } else {
+        final bodyReq = jsonDecode(responseRequests.body);
+        // ignore: use_build_context_synchronously
+        showMessage(context, translate(bodyReq['message']));
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   @override
@@ -63,8 +66,10 @@ class _MainPageState extends State<MainPage> {
       body: <Widget>[
         const CityPage(),
         const MapPage(),
-        const FriendsPage(),
-        const StatisticsPage(),
+        const RankPage(),
+        const StatisticsPage(
+          sharing: false,
+        ),
         const ProfilePage(),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBar(
@@ -86,7 +91,7 @@ class _MainPageState extends State<MainPage> {
           NavigationDestination(
             selectedIcon: Stack(
               children: [
-                const Icon(Icons.people_rounded),
+                const Icon(Icons.emoji_events_rounded),
                 if (friendRequestsCount > 0)
                   Positioned(
                     left: 10,
@@ -110,7 +115,7 @@ class _MainPageState extends State<MainPage> {
             ),
             icon: Stack(
               children: [
-                const Icon(Icons.people_outline_rounded),
+                const Icon(Icons.emoji_events_outlined),
                 if (friendRequestsCount > 0)
                   Positioned(
                     left: 10,
@@ -132,7 +137,7 @@ class _MainPageState extends State<MainPage> {
                   ),
               ],
             ),
-            label: translate('Friends'),
+            label: translate('Ranking'),
           ),
           NavigationDestination(
             selectedIcon: const Icon(Icons.table_chart),

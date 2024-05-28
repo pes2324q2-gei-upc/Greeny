@@ -21,6 +21,7 @@ class AppState with ChangeNotifier {
     'car': false,
     'metro': false
   };
+  bool fav = false;
   CameraPosition cameraPosition =
       const CameraPosition(target: LatLng(0, 0), zoom: 16);
 
@@ -79,19 +80,30 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  set isPlaying(bool value) {
-    _isPlaying = value;
+  void setFav(bool newFav) {
+    fav = newFav;
     notifyListeners();
+  }
+
+  set isPlaying(bool value) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isPlaying = value;
+      notifyListeners();
+    });
   }
 
   set totalDistance(double value) {
-    _totalDistance = value;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _totalDistance = value;
+      notifyListeners();
+    });
   }
 
   set previousPosition(Position? newPosition) {
-    _previousPosition = newPosition;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _previousPosition = newPosition;
+      notifyListeners();
+    });
   }
 
   set startedAt(DateTime? value) {

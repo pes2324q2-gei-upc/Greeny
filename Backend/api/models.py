@@ -1,19 +1,12 @@
-"""
-This module defines the database models for the Greeny aplication. 
-
-It includes models for Station, PublicTransportStation, TransportType, Stop, BusStation, 
-BicingStation, ChargingStation, User and Statistics.
-
-Each model corresponds to a table in the database and defines the fields and behaviors of 
-the data that will be stored.
-"""
+import random
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.gis.db import models
+from django.contrib.gis.db import models as gis_models
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class Station(models.Model):
     name = models.CharField(max_length=100)
-    location = models.PointField()
+    location = gis_models.PointField()
     rating = models.FloatField(default= 0.0)
 
     def __str__(self):
@@ -24,9 +17,45 @@ class Station(models.Model):
 class PublicTransportStation(Station):
     pass
 
+def get_default_image():
+    image_number = random.randint(1, 5)
+    return f'imatges/Default{image_number}.png'
+
 class User(AbstractUser):
     friends = models.ManyToManyField("self", blank=True)
+    image = models.ImageField(upload_to='imatges/', default=get_default_image)
+    reports = models.IntegerField(default=0)
+    mastery = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+    previous_lvl_just_passed = models.BooleanField(default=False)
 
+class Blacklist(models.Model):
+    email = models.EmailField(unique=True)
+
+class VerificationCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+
+class CO2Consumed(models.Model):
+    kg_CO2_walking_biking_consumed = models.FloatField(default=0.0)
+    kg_CO2_bus_consumed = models.FloatField(default=0.0)
+    kg_CO2_motorcycle_consumed = models.FloatField(default=0.0)
+    kg_CO2_car_gasoline_consumed = models.FloatField(default=0.0)
+    kg_CO2_electric_car_consumed = models.FloatField(default=0.0)
+    kg_CO2_metro_consumed = models.FloatField(default=0.0)
+    kg_CO2_tram_consumed = models.FloatField(default=0.0)
+    kg_CO2_fgc_consumed = models.FloatField(default=0.0)
+    kg_CO2_train_consumed = models.FloatField(default=0.0)
+
+    def save(self, *args, **kwargs):
+        #Save object to the database. Updates the existing entry if there is one.
+        if not self.pk and CO2Consumed.objects.exists():
+            # if the objects exists, then update the first one found
+            self.pk = CO2Consumed.objects.first().pk
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = "CO2Consumed"
 class TransportType(models.Model):
     class TTransport(models.TextChoices):
         METRO = "METRO", "metro"
@@ -66,6 +95,9 @@ class Statistics(models.Model):
     km_Bus = models.FloatField(default=0.0)
     km_Motorcycle = models.FloatField(default=0.0)
     km_Car = models.FloatField(default=0.0)
+
+    class Meta:
+        verbose_name_plural = "Statistics"
 
 class FriendRequest(models.Model):
     from_user = models.ForeignKey(
@@ -119,6 +151,7 @@ class FavoriteStation(models.Model):
 class Neighborhood(models.Model):
     name = models.CharField(max_length=50)
     path = models.CharField(max_length=100)
+    coords = ArrayField(gis_models.PointField(), blank=False, default=list)
 
 class Level(models.Model):
     number = models.IntegerField()

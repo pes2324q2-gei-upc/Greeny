@@ -19,9 +19,9 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from api.friend_view import FriendViewSet, FriendRequestViewSet
 from api.transports_views import FetchPublicTransportStations
 from .models import (User, FriendRequest, Station, PublicTransportStation,
-                        TransportType, Statistics, Route, Review, Neighborhood, Level)
+                        TransportType, Statistics, Route, Review, Neighborhood, Level, CO2Consumed)
 from .utils import calculate_co2_consumed, calculate_car_co2_consumed
-
+from .user_views import init_neighborhoods, init_levels
 
 class FetchPublicTransportStationsTest(TestCase):
     def setUp(self):
@@ -62,7 +62,20 @@ class FinalFormTransports(TestCase):
         response = self.client.post('/api/user/', user_data)
         self.assertEqual(response.status_code, 201)
         self.user = User.objects.get(username='alba')
+        init_neighborhoods()
+        init_levels(self.user)
         self.client.force_authenticate(user=self.user)
+        self.co2_consumed = CO2Consumed.objects.create(
+            kg_CO2_walking_biking_consumed=0.0,
+            kg_CO2_bus_consumed=0.08074,
+            kg_CO2_motorcycle_consumed=0.053,
+            kg_CO2_car_gasoline_consumed=0.143,
+            kg_CO2_electric_car_consumed=0.070,
+            kg_CO2_metro_consumed=0.05013,
+            kg_CO2_tram_consumed=0.08012,
+            kg_CO2_fgc_consumed=0.03577,
+            kg_CO2_train_consumed=0.04688
+        )
 
     def test_post_success(self):
         data = {
@@ -296,7 +309,8 @@ class UsersViewTestCase(TestCase):
     def test_create_user(self):
         data = {
             "username": "testuser2",
-            "password": "testpass2"
+            "password": "testpass2",
+            "email": "test@test.test"
         }
         response = self.client.post('/api/user/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -331,7 +345,7 @@ class TestReviewsViews(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Review.objects.count(), 2)
-        self.assertEqual(Review.objects.get(id=2).body, 'Good station!')
+        self.assertEqual(Review.objects.get(body='Good station!').body, 'Good station!')
         self.station.refresh_from_db()
         self.assertEqual(self.station.rating, 4.5)
 
@@ -387,3 +401,50 @@ class CityViewTest(TestCase):
         unauthenticated_client = APIClient()
         response = unauthenticated_client.get(reverse('city'))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+
+class ProfanityFilterTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        location = Point(0, 0)  # replace with actual longitude and latitude
+        self.station = Station.objects.create(name='Station1', location=location, rating=0)
+
+        self.user = User.objects.create(username='user1', password='pass',
+                                        email='aaa@gmail.com')
+        self.review = Review.objects.create(author=self.user, station=self.station,
+                                            body='Test review completely harmless', puntuation=5)
+        self.review2 = Review.objects.create(author=self.user, station=self.station,
+                                            body='Test review 2', puntuation=5)
+        self.url = reverse('profanity-filter',
+                           kwargs={'station_id': self.station.id, 'review_id': self.review.id})
+        self.client.force_authenticate(user=self.user)
+    def test_no_profanity(self):
+        self.review.body = "This station is perfect, no problem at all!"
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'No profanity detected'})
+
+    def test_profanity_no_previous_reports(self):
+        self.review.body = 'This station is very shit!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
+
+    def test_profanity_with_previous_reports(self):
+        self.review.author.reports = 2
+        self.review.author.save()
+        self.review.body = 'This station is shit!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_423_LOCKED)
+        self.assertEqual(response.data, {'message': 'User has been banned'})
+
+    def test_non_english_review(self):
+        self.review.body = 'Mierda de estacion!'
+        self.review.save()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'message': 'Review has been deleted due to profanity'})
