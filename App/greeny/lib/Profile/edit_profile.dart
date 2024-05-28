@@ -234,6 +234,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void showImagePickerDialog() {
     backendURL = getBackendURL();
+    hasDataChanged.value = true;
     showDialog(
       context: context,
       builder: (BuildContext context) {

@@ -492,8 +492,8 @@ class _CityPageState extends State<CityPage> with TickerProviderStateMixin {
                               levelNumber: levelNumber,
                             ),
                             buildplaypause(),
-                            if (appState.totalDistance != 0)
-                              LastTravel(km: appState.totalDistance),
+                            /*if (appState.totalDistance != 0)
+                              LastTravel(km: appState.totalDistance),*/
                           ],
                         ),
                       )
