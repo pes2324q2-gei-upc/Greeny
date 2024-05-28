@@ -29,7 +29,7 @@ class LocationService {
     // filtre per els metres que han de pasar per actualitzar els km
     LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 100,
+      distanceFilter: 10,
     );
     positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
