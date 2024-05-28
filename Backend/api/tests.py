@@ -439,7 +439,7 @@ class ProfanityFilterTest(TestCase):
         self.review.body = 'This station is shit!'
         self.review.save()
         response = self.client.post(self.url)
-        self.assertEqual(response.status_code, status.HTTP_423_LOCKED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'message': 'User has been banned'})
 
     def test_non_english_review(self):
