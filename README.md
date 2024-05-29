@@ -35,6 +35,7 @@ Aplicació de mobilitat sostenible
 [![Docker Image CI](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/docker-image.yml/badge.svg?branch=develop)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/docker-image.yml) [![Pylint](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/pylint.yml/badge.svg?branch=develop)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/pylint.yml) [![Django CI](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/django.yml/badge.svg?branch=develop)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/django.yml) [![Flutter](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/flutter.yml/badge.svg?branch=develop)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/flutter.yml)
 
 ## Integrants
+
 - Amorín Díaz, Miquel
 - Costabella Moreno, Agustí
 - López Buira, Iván
@@ -44,7 +45,7 @@ Aplicació de mobilitat sostenible
 - Vega Centeno, Javier
 
 <a href="https://github.com/pes2324q2-gei-upc/Greeny/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=pes2324q2-gei-upc/Greeny/" />
+  <img src="https://contrib.rocks/image?repo=pes2324q2-gei-upc/Greeny" />
 </a>
 
 ## Conception of the project
