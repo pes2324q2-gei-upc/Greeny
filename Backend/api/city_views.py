@@ -36,7 +36,7 @@ class CityView(APIView):
                 if previous_level:
                     previous_level_name = self.get_neighborhood(previous_level).name
             user_data = {
-                "user_name": user.username,
+                "user_name": user.first_name,
                 "is_staff": user.is_staff,
                 "status": "all_completed",
                 "previous_lvl_just_passed": user.previous_lvl_just_passed,
@@ -104,7 +104,7 @@ class CityView(APIView):
                 user.previous_lvl_just_passed = True
                 user.save()
                 user_data = {
-                    "user_name": user.username,
+                    "user_name": user.first_name,
                     "is_staff": user.is_staff,
                     "status": "all_completed",
                     "mastery": user.mastery,
@@ -121,7 +121,7 @@ class CityView(APIView):
         all_completed = all(l.completed for l in levels)
         if all_completed:
             user_data = {
-                "user_name": user.username,
+                "user_name": user.first_name,
                 "is_staff": user.is_staff,
                 "status": "all_completed"
             }
@@ -169,7 +169,7 @@ class CityView(APIView):
                     'name': neighborhood.name,
                     'path': neighborhood.path
                 },
-                'user_name': user.username,  # Incluye el nombre de usuario
+                'user_name': user.first_name,  # Incluye el nombre de usuario
                 'is_staff': user.is_staff,   # Incluye el estado de staff
             }
 
