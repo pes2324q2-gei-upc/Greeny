@@ -58,6 +58,14 @@ El nostre projecte consisteix en una aplicació mòbil que té com a idea princi
 
 La proposta del nostre projecte ofereix una experiència lúdica única, on els usuaris no només reben informació sobre punts de recàrrega elèctrica, estacions de Bicing i parades de transport públic, sinó que també es converteixen en protagonistes de la transformació d'una ciutat contaminada en un entorn més saludable i sostenible. Amb una combinació de gamificació, geolocalització i interacció social, aspirem a crear una plataforma que no només entretingui, sinó que també eduqui i motivi els usuaris a adoptar hàbits de vida més respectuosos amb el medi ambient. Així, el nostre projecte no només és una aplicació mòbil, sinó una iniciativa per a la conscienciació i la millora de la sostenibilitat urbana.
 
+## Vídeo Demo de Greeny
+
+El següent vídeo conté una **demostració de totes les funcionalitats** que de l'aplicació Greeny:
+
+https://github.com/pes2324q2-gei-upc/Greeny/assets/105717367/43e15f08-8ca2-4931-bd7d-539c0da111dd
+
+
+
 ## Com es calculen els teus punts?
 
 Utilitzant aquesta fórmula:
