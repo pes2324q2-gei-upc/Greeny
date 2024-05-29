@@ -150,25 +150,6 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Column(
-                    children: [
-                      Text(
-                        '${translate('Or sign in with')}:',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      IconButton(
-                        icon: const Image(
-                          image: AssetImage('assets/icons/google.png'),
-                          height: 40,
-                          width: 40,
-                        ),
-                        iconSize: 30,
-                        tooltip: translate('Sign in with Google'),
-                        onPressed: googleLogIn,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -203,14 +184,6 @@ class _SignInPageState extends State<SignInPage> {
           await UserAuth().userRegister(name, username, email, password);
       checkSuccess(res);
     }
-  }
-
-  Future<void> googleLogIn() async {
-    setState(() {
-      _loading = true;
-    });
-    bool ok = await UserAuth().userGoogleAuth();
-    checkSuccess(ok ? 'ok' : 'Could not log in. Please try it later');
   }
 
   void checkSuccess(String res) {
