@@ -44,9 +44,9 @@ def calculate_points(co2_consumed, car_co2_consumed):
 La fórmula calcula la **diferència entre el CO2 consumit i el CO2 que hauries consumit** fent la ruta en un cotxe de combustió.
 > En conseqüència en fer una ruta en cotxe de combustió no es guanyaran punts, ja que no s'ha estalviat CO2.
 
-## Instalar release APK a dispositius ANDROID
+## Instal·lar release APK a dispositius ANDROID
 
-Instalar l'arxiu [Greeny.apk](https://github.com/pes2324q2-gei-upc/Greeny/blob/main/Greeny.apk) al teu dispositiu.
+Instalar l'aplicació [Greeny.apk](https://github.com/pes2324q2-gei-upc/Greeny/releases/latest/download/Greeny-release.apk) de la [Última Release](https://github.com/pes2324q2-gei-upc/Greeny/releases/latest) al teu dispositiu.
 
 ## Instruccions per executar el projecte
 
@@ -55,7 +55,7 @@ Instalar l'arxiu [Greeny.apk](https://github.com/pes2324q2-gei-upc/Greeny/blob/m
 
 1. Baixarse el repo
 
-2. Instalarse docker
+2. Instal·lar-se docker
 
 3. Situarse a la carpeta backend
 
@@ -97,15 +97,15 @@ docker compose run backend python manage.py makemigrations
 > **Macos:** Descarregar `cocoapod`
 
 #### Preparació
-1. Instalar extensió flutter a vscode (potser també instalar flutter)
-2. Instalar emulador mobil (Xcode/Android Studio)
+1. Instal·lar extensió flutter a vscode (potser també instalar flutter)
+2. Instal·lar emulador mobil (Xcode/Android Studio)
 
 #### Run app
 1. A baix a la dreta de vscode seleccionar un dispositiu per executar el front end
 2. Seleccionar l'arxiu `./App/greeny/lib/main.dart`
 3. Donar-li a `Start debugging`.
 
-#### Instalar la app
+#### Instal·lar la app
 ```sh
 flutter run --release
 ```
