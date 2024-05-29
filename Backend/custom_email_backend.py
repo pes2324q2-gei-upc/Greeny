@@ -10,7 +10,6 @@ from django.core.mail.message import sanitize_address
 from django.core.mail.utils import DNS_NAME
 from django.utils.functional import cached_property
 
-
 class EmailBackend(BaseEmailBackend):
     """
     A wrapper that manages the SMTP network connection.
