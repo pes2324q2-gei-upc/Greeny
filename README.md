@@ -61,7 +61,7 @@ La proposta del nostre projecte ofereix una experiència lúdica única, on els 
 
 ## Vídeo Demo de Greeny
 
-El següent vídeo conté una **demostració de totes les funcionalitats** que de l'aplicació Greeny:
+El següent vídeo conté una **demostració de totes les funcionalitats** de l'aplicació Greeny:
 
 https://github.com/pes2324q2-gei-upc/Greeny/assets/105717367/43e15f08-8ca2-4931-bd7d-539c0da111dd
 
