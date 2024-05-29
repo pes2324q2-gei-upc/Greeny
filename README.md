@@ -43,6 +43,10 @@ Aplicació de mobilitat sostenible
 - Tajahuerce Brulles, Arnau
 - Vega Centeno, Javier
 
+<a href="https://github.com/pes2324q2-gei-upc/Greeny/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=pes2324q2-gei-upc/Greeny/" />
+</a>
+
 ## Conception of the project
 
 <p align="center">
