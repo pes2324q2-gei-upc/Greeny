@@ -2,6 +2,32 @@
 
 Aplicació de mobilitat sostenible
 
+## Table of Contents
+
+- [Greeny](#greeny)
+  - [Table of Contents](#table-of-contents)
+  - [CI/CD Status](#cicd-status)
+      - [main branch status](#main-branch-status)
+      - [development branch status](#development-branch-status)
+  - [Integrants](#integrants)
+  - [Conception of the project](#conception-of-the-project)
+  - [Com es calculen els teus punts?](#com-es-calculen-els-teus-punts)
+  - [Instal·lar release APK a dispositius ANDROID](#installar-release-apk-a-dispositius-android)
+  - [Instruccions per executar el projecte](#instruccions-per-executar-el-projecte)
+    - [Backend](#backend)
+      - [Posar en marxa:](#posar-en-marxa)
+      - [Run dels dockers corresponents](#run-dels-dockers-corresponents)
+      - [Per fer migracions](#per-fer-migracions)
+      - [Per crear migracions](#per-crear-migracions)
+    - [Frontend](#frontend)
+      - [Preparació](#preparació)
+      - [Run app](#run-app)
+      - [Instal·lar la app](#installar-la-app)
+  - [Folder Sctructure](#folder-sctructure)
+
+
+## CI/CD Status
+
 #### main branch status
 [![Docker Image CI](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/docker-image.yml) [![Pylint](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/pylint.yml/badge.svg)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/pylint.yml) [![Django CI](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/django.yml/badge.svg)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/django.yml) [![Flutter](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/flutter.yml/badge.svg)](https://github.com/pes2324q2-gei-upc/Greeny/actions/workflows/flutter.yml)
 
@@ -145,7 +171,6 @@ flutter run --release
 │   ├── manage.py
 │   ├── uploads/imatges     #Directori amb les fotos de perfil dels usuaris registrats
 │   └── requirements.txt    #Dependencies del Backend
-├── Greeny.apk              #APK de Greeny per dispositius Android
 ├── LICENSE.md              #Apache License del repositori
 └── README.md               #README del repositori
 ```
